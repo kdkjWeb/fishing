@@ -115,7 +115,7 @@
                         <el-row>
                         <el-col :span="12">
                             <el-form-item label="编号：" prop="number">
-                                <el-input v-model="form.number"></el-input>
+                                <el-input v-model="form.number" :disabled="disabled"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -134,7 +134,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="圈子分类：" prop="codeName">
+                            <el-form-item label="圈子分类：" prop="codeName" ref="codeName1">
                                 <el-select v-model="form.codeName" placeholder="圈子分类">
                                 <el-option :label="item.codeName" :value="item.cId" v-for="item in codeNameList" :key="item.cId"></el-option>
                                 </el-select>
@@ -144,11 +144,11 @@
                         <el-row>
                        <el-col :span="12">
                             <el-form-item label="评论数：" prop="commentCount">
-                                <el-input v-model="form.commentCount"></el-input>
+                                <el-input v-model="form.commentCount" :disabled="disabled"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="类型：" prop="kind">
+                            <el-form-item label="类型：" prop="kind" ref="kind1">
                                 <el-select v-model="form.kind" placeholder="类型">
                                 <el-option label="官方" value="官方"></el-option>
                                 <el-option label="个人" value="个人"></el-option>
@@ -169,7 +169,8 @@
                         name="picture"
                         :before-upload="beforeAvatarUpload"
                         :headers="myHeaders"   
-                        auto-upload>
+                        auto-upload
+                        :on-error="upError">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div>
@@ -181,12 +182,12 @@
                            <el-row>
                             <el-col :span="12">
                                 <el-form-item label="阅读数：" prop="viewCount">
-                                    <el-input v-model="form.viewCount"></el-input>
+                                    <el-input v-model="form.viewCount" :disabled="disabled"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item label="省：" prop="provinceName">
-                                    <el-select v-model="form.provinceName" placeholder="请选择省份" @change="chooseProvince">
+                                <el-form-item label="省：" prop="provinceId">
+                                    <el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince">
                                     <el-option :label="item.codeName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>
                                     </el-select>
                                 </el-form-item>
@@ -194,8 +195,8 @@
                            </el-row>
                       </el-col>
                       <el-col :span="8">
-                            <el-form-item label="市：" prop="cityName">
-                                <el-select v-model="form.cityName" placeholder="请选择市"  @change="chooseArea">
+                            <el-form-item label="市：" prop="cityId">
+                                <el-select v-model="form.cityId" placeholder="请选择市"  @change="chooseArea">
                                 <el-option :label="item.codeName" :value="item.cId" v-for="item in cityList" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
@@ -206,12 +207,12 @@
                            <el-row>
                             <el-col :span="12">
                                 <el-form-item label="成员数：" prop="memberCount">
-                                    <el-input v-model="form.memberCount"></el-input>
+                                    <el-input v-model="form.memberCount" :disabled="disabled"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item label="县：" prop="areaName">
-                                    <el-select v-model="form.areaName" placeholder="县" @change="chooseCountry">
+                                <el-form-item label="县：" prop="areaId">
+                                    <el-select v-model="form.areaId" placeholder="县" @change="chooseCountry">
                                     <el-option :label="item.codeName" :value="item.cId" v-for="item in areaList" :key="item.cId"></el-option>
                                     </el-select>
                                 </el-form-item>
@@ -219,8 +220,8 @@
                            </el-row>
                       </el-col>
                       <el-col :span="8">
-                            <el-form-item label="乡：" prop="countryName">
-                                <el-select v-model="form.countryName" placeholder="乡">
+                            <el-form-item label="乡：" prop="countryId">
+                                <el-select v-model="form.countryId" placeholder="乡">
                                  <el-option :label="item.codeName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
@@ -247,12 +248,13 @@
                            <el-row>
                             <el-col :span="12">
                                 <el-form-item label="创建人：" prop="creator">
-                                    <el-input v-model="form.creator"></el-input>
+                                    <el-input v-model="form.creator" :disabled="disabled"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
                                 <el-form-item label="创建时间：" prop="createTime">
                                     <el-date-picker
+                                        :disabled="disabled"
                                         v-model="form.createTime"
                                         type="datetime"
                                         placeholder="选择日期时间"
@@ -264,7 +266,9 @@
                       </el-col>
                       <el-col :span="8">
                             <el-form-item label="管理人：" prop="manager">
-                                <el-input v-model="form.manager"></el-input>
+                                <el-select v-model="form.manager" placeholder="管理人">
+                                 <el-option :label="item.nickname" :value="item.cId" v-for="item in managerList" :key="item.cId"></el-option>
+                                </el-select>
                             </el-form-item>
                       </el-col>
                     </el-row>
@@ -273,12 +277,13 @@
                            <el-row>
                             <el-col :span="12">
                                 <el-form-item label="修改人：" prop="modifier">
-                                    <el-input v-model="form.modifier"></el-input>
+                                    <el-input v-model="form.modifier" :disabled="disabled"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
                                 <el-form-item label="修改时间：" prop="modifyTime">
                                     <el-date-picker
+                                        :disabled="disabled"
                                         v-model="form.modifyTime"
                                         type="datetime"
                                         placeholder="选择日期时间"
@@ -322,6 +327,7 @@
 export default {
     data(){
         return{
+            disabled: false,
             myHeaders: {
                     token: ''
                 },
@@ -338,6 +344,7 @@ export default {
             cityList: [],   //市
             areaList: [],    //县级
             countryList: [],   //乡镇
+            managerList: [],   //管理人列表
             formInline: {   //圈子、详细地址、创建时间的表单
             name: '',
             address: '',
@@ -352,11 +359,11 @@ export default {
                 commentCount: '',  //评论数
                 kind: '',   //类型
                 viewCount: '',   //阅读数
-                provinceName: '',  //省份
-                cityName: '',   //市
+                provinceId: '',  //省份
+                cityId: '',   //市
                 memberCount: '',  //成员数
-                areaName: '',   //县
-                countryName: '',  //乡
+                areaId: '',   //县
+                countryId: '',  //乡
                 longitude: '',  //经度
                 latitude: '',   //维度
                 creator: '',   //创建人
@@ -367,6 +374,12 @@ export default {
                 location: '',   //地址
                 intro: '',   //简介
                 remark: '',    //备注
+                icon: ''   //图标
+   
+                        // provinceId: this.form.provinceName,
+                        // cityId: this.form.cityName,
+                        // areaId: this.form.areaName,
+                        // countryId: this.form.countryName,
             },
             tableList: [   //表格的头部配置
                 {prop: 'circleName', label: '圈子', width: '120', align: ''},
@@ -440,6 +453,17 @@ export default {
         //新增
         add(){
             this.dialogVisible = true;
+
+            //新增有些字段禁止填写
+            this.disabled = true;
+
+            // this.$refs['form'].resetFields();
+
+
+            this.$refs['codeName1'].clearValidate();
+            this.$refs['kind1'].clearValidate();
+            this.form = {};
+            this.imageUrl = '';
         },
         //删除
         deleted(){
@@ -490,37 +514,16 @@ export default {
                 return;
             }
             this.dialogVisible = true;
+            this.disabled = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-            let data = this.multipleSelection[0];
-
-            // 修改圈子数据回显
-            // this.form.circleName = data.circleName;
-            // this.form.number = this.rowIndex;
-            // this.form.status = data.status;
-            // this.form.sort = data.sort;
-            // this.form.codeName = data.codeName;
-            // this.form.commentCount = data.commentCount;
-            // this.form.kind = data.kind;
-            // this.form.viewCount = data.viewCount;
-            // this.form.province = data.provinceName;
-            // this.form.provinceName = data.cityName;
-            // this.form.memberCount = data.memberCount;
-            // this.form.areaName = data.areaName;
-            // this.form.countryName = data.countryName;
-            // this.form.longitude = data.longitude;
-            // this.form.latitude = data.latitude;
-            // this.form.creator = data.creator;
-            // this.form.createTime = data.createTime;
-            // this.form.manager = data.manager;
-            // this.form.modifier = data.modifier;
-            // this.form.modifyTime = data.modifyTime;
-            // this.form.location = data.location;
-            // // this.form.intro = data.intro;
-            // this.form.remark = data.remark;
             
-            this.form = data;
-            this.form.number = this.rowIndex;
-            // this.form.status = data.status == '正常' ? 1 : 0;
+
+            if(this.circleId){
+                let data = this.multipleSelection[0];
+                this.form = data;
+                this.form.number = this.rowIndex;
+                this.imageUrl = this.form.icon;
+            }
 
         },
         //导出
@@ -537,7 +540,6 @@ export default {
                 for(var i= 0; i<this.tableData.length; i++){
                     if(this.tableData[i].cId == this.multipleSelection[0].cId){
                         this.rowIndex = (this.currentPage - 1)*this.pageSize + i + 1;
-                        console.log(this.rowIndex)
                         break;
                     }
                 }
@@ -556,10 +558,60 @@ export default {
         },
         //弹出框的确认按钮
         comfirm(formName){
-            // console.log(this.form.kind)
+            
+            if(!this.form.icon){
+                this.$message({
+                message: '请上传新圈子的图标！',
+                type: 'warning'
+                });
+
+                return;
+            }
+
+
             this.$refs[formName].validate((valid)=>{
                 if(valid){
-                    alert('submit')
+                    let url = this.circleId ? 'circle/updateCircle' : 'circle/addCircle'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+                    this.$post(url,{
+                        cId: this.circleId ? this.circleId : null,
+                        circleName: this.form.circleName,
+                        status: this.form.status == '正常' ? 1 : this.form.status,   //因为修改回显如果状态不改变，那么传给后台的会是’正常‘汉字，需要进行转换成1，否则就是正常的
+                        sort: this.form.sort,
+                        circleCategoryId: this.form.codeName,
+                        kind: this.form.kind,
+                        provinceId: this.form.provinceName,
+                        cityId: this.form.cityName,
+                        areaId: this.form.areaName,
+                        countryId: this.form.countryName,
+                        longitude: this.form.longitude,
+                        latitude: this.form.latitude,
+                        managerId: this.form.manager,
+                        location: this.form.location,
+                        intro: this.form.intro,
+                        remark: this.form.remark,
+                        icon: this.form.icon
+                    }).then(res=>{
+                        if(res.code == 0){
+                            //隐藏dialog框
+                            this.dialogVisible = false;
+                            //提示添加成功
+                            this.$message({
+                            message: res.msg,
+                            type: 'success'
+                            });
+                             //重新获取圈子列表
+                            this.getCircleList();
+
+                            // 清空表单和图片
+                            // this.$refs['form'].resetFields();
+                            // this.imageUrl = ''
+                        }else{
+                            this.$message({
+                            message: res.msg,
+                            type: 'warning'
+                            });
+                        }
+                    })
                 }else{
                     return false;
                 }
@@ -568,14 +620,18 @@ export default {
         //弹出框的取消按钮
         cancel(formName){
             this.dialogVisible = false;
-            this.$refs[formName].resetFields();
+            // this.$refs[formName].resetFields();
+            // this.imageUrl = '';
+            this.disabled = false;
         },
 
 
         //关闭dialog弹出框
         closeDialog(done){
               this.dialogVisible = false;
-
+              this.disabled = false;
+            //   this.$refs[formName].resetFields();
+            //   this.imageUrl = '';
         　　/*this.$confirm('确认关闭？')
         　　.then(_ => {
         　　done();
@@ -643,7 +699,7 @@ export default {
      chooseProvince(){
         //根据省份id获取城市
          this.$get('city/queryByProvinceId',{
-             provinceId: this.form.provinceName
+             provinceId: this.form.provinceId
          }).then(res=>{
              this.cityList = res.data
          })
@@ -652,7 +708,7 @@ export default {
      chooseArea(){
          //根据城市id获取县级
          this.$get('area/queryByCityId',{
-             cityId: this.form.cityName
+             cityId: this.form.cityId
          }).then(res=>{
              this.areaList = res.data;
          })
@@ -661,16 +717,28 @@ export default {
      chooseCountry(){
          //根据县级id获取乡镇列表
          this.$get('country/queryByCityId',{
-             areaId: this.form.areaName
+             areaId: this.form.areaId
          }).then(res=>{
              this.countryList = res.data;
          })
      },
+    //获取管理人列表
+    getMangerList(){
+        this.$post('user/getUserList',{
+            role: 1
+        }).then(res=>{
+            if(res.code == 0){
+                this.managerList = res.data.list
+            }
+        })
+    },
+
 
      /**start上传图片 */
       handleAvatarSuccess(res, file) {
           console.log(file)
         this.imageUrl = URL.createObjectURL(file.raw);
+        this.form.icon = file.response.data;
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
@@ -683,17 +751,43 @@ export default {
         if (!isLt2M) {
           this.$message.error('上传图片大小不能超过 2MB!');
         }
-        return (isJPG || isPNG) && isLt2M;
+
+        /*const isSize = new Promise(function(resolve, reject) {
+            let _URL = window.URL || window.webkitURL;
+            let img = new Image();
+            img.onload = function() {
+                let volid = img.width / img.height;
+                volid == 1 ? resolve() : reject();
+            }
+            img.src = _URL.createObjectURL(file);
+        }).then(() => {
+            return file;
+        }, () => {
+            this.$message.error('上传图标长宽必须相等');
+            return Promise.reject();
+        });
+
+
+        return (isJPG || isPNG) && isLt2M && isSize;*/
+
+
+        return (isJPG || isPNG) && isLt2M
+      },
+      //上传图片失败
+      upError(err){
+        if(err){
+             this.$message.error('上传图标失败');
+        }
       }
      /**end上传图片 */
     },
+
+
     mounted(){
         //获取圈子列表
         this.getCircleList()
         //表格第一行默认选中
         this.checked();
-
-        console.log(this.$store.state.token)
 
         if(this.$store.state.token){
             this.myHeaders.token = this.$store.state.token
@@ -709,6 +803,8 @@ export default {
                 that.getCodeName();
                 //获取省份
                 that.getProvince();
+                //获取管理人列表
+                that.getMangerList();
             }
         }
     }

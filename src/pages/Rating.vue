@@ -379,7 +379,7 @@ export default {
             let data = this.multipleSelection[0];
 
             // 修改圈子数据回显
-          
+
             this.form = data;
             this.form.number = this.rowIndex;
             // this.form.status = data.status == '正常' ? 1 : 0;
