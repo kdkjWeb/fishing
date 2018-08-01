@@ -98,27 +98,28 @@
         title="圈子-圈子详情"
         :visible.sync="dialogVisible"
         top="8vh"
-        width="870px">
+        width="870px"
+        :before-close="closeDialog">
         <div class="dialog_content">
-            <el-form label-position="right" label-width="100px" :model="form" size="mini">
+            <el-form label-position="right" ref="form" :rules="rules"  label-width="100px" :model="form" size="mini">
 
                 <el-row>
                     <el-col :span="16">
                         <el-row>
                         <el-col :span="24">
-                            <el-form-item label="圈子：">
+                            <el-form-item label="圈子：" prop="circleName">
                                 <el-input v-model="form.circleName"></el-input>
                             </el-form-item>
                         </el-col>
                         </el-row>
                         <el-row>
                         <el-col :span="12">
-                            <el-form-item label="编号：">
+                            <el-form-item label="编号：" prop="number">
                                 <el-input v-model="form.number"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="状态：">
+                            <el-form-item label="状态：" prop="status">
                                 <el-select v-model="form.status" placeholder="圈子分类">
                                 <el-option label="正常" value="1"></el-option>
                                 <el-option label="已关闭" value="0"></el-option>
@@ -128,12 +129,12 @@
                         </el-row>
                         <el-row>
                        <el-col :span="12">
-                            <el-form-item label="排序号：">
+                            <el-form-item label="排序号：" prop="sort">
                                 <el-input v-model="form.sort"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="圈子分类：">
+                            <el-form-item label="圈子分类：" prop="codeName">
                                 <el-select v-model="form.codeName" placeholder="圈子分类">
                                 <el-option :label="item.codeName" :value="item.cId" v-for="item in codeNameList" :key="item.cId"></el-option>
                                 </el-select>
@@ -142,12 +143,12 @@
                         </el-row>
                         <el-row>
                        <el-col :span="12">
-                            <el-form-item label="评论数：">
+                            <el-form-item label="评论数：" prop="commentCount">
                                 <el-input v-model="form.commentCount"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="类型：">
+                            <el-form-item label="类型：" prop="kind">
                                 <el-select v-model="form.kind" placeholder="类型">
                                 <el-option label="官方" value="官方"></el-option>
                                 <el-option label="个人" value="个人"></el-option>
@@ -179,12 +180,12 @@
                       <el-col :span="16">
                            <el-row>
                             <el-col :span="12">
-                                <el-form-item label="阅读数：">
+                                <el-form-item label="阅读数：" prop="viewCount">
                                     <el-input v-model="form.viewCount"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item label="省：">
+                                <el-form-item label="省：" prop="provinceName">
                                     <el-select v-model="form.provinceName" placeholder="请选择省份" @change="chooseProvince">
                                     <el-option :label="item.codeName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>
                                     </el-select>
@@ -193,7 +194,7 @@
                            </el-row>
                       </el-col>
                       <el-col :span="8">
-                            <el-form-item label="市：">
+                            <el-form-item label="市：" prop="cityName">
                                 <el-select v-model="form.cityName" placeholder="请选择市"  @change="chooseArea">
                                 <el-option :label="item.codeName" :value="item.cId" v-for="item in cityList" :key="item.cId"></el-option>
                                 </el-select>
@@ -204,13 +205,13 @@
                       <el-col :span="16">
                            <el-row>
                             <el-col :span="12">
-                                <el-form-item label="成员数：">
+                                <el-form-item label="成员数：" prop="memberCount">
                                     <el-input v-model="form.memberCount"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item label="县：">
-                                    <el-select v-model="form.areaName" placeholder="圈子分类" @change="chooseCountry">
+                                <el-form-item label="县：" prop="areaName">
+                                    <el-select v-model="form.areaName" placeholder="县" @change="chooseCountry">
                                     <el-option :label="item.codeName" :value="item.cId" v-for="item in areaList" :key="item.cId"></el-option>
                                     </el-select>
                                 </el-form-item>
@@ -218,8 +219,8 @@
                            </el-row>
                       </el-col>
                       <el-col :span="8">
-                            <el-form-item label="乡：">
-                                <el-select v-model="form.countryName" placeholder="圈子分类">
+                            <el-form-item label="乡：" prop="countryName">
+                                <el-select v-model="form.countryName" placeholder="乡">
                                  <el-option :label="item.codeName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
@@ -229,12 +230,12 @@
                       <el-col :span="16">
                            <el-row>
                             <el-col :span="12">
-                                <el-form-item label="经度：">
+                                <el-form-item label="经度：" prop="longitude">
                                     <el-input v-model="form.longitude"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item label="纬度：">
+                                <el-form-item label="纬度：" prop="latitude">
                                       <el-input v-model="form.latitude"></el-input>
                                 </el-form-item>
                             </el-col>
@@ -245,12 +246,12 @@
                       <el-col :span="16">
                            <el-row>
                             <el-col :span="12">
-                                <el-form-item label="创建人：">
+                                <el-form-item label="创建人：" prop="creator">
                                     <el-input v-model="form.creator"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item label="创建时间：">
+                                <el-form-item label="创建时间：" prop="createTime">
                                     <el-date-picker
                                         v-model="form.createTime"
                                         type="datetime"
@@ -262,7 +263,7 @@
                            </el-row>
                       </el-col>
                       <el-col :span="8">
-                            <el-form-item label="管理人：">
+                            <el-form-item label="管理人：" prop="manager">
                                 <el-input v-model="form.manager"></el-input>
                             </el-form-item>
                       </el-col>
@@ -271,12 +272,12 @@
                       <el-col :span="16">
                            <el-row>
                             <el-col :span="12">
-                                <el-form-item label="修改人：">
+                                <el-form-item label="修改人：" prop="modifier">
                                     <el-input v-model="form.modifier"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item label="修改时间：">
+                                <el-form-item label="修改时间：" prop="modifyTime">
                                     <el-date-picker
                                         v-model="form.modifyTime"
                                         type="datetime"
@@ -290,17 +291,17 @@
                     </el-row>
                     <el-row>
                       <el-col :span="24">
-                          <el-form-item label="地址：">
+                          <el-form-item label="地址：" prop="location">
                                       <el-input v-model="form.location"></el-input>
                           </el-form-item>
                       </el-col>
                       <el-col :span="24">
-                          <el-form-item label="简介：">
+                          <el-form-item label="简介：" prop="intro">
                                       <el-input type="textarea" v-model="form.intro"></el-input>
                           </el-form-item>
                       </el-col>
                       <el-col :span="24">
-                          <el-form-item label="备注：">
+                          <el-form-item label="备注：" prop="remark">
                                       <el-input type="textarea" v-model="form.remark"></el-input>
                           </el-form-item>
                       </el-col>
@@ -309,8 +310,8 @@
 
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button size="mini" @click="cancel">取 消</el-button>
-            <el-button size="mini" type="primary" @click="comfirm">确 定</el-button>
+            <el-button size="mini" @click="cancel('form')">取 消</el-button>
+            <el-button size="mini" type="primary" @click="comfirm('form')">确 定</el-button>
         </span>
         </el-dialog>
         <!-- end弹出框 -->
@@ -384,7 +385,19 @@ export default {
                 {prop: 'modifyTime', label: '修改时间', width: '150', align: 'right'},
                 {prop: 'remark', label: '备注', width: '', align: ''}
             ],
-            tableData: []//表格的数据
+            tableData: [],//表格的数据
+            rules: {
+                circleName: [
+                      { required: true, message: '请输入圈子名称', trigger: 'blur' },
+                      { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+                ],
+                  codeName: [
+                    { required: true, message: '请选择圈子分类', trigger: 'change' }
+                ],
+                    kind: [
+                    { required: true, message: '请选择类型', trigger: 'change' }
+                ],
+            }
         }
     },
     methods:{
@@ -542,13 +555,37 @@ export default {
             this.getCircleList(this.pageSize,val)
         },
         //弹出框的确认按钮
-        comfirm(){
-            console.log(this.form.kind)
+        comfirm(formName){
+            // console.log(this.form.kind)
+            this.$refs[formName].validate((valid)=>{
+                if(valid){
+                    alert('submit')
+                }else{
+                    return false;
+                }
+            })
         },
         //弹出框的取消按钮
-        cancel(){
+        cancel(formName){
             this.dialogVisible = false;
+            this.$refs[formName].resetFields();
         },
+
+
+        //关闭dialog弹出框
+        closeDialog(done){
+              this.dialogVisible = false;
+
+        　　/*this.$confirm('确认关闭？')
+        　　.then(_ => {
+        　　done();
+            location.reload();
+        })
+        .catch(_ => { });*/
+        },
+
+
+        
         //默认选中第一行
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
@@ -701,17 +738,17 @@ export default {
 
 
 
-.avatar-uploader .el-upload {
+.circle .avatar-uploader .el-upload {
 border: 1px dashed #d9d9d9;
 border-radius: 6px;
 cursor: pointer;
 position: relative;
 overflow: hidden;
 }
-.avatar-uploader .el-upload:hover {
+.circle .avatar-uploader .el-upload:hover {
 border-color: #409EFF;
 }
-.avatar-uploader-icon {
+.circle .avatar-uploader-icon {
 font-size: 28px;
 color: #8c939d;
 width: 140px;
@@ -719,7 +756,7 @@ height: 140px;
 line-height: 140px;
 text-align: center;
 }
-.avatar {
+.circle .avatar {
 width: 140px;
 height: 140px;
 display: block;

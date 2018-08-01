@@ -226,18 +226,18 @@ export default {
                 userType: '',   //用户类型
             },
             tableList: [   //表格的头部配置
-                {prop: 'status', label: '状态', width: '80', align: ''},
-                {prop: 'kind', label: '类型', width: '80', align: ''},
-                {prop: 'level', label: '等级', width: '80', align: ''},
+                {prop: 'parentId', label: '类别parent_id', width: '120', align: ''},
                 {prop: 'name', label: '名称', width: '120', align: ''},
-                {prop: 'userGroup', label: '用户分组', width: '', align: ''},
-                {prop: 'upScore', label: '升级分值', width: '80', align: ''},
-                {prop: 'moneyReward', label: '娱乐币奖励', width: '120', align: ''},
-                {prop: 'userIcon', label: '用户图标', width: '80', align: ''},
+                {prop: 'status', label: '状态', width: '80', align: ''},
+                {prop: 'sort', label: '排序', width: '80', align: ''},
+                {prop: 'moneyReward', label: '打赏渔乐', width: '120', align: ''},
                 {prop: 'founder', label: '创建人', width: '100', align: ''},
-                {prop: 'createTime', label: '创建时间', width: '120', align: 'right'},
+                {prop: 'createTime', label: '创建时间', width: '', align: 'right'},
                 {prop: 'modifier', label: '修改人', width: '100', align: ''},
-                {prop: 'modifyTime', label: '修改时间', width: '150', align: 'right'},
+                {prop: 'modifyTime', label: '修改时间', width: '', align: 'right'},
+
+
+                
             ],
             tableData: []//表格的数据
         }
@@ -548,17 +548,17 @@ export default {
 
 
 
-.avatar-uploader .el-upload {
+.setting .avatar-uploader .el-upload {
 border: 1px dashed #d9d9d9;
 border-radius: 6px;
 cursor: pointer;
 position: relative;
 overflow: hidden;
 }
-.avatar-uploader .el-upload:hover {
+.setting .avatar-uploader .el-upload:hover {
 border-color: #409EFF;
 }
-.avatar-uploader-icon {
+.setting .avatar-uploader-icon {
 font-size: 28px;
 color: #8c939d;
 width: 150px;
@@ -566,7 +566,7 @@ height: 150px;
 line-height: 150px;
 text-align: center;
 }
-.avatar {
+.setting .avatar {
 width: 150px;
 height: 150px;
 display: block;

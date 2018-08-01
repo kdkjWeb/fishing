@@ -28,16 +28,17 @@ Axios.interceptors.request.use(
 
 
 // http response 拦截器
-Axios.interceptors.response.use(
+/*Axios.interceptors.response.use(
     response =>{
+        console.log(response)
         return response;
     },
     err =>{
         if(err.response){
-            
+            console.log(err)
         }
     }
-)
+)*/
 
 
 
