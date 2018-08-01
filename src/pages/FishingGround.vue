@@ -95,7 +95,7 @@
 
         <!-- start弹出框 -->
         <el-dialog
-        title="圈子-圈子详情"
+        title="钓场-钓场详情"
         :visible.sync="dialogVisible"
         top="8vh"
         width="870px">
