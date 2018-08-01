@@ -4,19 +4,19 @@ import store from './../store/store'
 import { Message, Loading } from 'element-ui';
 
 
-Axios.defaults.baseURL = 'http://192.168.20.3:8080/';
+Axios.defaults.baseURL = 'http://192.168.20.158:8080/';
 Axios.defaults.timeout = 50000;
 Axios.defaults.withCredentials = true;
 
 
 // http request 拦截器
 Axios.interceptors.request.use(
-  
+
     config =>{
         if(store.state.token){   //判断是否存在token,如果存在，则在每个header都加上token
             //   config.headers.Authorization = `token ${store.state.token}`;
 
-           config.headers['token'] = store.state.token;   //请求头设置token       
+           config.headers['token'] = store.state.token;   //请求头设置token
         }
         return config;
     },
@@ -84,7 +84,7 @@ export default{
       return new Promise((resolve,reject)=>{
           Axios.get(url,{
               params: data
-          }).then((res)=>{  
+          }).then((res)=>{
                  //如果动画为true，返回之后需要关闭动画
               if(load || load == undefined) {
                   loading.close();
@@ -118,7 +118,7 @@ export default{
               if(load || load == undefined) {
                   loading.close();
               }
-             
+
               reject(err)
           })
       })

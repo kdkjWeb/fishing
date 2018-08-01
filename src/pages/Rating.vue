@@ -91,7 +91,7 @@
         top="8vh"
         width="600px">
         <div class="dialog_content">
-            <el-form label-position="right" label-width="100px" :model="form" size="mini">
+            <el-form label-position="right" label-width="100px" ref="form"  :model="form" :rules="rules"  size="mini">
 
                 <el-row>
                   <el-col :span="12">
@@ -129,25 +129,29 @@
                 </el-row>
                 <el-row>
                   <el-col :span="12">
-                     <el-form-item label="类型：">
-                          <el-input v-model="form.kind"></el-input>
+                     <el-form-item label="类型：" prop="type">
+                       <el-select v-model="form.type" placeholder="类型">
+                         <el-option label="钓友" value="1"></el-option>
+                         <el-option label="农家乐" value="2"></el-option>
+                         <el-option label="渔具店" value="3"></el-option>
+                       </el-select>
                      </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                     <el-form-item label="用户分组：">
-                        <el-input v-model="form.userGroup"></el-input>
+                     <el-form-item label="等级：" prop="level">
+                       <el-input v-model="form.level"></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
                  <el-row>
                   <el-col :span="12">
-                     <el-form-item label="等级名称：">
+                     <el-form-item label="等级名称：" prop="name">
                           <el-input v-model="form.name"></el-input>
                      </el-form-item>
                   </el-col>
                   <el-col :span="12">
                      <el-form-item label="升级分值：">
-                        <el-input v-model="form.upScore"></el-input>
+                        <el-input v-model="form.score"></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -155,27 +159,28 @@
                   <el-col :span="12">
                       <el-form-item label="用户类型：">
                             <el-select v-model="form.userType" placeholder="用户类型">
-                            <el-option label="正常" value="1"></el-option>
-                            <el-option label="已关闭" value="0"></el-option>
+                            <el-option label="钓友" value="1"></el-option>
+                            <el-option label="农家乐" value="2"></el-option>
+                            <el-option label="渔具店" value="3"></el-option>
                             </el-select>
                         </el-form-item>
                   </el-col>
                   <el-col :span="12">
                      <el-form-item label="娱乐币奖励：">
-                        <el-input v-model="form.moneyReward"></el-input>
+                        <el-input v-model="form.coin"></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col :span="12">
                       <el-form-item label="创建人：">
-                          <el-input v-model="form.founder"></el-input>
+                          <el-input v-model="form.cUser"></el-input>
                       </el-form-item>
                   </el-col>
                   <el-col :span="12">
                       <el-form-item label="创建时间：">
                           <el-date-picker
-                              v-model="form.createTime"
+                              v-model="form.creatTime"
                               type="datetime"
                               placeholder="选择日期时间"
                               default-time="12:00:00">
@@ -186,7 +191,7 @@
                    <el-row>
                     <el-col :span="12">
                         <el-form-item label="修改人：">
-                            <el-input v-model="form.modifier"></el-input>
+                            <el-input v-model="form.modifyUser"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
@@ -204,8 +209,8 @@
 
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button size="mini" @click="cancel">取 消</el-button>
-            <el-button size="mini" type="primary" @click="comfirm">确 定</el-button>
+            <el-button size="mini" @click="cancel('form')">取 消</el-button>
+            <el-button size="mini" type="primary" @click="comfirm('form')">确 定</el-button>
         </span>
         </el-dialog>
         <!-- end弹出框 -->
@@ -230,25 +235,35 @@ export default {
             areaList: [],    //县级
             countryList: [],   //乡镇
             formInline: {   //圈子、详细地址、创建时间的表单
-            name: '',
-            status: ''
+              name: '',
+              status: ''
             },
             form:{
                 number: '',   //编号
                 status: '',   //状态
-                kind: '',   //类型
-                level: '',  //等级
-                name: '',   //名称
-                userGroup: '',  //用户分组
-                upScore: '',  //升级分值
-                moneyReward: '',  //娱乐币奖励
-                userIcon: '',  //用户图标
-                founder: '',  //创建人
-                createTime: '',   //创建时间
-                modifier: '',   //修改人
-                modifyTime: '',   //修改时间
-                userType: '',   //用户类型
+                creatTime:'',   //创建时间
+                cUser:'',     //创建人
+                modifyTime:'',  //修改时间
+                modifyUser:'',  //修改人
+                coin:'',  //娱乐奖励金币
+                type:'',  //类型
+                userType:'',  //用户类型
+                score:'',  //升级分值
+                name:'',  //等级名称
+                userPacote:'',  //用户分组
+                level:''  //等级
             },
+          rules:{
+            name:[
+              { required: true, message: '等级名称不能为空，请输入', trigger: 'blur' }
+            ],
+            type:[
+              { required: true, message: '类型不能为空，请选择', trigger: 'change' }
+            ],
+            level:[
+              { required: true, message: '等级不能为空，请输入', trigger: 'blur' }
+            ]
+          },
             tableList: [   //表格的头部配置
                 {prop: 'status', label: '状态', width: '100', align: ''},
                 {prop: 'type', label: '类型', width: '100', align: ''},
@@ -277,9 +292,6 @@ export default {
                 status: this.formInline.status ? this.formInline.status : null
             }).then(res=>{
                 if(res.code == 0){
-                    console.log(res)
-
-
                   //  this.tableData = res.data.list;
                     if(res.data.list.length <= 0){   //如果后面没返回数据就直接赋值
                         this.tableData = res.data.list;
@@ -350,7 +362,7 @@ export default {
                 this.$message({
                     type: 'info',
                     message: '已取消删除'
-                });          
+                });
                 });
         },
         //修改
@@ -367,30 +379,7 @@ export default {
             let data = this.multipleSelection[0];
 
             // 修改圈子数据回显
-            // this.form.circleName = data.circleName;
-            // this.form.number = this.rowIndex;
-            // this.form.status = data.status;
-            // this.form.sort = data.sort;
-            // this.form.codeName = data.codeName;
-            // this.form.commentCount = data.commentCount;
-            // this.form.kind = data.kind;
-            // this.form.viewCount = data.viewCount;
-            // this.form.province = data.provinceName;
-            // this.form.provinceName = data.cityName;
-            // this.form.memberCount = data.memberCount;
-            // this.form.areaName = data.areaName;
-            // this.form.countryName = data.countryName;
-            // this.form.longitude = data.longitude;
-            // this.form.latitude = data.latitude;
-            // this.form.creator = data.creator;
-            // this.form.createTime = data.createTime;
-            // this.form.manager = data.manager;
-            // this.form.modifier = data.modifier;
-            // this.form.modifyTime = data.modifyTime;
-            // this.form.location = data.location;
-            // // this.form.intro = data.intro;
-            // this.form.remark = data.remark;
-            
+          
             this.form = data;
             this.form.number = this.rowIndex;
             // this.form.status = data.status == '正常' ? 1 : 0;
@@ -403,14 +392,11 @@ export default {
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
-             console.log(this.multipleSelection)
-
             //虽然是多选框，但是产品设计每次只能选着一个
             if(this.multipleSelection.length == 1){
                 for(var i= 0; i<this.tableData.length; i++){
                     if(this.tableData[i].cId == this.multipleSelection[0].cId){
                         this.rowIndex = (this.currentPage - 1)*this.pageSize + i + 1;
-                        console.log(this.rowIndex)
                         break;
                     }
                 }
@@ -427,19 +413,43 @@ export default {
             this.currentPage = val;
             this.getCircleList(this.pageSize,val)
         },
-        //弹出框的确认按钮
-        comfirm(){
-            console.log(this.form.kind)
+
+
+        //弹出框的确认按钮  /levelRule/addLevelRule
+        comfirm(formName){
+          this.$refs[formName].validate((valid) => {
+            if (valid) {
+              this.$post('/levelRule/addLevelRule',this.form).then(res=>{
+                if(res.code == 0){
+                    this.$refs[formName].resetFields();
+                    this.dialogVisible = false;
+                    this.$message({
+                      message:res.msg,
+                      type: 'success',
+                    });
+
+                }
+              })
+            } else {
+              console.log('error submit!!');
+              return false;
+            }
+          });
+
         },
         //弹出框的取消按钮
-        cancel(){
+
+        cancel(form){
             this.dialogVisible = false;
+            this.$refs[form].resetFields();
         },
+
+
         //默认选中第一行
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
             this.$refs.multipleTable.toggleRowSelection(this.tableData[0],true);
-            
+
             if(this.currentPage == 1){
                 this.rowIndex = 1;
             }
@@ -455,7 +465,7 @@ export default {
             var h = date.getHours();
             var minute = date.getMinutes();
             minute = minute < 10 ? ('0' + minute) : minute;
-            var second = date.getSeconds();	
+            var second = date.getSeconds();
             second = second < 10 ? ('0' + second) : second;
             return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
         }else{
@@ -518,7 +528,6 @@ export default {
 
      /**start上传图片 */
       handleAvatarSuccess(res, file) {
-          console.log(file)
         this.imageUrl = URL.createObjectURL(file.raw);
       },
       beforeAvatarUpload(file) {
