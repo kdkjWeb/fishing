@@ -16,7 +16,6 @@ Axios.interceptors.request.use(
     config =>{
         if(store.state.token){   //判断是否存在token,如果存在，则在每个header都加上token
             //   config.headers.Authorization = `token ${store.state.token}`;
-
            config.headers['token'] = store.state.token;   //请求头设置token
         }
         return config;

@@ -162,13 +162,13 @@
                         <el-upload
                         class="avatar-uploader"
                         accept="image/jpeg,image/png"
-          
+
                         :action="`${this.$store.state.baseUrl}common/uploadOssPic`"
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
                         name="picture"
                         :before-upload="beforeAvatarUpload"
-                        :headers="myHeaders"   
+                        :headers="myHeaders"
                         auto-upload
                         :on-error="upError">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
@@ -375,7 +375,7 @@ export default {
                 intro: '',   //简介
                 remark: '',    //备注
                 icon: ''   //图标
-   
+
                         // provinceId: this.form.provinceName,
                         // cityId: this.form.cityName,
                         // areaId: this.form.areaName,
@@ -501,7 +501,7 @@ export default {
                 this.$message({
                     type: 'info',
                     message: '已取消删除'
-                });          
+                });
                 });
         },
         //修改
@@ -516,7 +516,7 @@ export default {
             this.dialogVisible = true;
             this.disabled = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-            
+
 
             if(this.circleId){
                 let data = this.multipleSelection[0];
@@ -558,7 +558,7 @@ export default {
         },
         //弹出框的确认按钮
         comfirm(formName){
-            
+
             if(!this.form.icon){
                 this.$message({
                 message: '请上传新圈子的图标！',
@@ -567,7 +567,6 @@ export default {
 
                 return;
             }
-
 
             this.$refs[formName].validate((valid)=>{
                 if(valid){
@@ -641,12 +640,12 @@ export default {
         },
 
 
-        
+
         //默认选中第一行
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
             this.$refs.multipleTable.toggleRowSelection(this.tableData[0],true);
-            
+
             if(this.currentPage == 1){
                 this.rowIndex = 1;
             }
@@ -662,7 +661,7 @@ export default {
             var h = date.getHours();
             var minute = date.getMinutes();
             minute = minute < 10 ? ('0' + minute) : minute;
-            var second = date.getSeconds();	
+            var second = date.getSeconds();
             second = second < 10 ? ('0' + second) : second;
             return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
         }else{
