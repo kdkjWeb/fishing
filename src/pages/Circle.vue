@@ -598,7 +598,7 @@ export default {
             this.$refs[formName].validate((valid)=>{
                 if(valid){
                     let url = this.circleId ? 'circle/updateCircle' : 'circle/addCircle'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
-                    let status = this.form.status == ('正常' ||'1') ? 1 : 0;
+                    let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
                     this.$post(url,{
                         cId: this.circleId ? this.circleId : null,
                         circleName: this.form.circleName,
