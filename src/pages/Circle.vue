@@ -382,21 +382,17 @@ export default {
                 remark: '',    //备注
                 icon: ''   //图标
    
-                        // provinceId: this.form.provinceName,
-                        // cityId: this.form.cityName,
-                        // areaId: this.form.areaName,
-                        // countryId: this.form.countryName,
             },
             tableList: [   //表格的头部配置
-                {prop: 'circleName', label: '圈子', width: '120', align: ''},
-                {prop: 'status', label: '状态', width: '80', align: ''},
-                {prop: 'kind', label: '类型', width: '80', align: ''},
+                {prop: 'circleName', label: '圈子', width: '100', align: ''},
+                {prop: 'status', label: '状态', width: '70', align: ''},
+                {prop: 'kind', label: '类型', width: '60', align: ''},
                 {prop: 'codeName', label: '圈子分类', width: '80', align: ''},
-                {prop: 'sort', label: '排序号', width: '80', align: 'right'},
-                {prop: 'commentCount', label: '评论', width: '80', align: 'right'},
-                {prop: 'viewCount', label: '阅读', width: '80', align: 'right'},
-                {prop: 'memberCount', label: '成员', width: '80', align: 'right'},
-                {prop: 'location', label: '详细地址', width: '', align: ''},
+                {prop: 'sort', label: '排序号', width: '70', align: 'right'},
+                {prop: 'commentCount', label: '评论', width: '60', align: 'right'},
+                {prop: 'viewCount', label: '阅读', width: '60', align: 'right'},
+                {prop: 'memberCount', label: '成员', width: '60', align: 'right'},
+                {prop: 'location', label: '详细地址', width: '180', align: ''},
                 {prop: 'manager', label: '管理人', width: '100', align: ''},
                 {prop: 'creator', label: '创建人', width: '100', align: ''},
                 {prop: 'createTime', label: '创建时间', width: '155', align: 'right'},
@@ -427,12 +423,13 @@ export default {
                 pageNum: pageNum ? pageNum : 1,
                 circleName: this.formInline.name ? this.formInline.name : null,
                 location: this.formInline.address ? this.formInline.address : null,
-                createTime: this.formInline.date ? this.dataTransform(this.formInline.date[0]) : null,
-                createTime2: this.formInline.date ? this.dataTransform(this.formInline.date[1]) : null,
+                createTime: this.formInline.date ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
+                createTime2: this.formInline.date ?  `${this.dataTransform(this.formInline.date[0])} 23:59:59`: null,
             }).then(res=>{
                 if(res.code == 0){
                     if(res.data.list.length <= 0){   //如果后面没返回数据就直接赋值
                         this.tableData = res.data.list;
+                        this.allNum.commentCount = this.allNum.viewCount = this.allNum.memberCount = 0;   //dom每次更新数据都清零
                     }else{   //返回数据之后进行数据处理
                         let arr = res.data.list;
                         arr.forEach((e,index) => {
@@ -462,6 +459,7 @@ export default {
         },
         //查询
         search(){
+            // console.log(this.formInline.date)
             this.getCircleList();
         },
         //新增
@@ -482,6 +480,7 @@ export default {
                             this.$refs['codeName'].resetField();
                             this.$refs['kind'].resetField();
                             this.form = {};
+                            this.form.status = '1';
                             this.imageUrl = '';
                         });
 
@@ -599,6 +598,8 @@ export default {
             this.$refs[formName].validate((valid)=>{
                 if(valid){
                     let url = this.circleId ? 'circle/updateCircle' : 'circle/addCircle'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+
+                    console.log(url)
                     this.$post(url,{
                         cId: this.circleId ? this.circleId : null,
                         circleName: this.form.circleName,
@@ -606,10 +607,10 @@ export default {
                         sort: this.form.sort,
                         circleCategoryId: this.form.codeName,
                         kind: this.form.kind,
-                        provinceId: this.form.provinceName,
-                        cityId: this.form.cityName,
-                        areaId: this.form.areaName,
-                        countryId: this.form.countryName,
+                        provinceId: this.form.provinceId,
+                        cityId: this.form.cityId,
+                        areaId: this.form.areaId,
+                        countryId: this.form.countryId,
                         longitude: this.form.longitude,
                         latitude: this.form.latitude,
                         managerId: this.form.manager,
@@ -629,14 +630,13 @@ export default {
                              //重新获取圈子列表
                             this.getCircleList();
 
-                            // 清空表单和图片
-                            // this.$refs['form'].resetFields();
-                            // this.imageUrl = ''
+                           this.circleId = ''
                         }else{
                             this.$message({
                             message: res.msg,
                             type: 'warning'
                             });
+                            this.circleId = ''
                         }
                     })
                 }else{
@@ -686,12 +686,14 @@ export default {
             m = m < 10 ? ('0' + m) : m;
             var d = date.getDate();
             d = d < 10 ? ('0' + d) : d;
-            var h = date.getHours();
-            var minute = date.getMinutes();
-            minute = minute < 10 ? ('0' + minute) : minute;
-            var second = date.getSeconds();	
-            second = second < 10 ? ('0' + second) : second;
-            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+            // var h = date.getHours();
+            // var minute = date.getMinutes();
+            // minute = minute < 10 ? ('0' + minute) : minute;
+            // var second = date.getSeconds();	
+            // second = second < 10 ? ('0' + second) : second;
+            // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+
+            return y + '-' + m + '-' + d;
         }else{
             return null;
         }
@@ -921,7 +923,7 @@ display: block;
     padding-right: 15px;
 }
 .circle .aboutNum{
-    width: 785px;
+    width: 665px;
     height: 30px;
     line-height: 30px;
     margin-top: 10px;
@@ -932,7 +934,7 @@ display: block;
 }
 .circle .aboutNum span:nth-child(2),.circle .aboutNum span:nth-child(3),.circle .aboutNum span:nth-child(4){
     display: inline-block;
-    width: 80px;
+    width: 60px;
     float: right;
     text-align: right;
     padding: 0 10px;
