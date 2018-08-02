@@ -75,7 +75,7 @@ export default {
     methods: {
         downList(){
             this.show = !this.show;
-            bus.$emit('hDown',this.show)
+            bus.$emit('headerShow',this.show)
         },
 
         //点击下拉列表的每一个选项
@@ -99,9 +99,9 @@ export default {
         }
     },
     mounted(){
-        console.log(JSON.parse(localStorage.getItem('userInfo')))
-        this.userName = JSON.parse(localStorage.getItem('userInfo')).nickname
+        this.userName = JSON.parse(localStorage.getItem('userInfo')).nickname;
     }
+
 }
 </script>
 
