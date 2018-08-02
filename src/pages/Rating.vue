@@ -31,7 +31,7 @@
         <!-- start表格 -->
         <div class="table">
             <el-table
-                height="300"
+                :height="height"
                 ref="multipleTable"
                 :data="tableData"
                 tooltip-effect="dark"
@@ -70,7 +70,7 @@
         <!-- end表格 -->
 
         <!-- start分页 -->
-        <div class="page">
+        <div class="page" >
             <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
@@ -253,7 +253,8 @@ export default {
                 score:'',  //升级分值
                 name:'',  //等级名称
                 userPacote:'',  //用户分组
-                level:''  //等级
+                level:'',  //等级
+                icon: ''   //图标
             },
           rules:{
             name:[
@@ -286,7 +287,7 @@ export default {
         //获取所有等级列表
         getRatingList(pageSize,pageNum){
             this.$post('levelRule/queryByRecord',{
-                pageSize: pageSize ? pageSize : 10,
+                pageSize: pageSize? pageSize:10,
                 pageNum: pageNum ? pageNum : 1,
                 name: this.formInline.name ? this.formInline.name : null,
                 status: this.formInline.status ? this.formInline.status : null
@@ -328,6 +329,8 @@ export default {
             this.dialogVisible = true;
             this.disabled = true;
             this.form = {};
+            this.imageUrl = '';
+          this.circleId = ''
         },
 
       //标准时间格式转换
@@ -360,7 +363,11 @@ export default {
         }
 
         this.$refs[formName].validate((valid) => {
-          let url = this.circleId ? '/levelRule/addLevelRule' : '/levelRule/updateLevelRule'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+
+
+
+          let url = this.circleId ? '/levelRule/updateLevelRule' : '/levelRule/addLevelRule'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+          console.log(url)
           if (valid) {
             this.$post(url,{
               number: this.form.number,   //编号
@@ -371,17 +378,15 @@ export default {
               modifyUser:this.form.modifyUser,  //修改人
               coin:this.form.coin,  //娱乐奖励金币
               type:this.form.type,  //类型
-              userType:this.form.userType,  //用户类型
+//              userType:this.form.userType,  //用户类型
               score:this.form.score,  //升级分值
               name:this.form.name,  //等级名称
               userPacote:this.form.userPacote,  //用户分组
-              level:this.form.level  //等级
+              level:this.form.level,  //等级
+              icon:this.form.icon   //图标
             }).then(res=>{
               if(res.code == 0){
-                this.$refs[formName].resetFields();
                 this.dialogVisible = false;
-                this.form.creatTime = '';
-                this.form.modifyTime = '';
                 this.$message({
                   message:res.msg,
                   type: 'success',
@@ -462,6 +467,7 @@ export default {
             this.form = data;
             this.form.userType = this.form.type;
             this.form.number = this.rowIndex;
+            this.imageUrl = this.form.icon;
             // this.form.status = data.status == '正常' ? 1 : 0;
             console.log(this.form)
           }
@@ -546,6 +552,7 @@ export default {
      /**start上传图片 */
       handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);
+       this.form.icon = file.response.data;
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
@@ -563,14 +570,20 @@ export default {
      /**end上传图片 */
     },
     mounted(){
+      window.addEventListener('resize',()=>{
+        this.height = (window.innerHeight - 200) + 'px'
+      });
       //获取所有等级列表
       this.getRatingList()
         //表格第一行默认选中
         this.checked();
     },
-    watch: {
+  created() {
+    //页面加载时获取屏幕高度
+    this.height = (window.innerHeight - 200) + 'px';
 
-    }
+
+  },
 }
 </script>
 
@@ -637,7 +650,7 @@ display: block;
 }
 .page{
     text-align: right;
-    margin: 10px 0 40px;
+    margin: 20px 0 0px;
 }
 .rating span.uploadTitle{
     float: left;

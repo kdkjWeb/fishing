@@ -40,7 +40,7 @@
         <!-- start表格 -->
         <div class="table">
             <el-table
-                height="300"
+                :height="height"
                 ref="multipleTable"
                 :data="tableData"
                 tooltip-effect="dark"
@@ -79,7 +79,7 @@
         <!-- end表格 -->
 
         <!-- start分页 -->
-        <div class="page">
+        <div class="page"  >
             <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
@@ -328,6 +328,7 @@ export default {
     data(){
         return{
             disabled: false,
+            height:0,
             myHeaders: {
                     token: ''
                 },
@@ -783,6 +784,9 @@ export default {
 
 
     mounted(){
+      window.addEventListener('resize',()=>{
+        this.height = (window.innerHeight - 200) + 'px'
+      });
         //获取圈子列表
         this.getCircleList()
         //表格第一行默认选中
@@ -806,7 +810,11 @@ export default {
                 that.getMangerList();
             }
         }
-    }
+    },
+  created() {
+    //页面加载时获取屏幕高度
+    this.height = (window.innerHeight - 200) + 'px';
+  },
 
 }
 </script>
@@ -874,7 +882,7 @@ display: block;
 }
 .page{
     text-align: right;
-    margin: 10px 0 40px;
+    margin: 20px 0 0px;
 }
 .circle span.uploadTitle{
     float: left;
