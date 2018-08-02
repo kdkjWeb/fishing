@@ -598,12 +598,11 @@ export default {
             this.$refs[formName].validate((valid)=>{
                 if(valid){
                     let url = this.circleId ? 'circle/updateCircle' : 'circle/addCircle'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
-
-                    console.log(url)
+                    let status = this.form.status == ('正常' ||'1') ? 1 : 0;
                     this.$post(url,{
                         cId: this.circleId ? this.circleId : null,
                         circleName: this.form.circleName,
-                        status: this.form.status == '正常' ? 1 : this.form.status,   //因为修改回显如果状态不改变，那么传给后台的会是’正常‘汉字，需要进行转换成1，否则就是正常的
+                        status:  status,  //因为修改回显如果状态不改变，那么传给后台的会是’正常‘汉字，需要进行转换成1，否则就是正常的
                         sort: this.form.sort,
                         circleCategoryId: this.form.codeName,
                         kind: this.form.kind,
@@ -731,6 +730,9 @@ export default {
              provinceId: this.form.provinceId
          }).then(res=>{
              this.cityList = res.data
+             this.form.cityId = '';
+             this.form.areaId = '';
+             this.form.countryId = '';
          })
      },
      //获取县级列表
@@ -740,6 +742,8 @@ export default {
              cityId: this.form.cityId
          }).then(res=>{
              this.areaList = res.data;
+             this.form.areaId = '';
+             this.form.countryId = '';
          })
      },
      //获取乡镇
@@ -749,6 +753,7 @@ export default {
              areaId: this.form.areaId
          }).then(res=>{
              this.countryList = res.data;
+             this.form.countryId = '';
          })
      },
     //获取管理人列表
