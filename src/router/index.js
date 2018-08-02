@@ -61,8 +61,8 @@ export default new Router({
 
 
 // 页面刷新时，重新赋值token
-if (window.localStorage.getItem('token')) {
-  store.commit('setToken', window.localStorage.getItem('token'))
+if (window.sessionStorage.getItem('token')) {
+  store.commit('setToken', window.sessionStorage.getItem('token'))
 }
 
 

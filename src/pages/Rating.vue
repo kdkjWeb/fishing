@@ -31,7 +31,7 @@
         <!-- start表格 -->
         <div class="table">
             <el-table
-                :height="height"
+                :max-height="height"
                 ref="multipleTable"
                 :data="tableData"
                 tooltip-effect="dark"
@@ -51,6 +51,18 @@
                 :index="index"
                 label="编号">
                 </el-table-column>
+              <el-table-column
+                width="100"
+                header-align="center"
+                label="用户图标">
+                <template slot-scope="scope">
+                  <div style="width:50px;height:50px;">
+                    <img :src="scope.row.iconStr" style="width:100%;">
+                  </div>
+
+                </template>
+              </el-table-column>
+
                 <el-table-column
                 v-for="(item,index) in tableList"
                 :key="index"
@@ -61,25 +73,25 @@
                 header-align="center"
                 :show-overflow-tooltip="true"
                 >
-                </el-table-column>
+              </el-table-column>
             </el-table>
-            <!-- <div class="aboutNum">
-                <div>合计： <span>{{total}}</span></div>
-            </div> -->
+            <div class="aboutNum">
+              <div> <span>合计：{{total}}</span></div>
+            </div>
         </div>
         <!-- end表格 -->
 
         <!-- start分页 -->
         <div class="page" >
             <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page.sync="currentPage"
-            :page-sizes="[10, 50, 80, 100]"
-            :page-size="pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
-            background>
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page.sync="currentPage"
+              :page-sizes="[30, 50, 80, 100]"
+              :page-size="pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="total"
+              background>
             </el-pagination>
         </div>
         <!-- end分页 -->
@@ -223,11 +235,12 @@
 export default {
     data(){
         return{
+            height:0,
             dialogVisible: false,   //弹出框是否显示
             imageUrl: '',  //上传图片显示
             multipleSelection: [],   //存放勾选的数据
             currentPage: 1, //当前第几页
-            pageSize: 10,   //每页显示多少条
+            pageSize: 30,   //每页显示多少条
             total: null,   //总共多少条数据
             circleId: '',
             rowIndex: '',   //每一行的编号
@@ -274,7 +287,7 @@ export default {
                 {prop: 'name', label: '名称', width: '120', align: ''},
                 {prop: 'score', label: '升级分值', width: '100', align: ''},
                 {prop: 'coin', label: '娱乐币奖励', width: '150', align: ''},
-                {prop: 'icon', label: '用户图标', width: '100', align: ''},
+//                {prop: 'iconStr', label: '用户图标', width: '100', align: ''},
                 {prop: 'creator', label: '创建人', width: '100', align: ''},
                 {prop: 'creatTime', label: '创建时间', width: '', align: 'right'},
                 {prop: 'modifier', label: '修改人', width: '100', align: ''},
@@ -287,7 +300,7 @@ export default {
         //获取所有等级列表
         getRatingList(pageSize,pageNum){
             this.$post('levelRule/queryByRecord',{
-                pageSize: pageSize? pageSize:10,
+                pageSize: pageSize? pageSize : 30,
                 pageNum: pageNum ? pageNum : 1,
                 name: this.formInline.name ? this.formInline.name : null,
                 status: this.formInline.status ? this.formInline.status : null
@@ -364,10 +377,7 @@ export default {
 
         this.$refs[formName].validate((valid) => {
 
-
-
           let url = this.circleId ? '/levelRule/updateLevelRule' : '/levelRule/addLevelRule'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
-          console.log(url)
           if (valid) {
             this.$post(url,{
               number: this.form.number,   //编号
@@ -459,12 +469,14 @@ export default {
             }
             this.dialogVisible = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
+
             let data = this.multipleSelection[0];
 
             // 修改圈子数据回显
 
           if(this.circleId){
             this.form = data;
+            this.form.icon =  this.form.iconStr
             this.form.userType = this.form.type;
             this.form.number = this.rowIndex;
             this.imageUrl = this.form.icon;
@@ -570,17 +582,18 @@ export default {
      /**end上传图片 */
     },
     mounted(){
-      window.addEventListener('resize',()=>{
-        this.height = (window.innerHeight - 200) + 'px'
-      });
+      window.addEventListener('resize', ()=>{
+        this.height = window.innerHeight - 240;
+      })
+
       //获取所有等级列表
       this.getRatingList()
         //表格第一行默认选中
-        this.checked();
+      this.checked();
     },
   created() {
     //页面加载时获取屏幕高度
-    this.height = (window.innerHeight - 200) + 'px';
+    this.height = window.innerHeight - 240;
 
 
   },
@@ -589,13 +602,13 @@ export default {
 
 
 <style>
-.topSearch .el-form-item__content{
+  .rating .topSearch .el-form-item__content{
     width: 100px;
 }
-.topSearch .el-date-editor{
+.rating .topSearch .el-date-editor{
     width: 220px;
 }
-.topSearch .el-table{
+.rating.topSearch .el-table{
     overflow-y: scroll;
 }
 .rating .el-dialog .el-dialog__header .el-dialog__title{
@@ -606,8 +619,6 @@ export default {
 .rating .el-date-editor--datetime input{
     width: 176.66px;
 }
-
-
 
 .rating .avatar-uploader .el-upload {
 border: 1px dashed #d9d9d9;
@@ -656,5 +667,15 @@ display: block;
     float: left;
     line-height: 100px;
     padding-right: 15px;
+}
+.aboutNum{
+  width: 785px;
+  height: 30px;
+  line-height: 30px;
+  margin-top: 10px;
+  box-sizing: border-box;
+}
+ .aboutNum span:nth-child(1){
+  padding-left: 10px;
 }
 </style>

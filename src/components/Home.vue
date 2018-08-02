@@ -8,7 +8,7 @@
         <vSidebar></vSidebar>
 
         <!-- 内容区域 -->
-        <div :class="collapse? 'content_collapse' : 'content_box'">
+        <div id="content_wrap" :class="collapse? 'content_collapse' : 'content_box'">
             <!-- 页面切换标签页组件 -->
             <!-- <vTags></vTags> -->
 
@@ -34,7 +34,7 @@ export default {
     },
     data() {
         return {
-            collapse: false    //菜单栏折叠，内容区域是否跟着折叠
+            collapse: false,    //菜单栏折叠，内容区域是否跟着折叠
         }
     },
     created(){
@@ -42,7 +42,12 @@ export default {
         bus.$on('collapse', flag=>{
             this.collapse = flag
         })
-    }
+
+
+     
+
+    },
+   
 }
 </script>
 
@@ -73,7 +78,7 @@ export default {
 } */
 
 .content{
-    padding: 25px 20px 45px;
+    padding: 25px 20px 20px;
 }
 
 
