@@ -9,7 +9,7 @@
                             <el-input clearable v-model="formInline.name" placeholder="名称"></el-input>
                         </el-form-item>
                         <el-form-item label="状态：">
-                                <el-select v-model="formInline.status" placeholder="状态">
+                                <el-select v-model="formInline.status" placeholder="状态" clearable>
                                 <el-option label="正常" value="1"></el-option>
                                 <el-option label="已关闭" value="0"></el-option>
                                 </el-select>
@@ -31,7 +31,7 @@
         <!-- start表格 -->
         <div class="table">
             <el-table
-                height="300"
+                :max-height="height"
                 ref="multipleTable"
                 :data="tableData"
                 tooltip-effect="dark"
@@ -51,6 +51,18 @@
                 :index="index"
                 label="编号">
                 </el-table-column>
+              <el-table-column
+                width="100"
+                header-align="center"
+                label="用户图标">
+                <template slot-scope="scope">
+                  <div style="width:50px;height:50px;">
+                    <img :src="scope.row.iconStr" style="width:100%;">
+                  </div>
+
+                </template>
+              </el-table-column>
+
                 <el-table-column
                 v-for="(item,index) in tableList"
                 :key="index"
@@ -61,25 +73,25 @@
                 header-align="center"
                 :show-overflow-tooltip="true"
                 >
-                </el-table-column>
+              </el-table-column>
             </el-table>
-            <!-- <div class="aboutNum">
-                <div>合计： <span>{{total}}</span></div>
-            </div> -->
+            <div class="aboutNum">
+              <div> <span>合计：{{total}}</span></div>
+            </div>
         </div>
         <!-- end表格 -->
 
         <!-- start分页 -->
-        <div class="page">
+        <div class="page" >
             <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page.sync="currentPage"
-            :page-sizes="[10, 50, 80, 100]"
-            :page-size="pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
-            background>
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page.sync="currentPage"
+              :page-sizes="[30, 50, 80, 100]"
+              :page-size="pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="total"
+              background>
             </el-pagination>
         </div>
         <!-- end分页 -->
@@ -97,8 +109,8 @@
                   <el-col :span="12">
                     <el-row>
                       <el-col :span="24">
-                        <el-form-item label="编号：">
-                            <el-input v-model="form.number"></el-input>
+                        <el-form-item label="编号：" >
+                            <el-input v-model="form.number" disabled></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="24">
@@ -174,14 +186,15 @@
                 <el-row>
                   <el-col :span="12">
                       <el-form-item label="创建人：">
-                          <el-input v-model="form.cUser"></el-input>
+                          <el-input v-model="form.creator" disabled></el-input>
                       </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                      <el-form-item label="创建时间：">
+                      <el-form-item label="创建时间：" >
                           <el-date-picker
                               v-model="form.creatTime"
                               type="datetime"
+                              disabled
                               placeholder="选择日期时间"
                               default-time="12:00:00">
                           </el-date-picker>
@@ -191,14 +204,15 @@
                    <el-row>
                     <el-col :span="12">
                         <el-form-item label="修改人：">
-                            <el-input v-model="form.modifyUser"></el-input>
+                            <el-input v-model="form.modifier" disabled></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="修改时间：">
+                        <el-form-item label="修改时间：" >
                             <el-date-picker
                                 v-model="form.modifyTime"
                                 type="datetime"
+                                disabled
                                 placeholder="选择日期时间"
                                 default-time="12:00:00">
                             </el-date-picker>
@@ -221,11 +235,12 @@
 export default {
     data(){
         return{
+            height:0,
             dialogVisible: false,   //弹出框是否显示
             imageUrl: '',  //上传图片显示
             multipleSelection: [],   //存放勾选的数据
             currentPage: 1, //当前第几页
-            pageSize: 10,   //每页显示多少条
+            pageSize: 30,   //每页显示多少条
             total: null,   //总共多少条数据
             circleId: '',
             rowIndex: '',   //每一行的编号
@@ -251,7 +266,8 @@ export default {
                 score:'',  //升级分值
                 name:'',  //等级名称
                 userPacote:'',  //用户分组
-                level:''  //等级
+                level:'',  //等级
+                icon: ''   //图标
             },
           rules:{
             name:[
@@ -269,10 +285,9 @@ export default {
                 {prop: 'type', label: '类型', width: '100', align: ''},
                 {prop: 'level', label: '等级', width: '100', align: 'right'},
                 {prop: 'name', label: '名称', width: '120', align: ''},
-                {prop: 'type', label: '用户分组', width: '120', align: ''},   //userGroup  用户分组跟类型是一样的
                 {prop: 'score', label: '升级分值', width: '100', align: ''},
                 {prop: 'coin', label: '娱乐币奖励', width: '150', align: ''},
-                {prop: 'icon', label: '用户图标', width: '100', align: ''},
+//                {prop: 'iconStr', label: '用户图标', width: '100', align: ''},
                 {prop: 'creator', label: '创建人', width: '100', align: ''},
                 {prop: 'creatTime', label: '创建时间', width: '', align: 'right'},
                 {prop: 'modifier', label: '修改人', width: '100', align: ''},
@@ -282,12 +297,11 @@ export default {
         }
     },
     methods:{
-        //获取等级列表
+        //获取所有等级列表
         getRatingList(pageSize,pageNum){
             this.$post('levelRule/queryByRecord',{
-                pageSize: pageSize ? pageSize : 10,
+                pageSize: pageSize? pageSize : 30,
                 pageNum: pageNum ? pageNum : 1,
-                type: '1',
                 name: this.formInline.name ? this.formInline.name : null,
                 status: this.formInline.status ? this.formInline.status : null
             }).then(res=>{
@@ -322,11 +336,90 @@ export default {
         search(){
             this.getRatingList();
         },
-        //新增
+
+//        新增
         add(){
             this.dialogVisible = true;
+            this.disabled = true;
+            this.form = {};
+            this.imageUrl = '';
+          this.circleId = ''
         },
-        //删除
+
+      //标准时间格式转换
+      dataTransform(date){
+        if(date){
+          var y = date.getFullYear();
+          var m = date.getMonth() + 1;
+          m = m < 10 ? ('0' + m) : m;
+          var d = date.getDate();
+          d = d < 10 ? ('0' + d) : d;
+          var h = date.getHours();
+          var minute = date.getMinutes();
+          minute = minute < 10 ? ('0' + minute) : minute;
+          var second = date.getSeconds();
+          second = second < 10 ? ('0' + second) : second;
+          return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+        }else{
+          return null;
+        }
+      },
+
+      //弹出框的确认按钮  /levelRule/addLevelRule
+      comfirm(formName){
+        if(!this.form.icon){
+          this.$message({
+            message: '请上传等级的图标！',
+            type: 'warning'
+          });
+          return;
+        }
+
+        this.$refs[formName].validate((valid) => {
+
+          let url = this.circleId ? '/levelRule/updateLevelRule' : '/levelRule/addLevelRule'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+          if (valid) {
+            this.$post(url,{
+              number: this.form.number,   //编号
+              status: this.form.status,   //状态
+//              creatTime:this.dataTransform(this.form.creatTime),   //创建时间
+              cUser:this.form.cUser,     //创建人
+//              modifyTime:this.dataTransform(this.form.modifyTime),  //修改时间
+              modifyUser:this.form.modifyUser,  //修改人
+              coin:this.form.coin,  //娱乐奖励金币
+              type:this.form.type,  //类型
+//              userType:this.form.userType,  //用户类型
+              score:this.form.score,  //升级分值
+              name:this.form.name,  //等级名称
+              userPacote:this.form.userPacote,  //用户分组
+              level:this.form.level,  //等级
+              icon:this.form.icon   //图标
+            }).then(res=>{
+              if(res.code == 0){
+                this.dialogVisible = false;
+                this.$message({
+                  message:res.msg,
+                  type: 'success',
+                });
+                this.getRatingList();
+              }
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+
+      },
+
+      //弹出框的取消按钮
+      cancel(form){
+        this.$refs[form].resetFields();
+        this.form = {}
+        this.dialogVisible = false;
+      },
+
+//        删除
         deleted(){
             if(this.multipleSelection.length != 1){
                 this.$message({
@@ -365,7 +458,7 @@ export default {
                 });
                 });
         },
-        //修改
+//        修改
         edit(){
             if(this.multipleSelection.length != 1){
                 this.$message({
@@ -376,19 +469,28 @@ export default {
             }
             this.dialogVisible = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
+
             let data = this.multipleSelection[0];
 
             // 修改圈子数据回显
 
+          if(this.circleId){
             this.form = data;
+            this.form.icon =  this.form.iconStr
+            this.form.userType = this.form.type;
             this.form.number = this.rowIndex;
+            this.imageUrl = this.form.icon;
             // this.form.status = data.status == '正常' ? 1 : 0;
+            console.log(this.form)
+          }
+
 
         },
         //导出
         exportd(){
 
         },
+
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
@@ -406,43 +508,16 @@ export default {
         //每页显示多少条数据
         handleSizeChange(val) {
             this.pageSize = val;
-            this.getCircleList(val,this.currentPage);
+            this.getRatingList(val,this.currentPage);
         },
+
         //当前第几页
         handleCurrentChange(val) {
             this.currentPage = val;
-            this.getCircleList(this.pageSize,val)
+            this.getRatingList(this.pageSize,val)
         },
 
 
-        //弹出框的确认按钮  /levelRule/addLevelRule
-        comfirm(formName){
-          this.$refs[formName].validate((valid) => {
-            if (valid) {
-              this.$post('/levelRule/addLevelRule',this.form).then(res=>{
-                if(res.code == 0){
-                    this.$refs[formName].resetFields();
-                    this.dialogVisible = false;
-                    this.$message({
-                      message:res.msg,
-                      type: 'success',
-                    });
-
-                }
-              })
-            } else {
-              console.log('error submit!!');
-              return false;
-            }
-          });
-
-        },
-        //弹出框的取消按钮
-
-        cancel(form){
-            this.dialogVisible = false;
-            this.$refs[form].resetFields();
-        },
 
 
         //默认选中第一行
@@ -484,51 +559,12 @@ export default {
      index(index){
          return (this.currentPage - 1)*this.pageSize + index + 1;
      },
-     //获取圈子分类列表
-     getCodeName(){
-         this.$post('sysCategory/queryByCategory',{
-             category: 32
-         }).then(res=>{
-             this.codeNameList = res.data;
-         })
-     },
-     //获取省份列表
-     getProvince(){
-         this.$get('province/queryAll',{}).then(res=>{
-             this.provinceList = res.data
-         })
-     },
-     //获取市列表
-     chooseProvince(){
-        //根据省份id获取城市
-         this.$get('city/queryByProvinceId',{
-             provinceId: this.form.provinceName
-         }).then(res=>{
-             this.cityList = res.data
-         })
-     },
-     //获取县级列表
-     chooseArea(){
-         //根据城市id获取县级
-         this.$get('area/queryByCityId',{
-             cityId: this.form.cityName
-         }).then(res=>{
-             this.areaList = res.data;
-         })
-     },
-     //获取乡镇
-     chooseCountry(){
-         //根据县级id获取乡镇列表
-         this.$get('country/queryByCityId',{
-             areaId: this.form.areaName
-         }).then(res=>{
-             this.countryList = res.data;
-         })
-     },
+
 
      /**start上传图片 */
       handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);
+       this.form.icon = file.response.data;
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
@@ -546,34 +582,33 @@ export default {
      /**end上传图片 */
     },
     mounted(){
-        //获取等级列表
-        this.getRatingList()
+      window.addEventListener('resize', ()=>{
+        this.height = window.innerHeight - 240;
+      })
+
+      //获取所有等级列表
+      this.getRatingList()
         //表格第一行默认选中
-        this.checked();
+      this.checked();
     },
-    watch: {
-        dialogVisible: function(val){
-            let that = this;
-            if(val){
-                //调用圈子分类函数
-                that.getCodeName();
-                //获取省份
-                that.getProvince();
-            }
-        }
-    }
+  created() {
+    //页面加载时获取屏幕高度
+    this.height = window.innerHeight - 240;
+
+
+  },
 }
 </script>
 
 
 <style>
-.topSearch .el-form-item__content{
+  .rating .topSearch .el-form-item__content{
     width: 100px;
 }
-.topSearch .el-date-editor{
+.rating .topSearch .el-date-editor{
     width: 220px;
 }
-.topSearch .el-table{
+.rating.topSearch .el-table{
     overflow-y: scroll;
 }
 .rating .el-dialog .el-dialog__header .el-dialog__title{
@@ -584,8 +619,6 @@ export default {
 .rating .el-date-editor--datetime input{
     width: 176.66px;
 }
-
-
 
 .rating .avatar-uploader .el-upload {
 border: 1px dashed #d9d9d9;
@@ -628,11 +661,21 @@ display: block;
 }
 .page{
     text-align: right;
-    margin: 10px 0 40px;
+    margin: 20px 0 0px;
 }
 .rating span.uploadTitle{
     float: left;
     line-height: 100px;
     padding-right: 15px;
+}
+.aboutNum{
+  width: 785px;
+  height: 30px;
+  line-height: 30px;
+  margin-top: 10px;
+  box-sizing: border-box;
+}
+ .aboutNum span:nth-child(1){
+  padding-left: 10px;
 }
 </style>
