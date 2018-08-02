@@ -109,7 +109,7 @@ export default {
                 }else{
                      this.verification = ''
                      this.show = false
-                     this.text = '登录失败，请重新登录'
+                     this.text = res.msg
                      this.setRandom()
                 }
             })

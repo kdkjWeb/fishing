@@ -40,7 +40,7 @@
         <!-- start表格 -->
         <div class="table">
             <el-table
-                height="300"
+                :max-height="height"
                 ref="multipleTable"
                 :data="tableData"
                 tooltip-effect="dark"
@@ -72,9 +72,9 @@
                 >
                 </el-table-column>
             </el-table>
-            <!-- <div class="aboutNum">
-                <div>合计： <span>{{total}}</span></div>
-            </div> -->
+            <div class="aboutNum">
+                <div> <span>合计：{{total}}</span><span>{{allNum.memberCount}}</span><span>{{allNum.viewCount}}</span><span>{{allNum.commentCount}}</span></div>
+            </div>
         </div>
         <!-- end表格 -->
 
@@ -84,7 +84,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="currentPage"
-            :page-sizes="[10, 50, 80, 100]"
+            :page-sizes="[30, 50, 80, 100]"
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -120,7 +120,7 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="状态：" prop="status">
-                                <el-select v-model="form.status" placeholder="圈子分类">
+                                <el-select v-model="form.status" placeholder="状态">
                                 <el-option label="正常" value="1"></el-option>
                                 <el-option label="已关闭" value="0"></el-option>
                                 </el-select>
@@ -134,7 +134,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="圈子分类：" prop="codeName" ref="codeName1">
+                            <el-form-item label="圈子分类：" prop="codeName" ref="codeName">
                                 <el-select v-model="form.codeName" placeholder="圈子分类">
                                 <el-option :label="item.codeName" :value="item.cId" v-for="item in codeNameList" :key="item.cId"></el-option>
                                 </el-select>
@@ -148,7 +148,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="类型：" prop="kind" ref="kind1">
+                            <el-form-item label="类型：" prop="kind" ref="kind">
                                 <el-select v-model="form.kind" placeholder="类型">
                                 <el-option label="官方" value="官方"></el-option>
                                 <el-option label="个人" value="个人"></el-option>
@@ -327,15 +327,21 @@
 export default {
     data(){
         return{
-            disabled: false,
-            myHeaders: {
+            allNum: {
+                commentCount: 0,   //总评论数
+                viewCount: 0,    //总阅读数
+                memberCount: 0   //总成员数
+            },
+            height: null,   //表格动态设置高度
+            disabled: false,   //是否禁止填写
+            myHeaders: {     //上传图片携带token
                     token: ''
                 },
             dialogVisible: false,   //弹出框是否显示
             imageUrl: '',  //上传图片显示
             multipleSelection: [],   //存放勾选的数据
             currentPage: 1, //当前第几页
-            pageSize: 10,   //每页显示多少条
+            pageSize: 30,   //每页显示多少条
             total: null,   //总共多少条数据
             circleId: '',
             rowIndex: '',   //每一行的编号
@@ -389,13 +395,13 @@ export default {
                 {prop: 'sort', label: '排序号', width: '80', align: 'right'},
                 {prop: 'commentCount', label: '评论', width: '80', align: 'right'},
                 {prop: 'viewCount', label: '阅读', width: '80', align: 'right'},
-                {prop: 'memberCount', label: '成员', width: '100', align: 'right'},
+                {prop: 'memberCount', label: '成员', width: '80', align: 'right'},
                 {prop: 'location', label: '详细地址', width: '', align: ''},
                 {prop: 'manager', label: '管理人', width: '100', align: ''},
                 {prop: 'creator', label: '创建人', width: '100', align: ''},
                 {prop: 'createTime', label: '创建时间', width: '155', align: 'right'},
                 {prop: 'modifier', label: '修改人', width: '100', align: ''},
-                {prop: 'modifyTime', label: '修改时间', width: '150', align: 'right'},
+                {prop: 'modifyTime', label: '修改时间', width: '155', align: 'right'},
                 {prop: 'remark', label: '备注', width: '', align: ''}
             ],
             tableData: [],//表格的数据
@@ -417,7 +423,7 @@ export default {
         //获取圈子列表
         getCircleList(pageSize,pageNum){
             this.$post('circle/queryByRecord',{
-                pageSize: pageSize ? pageSize : 10,
+                pageSize: pageSize ? pageSize : 20,
                 pageNum: pageNum ? pageNum : 1,
                 circleName: this.formInline.name ? this.formInline.name : null,
                 location: this.formInline.address ? this.formInline.address : null,
@@ -425,7 +431,6 @@ export default {
                 createTime2: this.formInline.date ? this.dataTransform(this.formInline.date[1]) : null,
             }).then(res=>{
                 if(res.code == 0){
-                  //  this.tableData = res.data.list;
                     if(res.data.list.length <= 0){   //如果后面没返回数据就直接赋值
                         this.tableData = res.data.list;
                     }else{   //返回数据之后进行数据处理
@@ -440,6 +445,15 @@ export default {
                         });
                          this.$nextTick(function(){
                             this.checked();//每次更新了数据，触发这个函数即可。
+
+                            // 每次dom数据更新以后重新计算总数
+                            this.allNum.commentCount = this.allNum.viewCount = this.allNum.memberCount = 0;   //dom每次更新数据都清零
+                            this.tableData.forEach((val,index)=>{
+
+                                this.allNum.commentCount +=val.commentCount;
+                                this.allNum.viewCount +=val.viewCount;
+                                this.allNum.memberCount +=val.memberCount;
+                            })
                         })
                     }
                     this.total = res.data.total;
@@ -457,13 +471,26 @@ export default {
             //新增有些字段禁止填写
             this.disabled = true;
 
-            // this.$refs['form'].resetFields();
+  
+            //点击新增清空表单
+                for(var i in this.form){
+                if(i == 'status'){  //遇到默认项跳过，执行下面的循环
+                    continue;
+                }else if(this.form[i] != ''){
+                  
+                    this.$nextTick(() => {
+                            this.$refs['codeName'].resetField();
+                            this.$refs['kind'].resetField();
+                            this.form = {};
+                            this.imageUrl = '';
+                        });
+
+                    
+                }
+            }
 
 
-            this.$refs['codeName1'].clearValidate();
-            this.$refs['kind1'].clearValidate();
-            this.form = {};
-            this.imageUrl = '';
+            
         },
         //删除
         deleted(){
@@ -516,7 +543,7 @@ export default {
             this.dialogVisible = true;
             this.disabled = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-            
+      
 
             if(this.circleId){
                 let data = this.multipleSelection[0];
@@ -792,13 +819,24 @@ export default {
         if(this.$store.state.token){
             this.myHeaders.token = this.$store.state.token
         }
-        console.log(this.myHeaders.token )
+        
+
+       
+
+        window.addEventListener('resize', ()=>{
+             this.height = window.innerHeight - 240;
+        })
+
+
+   
+    },
+    created(){
+         this.height = window.innerHeight - 240;
     },
     watch: {
         dialogVisible: function(val){
             let that = this;
             if(val){
-                console.log(1)
                 //调用圈子分类函数
                 that.getCodeName();
                 //获取省份
@@ -875,11 +913,29 @@ display: block;
 }
 .page{
     text-align: right;
-    margin: 10px 0 40px;
+    margin: 10px 0 5px;
 }
 .circle span.uploadTitle{
     float: left;
     line-height: 150px;
     padding-right: 15px;
+}
+.circle .aboutNum{
+    width: 785px;
+    height: 30px;
+    line-height: 30px;
+    margin-top: 10px;
+    box-sizing: border-box;
+}
+.circle .aboutNum span:nth-child(1){
+    padding-left: 10px;
+}
+.circle .aboutNum span:nth-child(2),.circle .aboutNum span:nth-child(3),.circle .aboutNum span:nth-child(4){
+    display: inline-block;
+    width: 80px;
+    float: right;
+    text-align: right;
+    padding: 0 10px;
+    box-sizing: border-box;
 }
 </style>

@@ -73,7 +73,7 @@ export default {
 } */
 
 .content{
-    padding: 25px 20px 45px;
+    padding: 25px 20px 20px;
 }
 
 
