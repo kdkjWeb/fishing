@@ -43,6 +43,18 @@ export default {
                     index: 'post',
                     title: '帖子'
                 },{
+                    icon: 'icon-xiaoxi',
+                    index: '1',
+                    title: '评论回复'
+                },{
+                    icon: 'icon-dianzan3',
+                    index: '2',
+                    title: '点赞'
+                },{
+                    icon: 'icon-dashang',
+                    index: '3',
+                    title: '打赏'
+                },{
                     icon: 'icon-shipin2',
                     index: 'video',
                     title: '视频'
@@ -76,17 +88,50 @@ export default {
                     title: '查询',
                     subs: [
                         {
-                            icon: 'icon-dengji1',
                             index: '5',
-                            title: '钓场'
+                            title: '我的收藏'
                         },{
-                            icon: 'icon-fenlei',
                             index: '6',
-                            title: '分类设置'
+                            title: '加入圈子'
                         },{
-                            icon: 'icon-yonghu',
                             index: '7',
-                            title: '用户'
+                            title: '访客记录'
+                        },{
+                            index: '8',
+                            title: '我的关注'
+                        },{
+                            index: '9',
+                            title: '去过钓场'
+                        },{
+                            index: '10',
+                            title: '签到'
+                        },{
+                            index: '11',
+                            title: '签到用户'
+                        },{
+                            index: '12',
+                            title: '钱包'
+                        },{
+                            index: '13',
+                            title: '金币记录'
+                        },{
+                            index: '14',
+                            title: '积分记录'
+                        },{
+                            index: '15',
+                            title: '积分规则'
+                        },{
+                            index: '16',
+                            title: '帖子圈子'
+                        },{
+                            index: '17',
+                            title: '水位'
+                        },{
+                            index: '18',
+                            title: '水情'
+                        },{
+                            index: '19',
+                            title: '充值记录'
                         }
                     ]
                 }
@@ -115,6 +160,9 @@ export default {
     font-size: 20px;
     padding-right: 6px;
     vertical-align: middle;
+}
+.el-submenu ul.el-menu li.el-menu-item:last-child{
+    margin-bottom: 50px;
 }
 </style>
 
