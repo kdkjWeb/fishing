@@ -106,8 +106,8 @@
                     <el-col :span="16">
                         <el-row>
                         <el-col :span="24">
-                            <el-form-item label="圈子：">
-                                <el-input v-model="form.circleName"></el-input>
+                            <el-form-item label="钓场名称：">
+                                <el-input v-model="form.name"></el-input>
                             </el-form-item>
                         </el-col>
                         </el-row>
@@ -129,42 +129,47 @@
                         <el-row>
                        <el-col :span="12">
                             <el-form-item label="排序号：">
-                                <el-input v-model="form.sort"></el-input>
+                                <el-input v-model="form.position"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="圈子分类：">
-                                <el-select v-model="form.codeName" placeholder="圈子分类">
-                                <el-option :label="item.codeName" :value="item.cId" v-for="item in codeNameList" :key="item.cId"></el-option>
+                            <el-form-item label="审核状态：">
+                                <el-select v-model="form.ispass" placeholder="审核状态">
+                                <el-option label="待审核" value="0"></el-option>
+                                <el-option label="通过" value="1"></el-option>
+                                <el-option label="不通过" value="2"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
                         </el-row>
                         <el-row>
                        <el-col :span="12">
-                            <el-form-item label="评论数：">
-                                <el-input v-model="form.commentCount"></el-input>
+                            <el-form-item label="钓场电话：">
+                                <el-input v-model.number="form.phone"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="类型：">
-                                <el-select v-model="form.kind" placeholder="类型">
-                                <el-option label="官方" value="官方"></el-option>
-                                <el-option label="个人" value="个人"></el-option>
+                             <el-form-item label="圈子分类：">
+                                <el-select v-model="form.type" placeholder="圈子分类">
+                                <el-option :label="item.codeName" :value="item.cId" v-for="item in codeNameList" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
                         </el-row>
                          <el-row>
                        <el-col :span="12">
-                            <el-form-item label="排序号：">
-                                <el-input v-model="form.sort"></el-input>
+                            <el-form-item label="是否免费：">
+                                <el-select v-model="form.needPay" placeholder="是否免费">
+                                <el-option label="是" value="1"></el-option>
+                                <el-option label="否" value="0"></el-option>
+                                </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="圈子分类：">
-                                <el-select v-model="form.codeName" placeholder="圈子分类">
-                                <el-option :label="item.codeName" :value="item.cId" v-for="item in codeNameList" :key="item.cId"></el-option>
+                            <el-form-item label="类型：">
+                                <el-select v-model="form.ownertype" placeholder="类型">
+                                <el-option label="官方" value="官方"></el-option>
+                                <el-option label="个人" value="个人"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
@@ -175,10 +180,12 @@
                         <el-upload
                         class="avatar-uploader"
                         accept="image/jpeg,image/png"
-                        action="http://192.168.20.158:8080/common/uploadOssPic"
+                        :action="`${this.$store.state.baseUrl}common/uploadOssPic`"
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
                         name="picture"
+                        :headers="myHeaders"   
+                        auto-upload
                         :before-upload="beforeAvatarUpload">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -189,31 +196,29 @@
                     
 
                     <el-row>
-                      <el-col :span="8">
+                      <!-- <el-col :span="8">
                           <el-form-item label="评论数：">
                                 <el-input v-model="form.commentCount"></el-input>
                             </el-form-item>
-                      </el-col>
-                      <el-col :span="16">
+                      </el-col> -->
+                      <el-col :span="24">
                            <el-form-item label="有什么鱼：">
-                                <el-select v-model="form.status" placeholder="有什么鱼">
-                                <el-option label="正常" value="1"></el-option>
-                                <el-option label="已关闭" value="0"></el-option>
+                                <el-select v-model="form.fishType" multiple  placeholder="有什么鱼">
+                                <el-option v-for="item in fishList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
                     </el-row>
                     <el-row>
                       <el-col :span="8">
-                         <el-form-item label="阅读数：">
-                            <el-input v-model="form.viewCount"></el-input>
+                         <el-form-item label="帖子数：">
+                            <el-input v-model="form.topicNum"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="16">
                            <el-form-item label="允许钓法：">
-                                <el-select v-model="form.status" placeholder="有什么鱼">
-                                <el-option label="正常" value="1"></el-option>
-                                <el-option label="已关闭" value="0"></el-option>
+                                <el-select v-model="form.fishingType" multiple  placeholder="允许钓法">
+                                <el-option v-for="item in fishMethodList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -221,14 +226,13 @@
                     <el-row>
                       <el-col :span="8">
                            <el-form-item label="成员数：">
-                                <el-input v-model="form.memberCount"></el-input>
+                                <el-input v-model="form.attentionNum"></el-input>
                             </el-form-item>
                       </el-col>
                       <el-col :span="16">
                            <el-form-item label="禁止钓法：">
-                                <el-select v-model="form.status" placeholder="有什么鱼">
-                                <el-option label="正常" value="1"></el-option>
-                                <el-option label="已关闭" value="0"></el-option>
+                                <el-select v-model="form.forbiddenFishing" multiple placeholder="禁止钓法">
+                                <el-option v-for="item in fishMethodList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -241,9 +245,8 @@
                       </el-col>
                       <el-col :span="16">
                            <el-form-item label="允许饵料：">
-                                <el-select v-model="form.status" placeholder="有什么鱼">
-                                <el-option label="正常" value="1"></el-option>
-                                <el-option label="已关闭" value="0"></el-option>
+                                <el-select v-model="form.baits" multiple placeholder="允许饵料">
+                                <el-option v-for="item in baitList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -256,9 +259,8 @@
                       </el-col>
                       <el-col :span="16">
                            <el-form-item label="禁止饵料：">
-                                <el-select v-model="form.status" placeholder="有什么鱼">
-                                <el-option label="正常" value="1"></el-option>
-                                <el-option label="已关闭" value="0"></el-option>
+                                <el-select v-model="form.forbiddenBaits" multiple placeholder="禁止饵料">
+                                <el-option v-for="item in baitList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -267,28 +269,28 @@
                     <el-row>
                       <el-col :span="6">
                            <el-form-item label="省：">
-                            <el-select v-model="form.provinceName" placeholder="请选择省份" @change="chooseProvince">
+                            <el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince">
                             <el-option :label="item.codeName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
                           <el-form-item label="市：">
-                            <el-select v-model="form.cityName" placeholder="请选择市"  @change="chooseArea">
+                            <el-select v-model="form.cityId" placeholder="请选择市"  @change="chooseArea">
                             <el-option :label="item.codeName" :value="item.cId" v-for="item in cityList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
                           <el-form-item label="县：">
-                            <el-select v-model="form.areaName" placeholder="圈子分类" @change="chooseCountry">
+                            <el-select v-model="form.areaId" placeholder="请选择区县" @change="chooseCountry">
                             <el-option :label="item.codeName" :value="item.cId" v-for="item in areaList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
                           <el-form-item label="乡：">
-                            <el-select v-model="form.countryName" placeholder="圈子分类">
+                            <el-select v-model="form.countryId" placeholder="请选择乡镇">
                                 <el-option :label="item.codeName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
@@ -297,13 +299,13 @@
                     <el-row>
                       <el-col :span="8">
                           <el-form-item label="创建人：">
-                            <el-input v-model="form.creator"></el-input>
+                            <el-input v-model="form.cUser"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
                           <el-form-item label="创建时间：">
                             <el-date-picker
-                                v-model="form.createTime"
+                                v-model="form.cdate"
                                 type="datetime"
                                 placeholder="选择日期时间"
                                 default-time="12:00:00">
@@ -312,7 +314,11 @@
                       </el-col>
                       <el-col :span="8">
                           <el-form-item label="管理人：">
-                            <el-input v-model="form.manager"></el-input>
+                            <!-- <el-input v-model="form.manager"></el-input> -->
+
+                            <el-select v-model="form.manager" placeholder="管理人">
+                                <el-option :label="item.nickname" :value="item.cId" v-for="item in managerList" :key="item.cId"></el-option>
+                            </el-select>
                         </el-form-item>
                       </el-col>
                     </el-row>
@@ -336,7 +342,7 @@
                     <el-row>
                        <el-col :span="24">
                           <el-form-item label="收费详情：">
-                                      <el-input v-model="form.location"></el-input>
+                                      <el-input v-model="form.payDetails"></el-input>
                           </el-form-item>
                       </el-col>
                       <el-col :span="24">
@@ -346,7 +352,7 @@
                       </el-col>
                       <el-col :span="24">
                           <el-form-item label="简介：">
-                                      <el-input type="textarea" v-model="form.intro"></el-input>
+                                      <el-input type="textarea" v-model="form.detailsRule"></el-input>
                           </el-form-item>
                       </el-col>
                       <el-col :span="24">
@@ -371,6 +377,9 @@
 export default {
     data(){
         return{
+            myHeaders: {     //上传图片携带token
+                    token: ''
+                },
             height: null,
             dialogVisible: false,   //弹出框是否显示
             imageUrl: '',  //上传图片显示
@@ -381,39 +390,49 @@ export default {
             circleId: '',
             rowIndex: '',   //每一行的编号
             codeNameList: [],   //圈子分类
+            fishList: [],   //鱼类分类
+            fishMethodList: [],   //有什么钓法
+            baitList: [],   //饵料列表
             provinceList: [],  //省份
             cityList: [],   //市
             areaList: [],    //县级
             countryList: [],   //乡镇
+            managerList: [],   //管理人列表
             formInline: {   //圈子、详细地址、创建时间的表单
             name: '',
             location: '',
             cdate: ''
             },
             form:{
-                fishingGround: '',  //圈子
+                name: '',  //钓场名称
                 number: '',   //编号
-                status: '1',   //状态
-                sort: '',   //排序号
-                codeName: '',   //圈子分类
-                commentCount: '',  //评论数
-                kind: '',   //类型
-                viewCount: '',   //阅读数
-                provinceName: '',  //省份
-                cityName: '',   //市
-                memberCount: '',  //成员数
-                areaName: '',   //县
-                countryName: '',  //乡
-                longitude: '',  //经度
+                status: '1',   //状态    
+                position: '',   //排序号
+                ispass: '',    //审核状态
+                phone: '',   //钓场电话
+                type: '',   //圈子分类
+                ownertype: '',   //类型
+                needPay: '',   //是否收费
+                icon: '',
+                topicNum: '',   //帖子数
+                longitude: '',   //经度
                 latitude: '',   //维度
-                creator: '',   //创建人
-                createTime: '',   //创建时间
+                provinceId: '',  //省份
+                cityId: '',   //市
+                areaId: '',   //县
+                countryId: '',  //乡
                 manager: '',   //管理人
-                modifier: '',   //修改人
-                modifyTime: '',   //修改时间
-                location: '',   //地址
-                intro: '',   //简介
-                remark: '',    //备注
+                location: '',   //详细地址
+                payDetails: '',   //收费详情
+                detailsRule: '',   //简介
+                attentionNum: '',   //成员数
+                cUser: '',   //创建人
+                cdate: '',   //创建时间
+                fishType: [],   //有什么鱼
+                fishingType: [],  //允许钓法
+                forbiddenFishing: [],   //禁止钓法
+                forbiddenBaits: [],   //禁止饵料
+                baits: []   //允许饵料
             },
             tableList: [   //表格的头部配置
                 {prop: 'name', label: '钓场', width: '120', align: ''},
@@ -438,13 +457,13 @@ export default {
     methods:{
         //获取钓场列表
         getGroundList(pageSize,pageNum){
-            this.$post('fishplace/getFishPlaceList',{
+            this.$post('fishplace/managerGetList',{
                 pageSize: pageSize ? pageSize : 10,
                 pageNum: pageNum ? pageNum : 1,
-                circleName: this.formInline.name ? this.formInline.name : null,
+                name: this.formInline.name ? this.formInline.name : null,
                 location: this.formInline.location ? this.formInline.location : null,
-                cdate: this.formInline.cdate ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
-                cdate: this.formInline.cdate ? `${this.dataTransform(this.formInline.date[0])} 23:59:59`: null,
+                cdate: this.formInline.cdate ? `${this.dataTransform(this.formInline.cdate[0])} 00:00:00` : null,
+                enddate: this.formInline.cdate ? `${this.dataTransform(this.formInline.cdate[1])} 23:59:59`: null,
             }).then(res=>{
                 if(res.code == 0){
                   //  this.tableData = res.data.list;
@@ -599,12 +618,13 @@ export default {
             m = m < 10 ? ('0' + m) : m;
             var d = date.getDate();
             d = d < 10 ? ('0' + d) : d;
-            var h = date.getHours();
+           /* var h = date.getHours();
             var minute = date.getMinutes();
             minute = minute < 10 ? ('0' + minute) : minute;
             var second = date.getSeconds();	
             second = second < 10 ? ('0' + second) : second;
-            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;*/
+            return y + '-' + m + '-' + d;
         }else{
             return null;
         }
@@ -629,10 +649,34 @@ export default {
              this.codeNameList = res.data;
          })
      },
+     //获取鱼类分类
+     getFishList(){
+         this.$post('sysCategory/queryByCategory',{
+             category: 35
+         }).then(res=>{
+            this.fishList = res.data;
+         })
+     },
+     //获取有什么钓法
+     getFishMethodList(){
+         this.$post('sysCategory/queryByCategory',{
+             category: 33
+         }).then(res=>{
+            this.fishMethodList = res.data;
+         })
+     },
+     //获取有什么饵料
+     getBaitList(){
+         this.$post('sysCategory/queryByCategory',{
+             category: 34
+         }).then(res=>{
+            this.baitList = res.data;
+         })
+     },
      //获取省份列表
      getProvince(){
          this.$get('province/queryAll',{}).then(res=>{
-             this.provinceList = res.data
+             this.provinceList = res.data;
          })
      },
      //获取市列表
@@ -662,6 +706,16 @@ export default {
              this.countryList = res.data;
          })
      },
+     //获取管理人列表
+    getMangerList(){
+        this.$post('user/getUserList',{
+            role: 1
+        }).then(res=>{
+            if(res.code == 0){
+                this.managerList = res.data.list
+            }
+        })
+    },
 
      /**start上传图片 */
       handleAvatarSuccess(res, file) {
@@ -688,10 +742,16 @@ export default {
         this.getGroundList()
         //表格第一行默认选中
         this.checked();
+      
+
 
          window.addEventListener('resize', ()=>{
              this.height = window.innerHeight - 240;
         })
+
+        if(this.$store.state.token){
+            this.myHeaders.token = this.$store.state.token
+        }
     },
     created(){
          this.height = window.innerHeight - 240;
@@ -702,9 +762,17 @@ export default {
             if(val){
                 console.log(1)
                 //调用圈子分类函数
-                that.getCodeName();
+                this.getCodeName();
+                  //获取鱼类分类
+                this.getFishList();
+                //有什么钓法
+                this.getFishMethodList();
+                //有什么饵料
+                this.getBaitList();
                 //获取省份
-                that.getProvince();
+                this.getProvince();
+                //获取管理人列表
+                this.getMangerList();
             }
         }
     }
