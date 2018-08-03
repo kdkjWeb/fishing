@@ -559,9 +559,20 @@ export default {
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
-             console.log(this.multipleSelection)
+             
 
-            //虽然是多选框，但是产品设计每次只能选着一个
+            if(this.multipleSelection.length == 2){
+                     for(var i= 0; i<this.tableData.length; i++){
+                    if(this.tableData[i].cId == this.multipleSelection[0].cId){
+                        this.$refs.multipleTable.toggleRowSelection(this.tableData[i],false);
+                        break;
+                    }
+                }
+            }
+
+
+
+            //虽然是多选框，但是产品设计每次只能选着一个,换页的时候重新计算序列编号
             if(this.multipleSelection.length == 1){
                 for(var i= 0; i<this.tableData.length; i++){
                     if(this.tableData[i].cId == this.multipleSelection[0].cId){
