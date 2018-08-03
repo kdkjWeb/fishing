@@ -131,7 +131,7 @@
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
                         name="picture"
-                        :headers="myHeaders"   
+                        :headers="myHeaders"
                         :before-upload="beforeAvatarUpload">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -281,7 +281,7 @@ export default {
             ],
             level:[
               { required: true, message: '等级不能为空，请输入', trigger: 'blur' },
-              { type: 'number', message: '等级必须为数字值', trigger: 'blur' }
+              {pattern: /^([0-9][0-9]{0,1}|100)$/, message: '等级必须是数字0-100', trigger: 'blur' }
             ],
             score: {
                 type: 'number',
@@ -353,7 +353,7 @@ export default {
             this.disabled = true;
             this.form = {};
             this.imageUrl = '';
-          this.circleId = ''
+            this.circleId = ''
         },
 
       //标准时间格式转换
@@ -377,7 +377,6 @@ export default {
 
       //弹出框的确认按钮  /levelRule/addLevelRule
       comfirm(formName){
-
         if(!this.form.icon){
           this.$message({
             message: '请上传等级的图标！',
@@ -385,7 +384,6 @@ export default {
           });
           return;
         }
-
 
         this.$refs[formName].validate((valid) => {
 
@@ -608,7 +606,7 @@ export default {
       window.addEventListener('resize', ()=>{
         this.height = window.innerHeight - 240;
       })
-    
+
      if(this.$store.state.token){
             this.myHeaders.token = this.$store.state.token
         }
