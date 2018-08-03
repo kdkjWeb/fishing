@@ -59,7 +59,6 @@
                   <div style="width:50px;height:50px;">
                     <img :src="scope.row.iconStr" style="width:100%;">
                   </div>
-
                 </template>
               </el-table-column>
 
@@ -84,14 +83,14 @@
         <!-- start分页 -->
         <div class="page" >
             <el-pagination
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              :current-page.sync="currentPage"
-              :page-sizes="[30, 50, 80, 100]"
-              :page-size="pageSize"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="total"
-              background>
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page.sync="currentPage"
+                :page-sizes="[30, 50, 80, 100]"
+                :page-size="pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="total"
+                background>
             </el-pagination>
         </div>
         <!-- end分页 -->
