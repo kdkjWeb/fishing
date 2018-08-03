@@ -135,7 +135,7 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="圈子分类：" prop="codeName" ref="codeName">
-                                <el-select v-model="form.codeName" placeholder="圈子分类">
+                                <el-select v-model="form.circleCategoryId" placeholder="圈子分类">
                                 <el-option :label="item.codeName" :value="item.cId" v-for="item in codeNameList" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
@@ -342,7 +342,7 @@ export default {
             multipleSelection: [],   //存放勾选的数据
             currentPage: 1, //当前第几页
             pageSize: 30,   //每页显示多少条
-            total: null,   //总共多少条数据
+            total: 0,   //总共多少条数据
             circleId: '',
             rowIndex: '',   //每一行的编号
             codeNameList: [],   //圈子分类
@@ -361,7 +361,7 @@ export default {
                 number: '',   //编号
                 status: '1',   //状态
                 sort: '',   //排序号
-                codeName: '',   //圈子分类
+                circleCategoryId: '',   //圈子分类
                 commentCount: '',  //评论数
                 kind: '',   //类型
                 viewCount: '',   //阅读数
@@ -406,7 +406,7 @@ export default {
                       { required: true, message: '请输入圈子名称', trigger: 'blur' },
                       { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
                 ],
-                  codeName: [
+                  circleCategoryId: [
                     { required: true, message: '请选择圈子分类', trigger: 'change' }
                 ],
                     kind: [
@@ -542,13 +542,12 @@ export default {
             this.dialogVisible = true;
             this.disabled = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-      
-
+ 
             if(this.circleId){
                 let data = this.multipleSelection[0];
                 this.form = data;
                 this.form.number = this.rowIndex;
-                this.imageUrl = this.form.icon;
+                this.imageUrl = this.form.iconUrl;
             }
 
         },
@@ -616,7 +615,7 @@ export default {
                         circleName: this.form.circleName,
                         status:  status,  //因为修改回显如果状态不改变，那么传给后台的会是’正常‘汉字，需要进行转换成1，否则就是正常的
                         sort: this.form.sort,
-                        circleCategoryId: this.form.codeName,
+                        circleCategoryId: this.form.circleCategoryId,
                         kind: this.form.kind,
                         provinceId: this.form.provinceId,
                         cityId: this.form.cityId,

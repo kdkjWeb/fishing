@@ -5,15 +5,15 @@
             <el-row>
                 <el-col :span="14">
                     <el-form :inline="true" :model="formInline" class="demo-form-inline" size="mini">
-                        <el-form-item label="圈子：">
-                            <el-input clearable v-model="formInline.name" placeholder="圈子"></el-input>
+                        <el-form-item label="钓场：">
+                            <el-input clearable v-model="formInline.name" placeholder="钓场"></el-input>
                         </el-form-item>
                         <el-form-item label="详细地址：">
-                            <el-input clearable v-model="formInline.address" placeholder="详细地址"></el-input>
+                            <el-input clearable v-model="formInline.location" placeholder="详细地址"></el-input>
                         </el-form-item>
                         <el-form-item label="创建时间：">
                             <el-date-picker
-                            v-model="formInline.date"
+                            v-model="formInline.cdate"
                             type="daterange"
                             align="right"
                             unlink-panels
@@ -40,7 +40,7 @@
         <!-- start表格 -->
         <div class="table">
             <el-table
-                height="300"
+                :max-height="height"
                 ref="multipleTable"
                 :data="tableData"
                 tooltip-effect="dark"
@@ -371,6 +371,7 @@
 export default {
     data(){
         return{
+            height: null,
             dialogVisible: false,   //弹出框是否显示
             imageUrl: '',  //上传图片显示
             multipleSelection: [],   //存放勾选的数据
@@ -386,8 +387,8 @@ export default {
             countryList: [],   //乡镇
             formInline: {   //圈子、详细地址、创建时间的表单
             name: '',
-            address: '',
-            date: ''
+            location: '',
+            cdate: ''
             },
             form:{
                 fishingGround: '',  //圈子
@@ -415,18 +416,18 @@ export default {
                 remark: '',    //备注
             },
             tableList: [   //表格的头部配置
-                {prop: 'fishingGround', label: '钓场', width: '120', align: ''},
+                {prop: 'name', label: '钓场', width: '120', align: ''},
                 {prop: 'status', label: '审核状态', width: '120', align: ''},
-                {prop: 'kind', label: '类型', width: '80', align: ''},
-                {prop: 'codeName', label: '圈子分类', width: '80', align: ''},
+                {prop: 'type', label: '类型', width: '80', align: ''},
+                {prop: 'type', label: '钓场分类', width: '80', align: ''},
                 {prop: 'sort', label: '排序号', width: '80', align: 'right'},
                 {prop: 'commentCount', label: '评论', width: '80', align: 'right'},
                 {prop: 'viewCount', label: '阅读', width: '80', align: 'right'},
                 {prop: 'memberCount', label: '成员', width: '100', align: 'right'},
                 {prop: 'location', label: '详细地址', width: '', align: ''},
                 {prop: 'manager', label: '管理人', width: '100', align: ''},
-                {prop: 'creator', label: '创建人', width: '100', align: ''},
-                {prop: 'createTime', label: '创建时间', width: '120', align: 'right'},
+                {prop: 'cUser', label: '创建人', width: '100', align: ''},
+                {prop: 'cdate', label: '创建时间', width: '120', align: 'right'},
                 {prop: 'modifier', label: '修改人', width: '100', align: ''},
                 {prop: 'modifyTime', label: '修改时间', width: '150', align: 'right'},
                 {prop: 'remark', label: '备注', width: '', align: ''}
@@ -435,15 +436,15 @@ export default {
         }
     },
     methods:{
-        //获取圈子列表
-        getCircleList(pageSize,pageNum){
-            this.$post('circle/queryByRecord',{
+        //获取钓场列表
+        getGroundList(pageSize,pageNum){
+            this.$post('fishplace/getFishPlaceList',{
                 pageSize: pageSize ? pageSize : 10,
                 pageNum: pageNum ? pageNum : 1,
                 circleName: this.formInline.name ? this.formInline.name : null,
-                location: this.formInline.address ? this.formInline.address : null,
-                createTime: this.formInline.date ? this.dataTransform(this.formInline.date[0]) : null,
-                createTime2: this.formInline.date ? this.dataTransform(this.formInline.date[1]) : null,
+                location: this.formInline.location ? this.formInline.location : null,
+                cdate: this.formInline.cdate ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
+                cdate: this.formInline.cdate ? `${this.dataTransform(this.formInline.date[0])} 23:59:59`: null,
             }).then(res=>{
                 if(res.code == 0){
                   //  this.tableData = res.data.list;
@@ -456,7 +457,7 @@ export default {
                            arr[index].creator = e.creator ? e.creator.nickname : '';
                            arr[index].modifier = e.modifier ? e.modifier.nickname : '';
                            arr[index].status = e.status ? '正常' : '已关闭';
-                           arr[index].createTime = e.createTime.split(' ')[0];
+                        //    arr[index].createTime = e.createTime.split(' ')[0];
                            this.tableData = JSON.parse(JSON.stringify(arr))
                         });
                          this.$nextTick(function(){
@@ -469,7 +470,7 @@ export default {
         },
         //查询
         search(){
-            this.getCircleList();
+            this.getGroundList();
         },
         //新增
         add(){
@@ -527,30 +528,7 @@ export default {
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
             let data = this.multipleSelection[0];
 
-            // 修改圈子数据回显
-            // this.form.circleName = data.circleName;
-            // this.form.number = this.rowIndex;
-            // this.form.status = data.status;
-            // this.form.sort = data.sort;
-            // this.form.codeName = data.codeName;
-            // this.form.commentCount = data.commentCount;
-            // this.form.kind = data.kind;
-            // this.form.viewCount = data.viewCount;
-            // this.form.province = data.provinceName;
-            // this.form.provinceName = data.cityName;
-            // this.form.memberCount = data.memberCount;
-            // this.form.areaName = data.areaName;
-            // this.form.countryName = data.countryName;
-            // this.form.longitude = data.longitude;
-            // this.form.latitude = data.latitude;
-            // this.form.creator = data.creator;
-            // this.form.createTime = data.createTime;
-            // this.form.manager = data.manager;
-            // this.form.modifier = data.modifier;
-            // this.form.modifyTime = data.modifyTime;
-            // this.form.location = data.location;
-            // // this.form.intro = data.intro;
-            // this.form.remark = data.remark;
+          
             
             this.form = data;
             this.form.number = this.rowIndex;
@@ -564,14 +542,22 @@ export default {
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
-             console.log(this.multipleSelection)
+            
+                 // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
+            if(this.multipleSelection.length == 2){
+                     for(var i= 0; i<this.tableData.length; i++){
+                    if(this.tableData[i].cId == this.multipleSelection[0].cId){
+                        this.$refs.multipleTable.toggleRowSelection(this.tableData[i],false);
+                        break;
+                    }
+                }
+            }
 
             //虽然是多选框，但是产品设计每次只能选着一个
             if(this.multipleSelection.length == 1){
                 for(var i= 0; i<this.tableData.length; i++){
                     if(this.tableData[i].cId == this.multipleSelection[0].cId){
                         this.rowIndex = (this.currentPage - 1)*this.pageSize + i + 1;
-                        console.log(this.rowIndex)
                         break;
                     }
                 }
@@ -581,12 +567,12 @@ export default {
         //每页显示多少条数据
         handleSizeChange(val) {
             this.pageSize = val;
-            this.getCircleList(val,this.currentPage);
+            this.getGroundList(val,this.currentPage);
         },
         //当前第几页
         handleCurrentChange(val) {
             this.currentPage = val;
-            this.getCircleList(this.pageSize,val)
+            this.getGroundList(this.pageSize,val)
         },
         //弹出框的确认按钮
         comfirm(){
@@ -699,9 +685,16 @@ export default {
     },
     mounted(){
         //获取圈子列表
-        this.getCircleList()
+        this.getGroundList()
         //表格第一行默认选中
         this.checked();
+
+         window.addEventListener('resize', ()=>{
+             this.height = window.innerHeight - 240;
+        })
+    },
+    created(){
+         this.height = window.innerHeight - 240;
     },
     watch: {
         dialogVisible: function(val){
