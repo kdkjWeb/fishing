@@ -79,7 +79,7 @@
         <!-- end表格 -->
 
         <!-- start分页 -->
-        <div class="page"  >
+        <div class="page">
             <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
@@ -162,13 +162,13 @@
                         <el-upload
                         class="avatar-uploader"
                         accept="image/jpeg,image/png"
-
+          
                         :action="`${this.$store.state.baseUrl}common/uploadOssPic`"
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
                         name="picture"
                         :before-upload="beforeAvatarUpload"
-                        :headers="myHeaders"
+                        :headers="myHeaders"   
                         auto-upload
                         :on-error="upError">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
@@ -327,8 +327,6 @@
 export default {
     data(){
         return{
-
-
             allNum: {
                 commentCount: 0,   //总评论数
                 viewCount: 0,    //总阅读数
@@ -383,17 +381,18 @@ export default {
                 intro: '',   //简介
                 remark: '',    //备注
                 icon: ''   //图标
+   
             },
             tableList: [   //表格的头部配置
-                {prop: 'circleName', label: '圈子', width: '120', align: ''},
-                {prop: 'status', label: '状态', width: '80', align: ''},
-                {prop: 'kind', label: '类型', width: '80', align: ''},
+                {prop: 'circleName', label: '圈子', width: '100', align: ''},
+                {prop: 'status', label: '状态', width: '70', align: ''},
+                {prop: 'kind', label: '类型', width: '60', align: ''},
                 {prop: 'codeName', label: '圈子分类', width: '80', align: ''},
-                {prop: 'sort', label: '排序号', width: '80', align: 'right'},
-                {prop: 'commentCount', label: '评论', width: '80', align: 'right'},
-                {prop: 'viewCount', label: '阅读', width: '80', align: 'right'},
-                {prop: 'memberCount', label: '成员', width: '80', align: 'right'},
-                {prop: 'location', label: '详细地址', width: '', align: ''},
+                {prop: 'sort', label: '排序号', width: '70', align: 'right'},
+                {prop: 'commentCount', label: '评论', width: '60', align: 'right'},
+                {prop: 'viewCount', label: '阅读', width: '60', align: 'right'},
+                {prop: 'memberCount', label: '成员', width: '60', align: 'right'},
+                {prop: 'location', label: '详细地址', width: '180', align: ''},
                 {prop: 'manager', label: '管理人', width: '100', align: ''},
                 {prop: 'creator', label: '创建人', width: '100', align: ''},
                 {prop: 'createTime', label: '创建时间', width: '155', align: 'right'},
@@ -424,12 +423,13 @@ export default {
                 pageNum: pageNum ? pageNum : 1,
                 circleName: this.formInline.name ? this.formInline.name : null,
                 location: this.formInline.address ? this.formInline.address : null,
-                createTime: this.formInline.date ? this.dataTransform(this.formInline.date[0]) : null,
-                createTime2: this.formInline.date ? this.dataTransform(this.formInline.date[1]) : null,
+                createTime: this.formInline.date ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
+                createTime2: this.formInline.date ?  `${this.dataTransform(this.formInline.date[0])} 23:59:59`: null,
             }).then(res=>{
                 if(res.code == 0){
                     if(res.data.list.length <= 0){   //如果后面没返回数据就直接赋值
                         this.tableData = res.data.list;
+                        this.allNum.commentCount = this.allNum.viewCount = this.allNum.memberCount = 0;   //dom每次更新数据都清零
                     }else{   //返回数据之后进行数据处理
                         let arr = res.data.list;
                         arr.forEach((e,index) => {
@@ -459,6 +459,7 @@ export default {
         },
         //查询
         search(){
+            // console.log(this.formInline.date)
             this.getCircleList();
         },
         //新增
@@ -468,26 +469,27 @@ export default {
             //新增有些字段禁止填写
             this.disabled = true;
 
-
+  
             //点击新增清空表单
                 for(var i in this.form){
                 if(i == 'status'){  //遇到默认项跳过，执行下面的循环
                     continue;
                 }else if(this.form[i] != ''){
-
+                  
                     this.$nextTick(() => {
                             this.$refs['codeName'].resetField();
                             this.$refs['kind'].resetField();
                             this.form = {};
+                            this.form.status = '1';
                             this.imageUrl = '';
                         });
 
-
+                    
                 }
             }
 
 
-
+            
         },
         //删除
         deleted(){
@@ -525,7 +527,7 @@ export default {
                 this.$message({
                     type: 'info',
                     message: '已取消删除'
-                });
+                });          
                 });
         },
         //修改
@@ -540,7 +542,7 @@ export default {
             this.dialogVisible = true;
             this.disabled = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-
+      
 
             if(this.circleId){
                 let data = this.multipleSelection[0];
@@ -582,7 +584,7 @@ export default {
         },
         //弹出框的确认按钮
         comfirm(formName){
-
+            
             if(!this.form.icon){
                 this.$message({
                 message: '请上传新圈子的图标！',
@@ -592,20 +594,22 @@ export default {
                 return;
             }
 
+
             this.$refs[formName].validate((valid)=>{
                 if(valid){
                     let url = this.circleId ? 'circle/updateCircle' : 'circle/addCircle'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+                    let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
                     this.$post(url,{
                         cId: this.circleId ? this.circleId : null,
                         circleName: this.form.circleName,
-                        status: this.form.status == '正常' ? 1 : this.form.status,   //因为修改回显如果状态不改变，那么传给后台的会是’正常‘汉字，需要进行转换成1，否则就是正常的
+                        status:  status,  //因为修改回显如果状态不改变，那么传给后台的会是’正常‘汉字，需要进行转换成1，否则就是正常的
                         sort: this.form.sort,
                         circleCategoryId: this.form.codeName,
                         kind: this.form.kind,
-                        provinceId: this.form.provinceName,
-                        cityId: this.form.cityName,
-                        areaId: this.form.areaName,
-                        countryId: this.form.countryName,
+                        provinceId: this.form.provinceId,
+                        cityId: this.form.cityId,
+                        areaId: this.form.areaId,
+                        countryId: this.form.countryId,
                         longitude: this.form.longitude,
                         latitude: this.form.latitude,
                         managerId: this.form.manager,
@@ -625,14 +629,13 @@ export default {
                              //重新获取圈子列表
                             this.getCircleList();
 
-                            // 清空表单和图片
-                            // this.$refs['form'].resetFields();
-                            // this.imageUrl = ''
+                           this.circleId = ''
                         }else{
                             this.$message({
                             message: res.msg,
                             type: 'warning'
                             });
+                            this.circleId = ''
                         }
                     })
                 }else{
@@ -664,12 +667,12 @@ export default {
         },
 
 
-
+        
         //默认选中第一行
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
             this.$refs.multipleTable.toggleRowSelection(this.tableData[0],true);
-
+            
             if(this.currentPage == 1){
                 this.rowIndex = 1;
             }
@@ -682,12 +685,14 @@ export default {
             m = m < 10 ? ('0' + m) : m;
             var d = date.getDate();
             d = d < 10 ? ('0' + d) : d;
-            var h = date.getHours();
-            var minute = date.getMinutes();
-            minute = minute < 10 ? ('0' + minute) : minute;
-            var second = date.getSeconds();
-            second = second < 10 ? ('0' + second) : second;
-            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+            // var h = date.getHours();
+            // var minute = date.getMinutes();
+            // minute = minute < 10 ? ('0' + minute) : minute;
+            // var second = date.getSeconds();	
+            // second = second < 10 ? ('0' + second) : second;
+            // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+
+            return y + '-' + m + '-' + d;
         }else{
             return null;
         }
@@ -725,6 +730,9 @@ export default {
              provinceId: this.form.provinceId
          }).then(res=>{
              this.cityList = res.data
+             this.form.cityId = '';
+             this.form.areaId = '';
+             this.form.countryId = '';
          })
      },
      //获取县级列表
@@ -734,6 +742,8 @@ export default {
              cityId: this.form.cityId
          }).then(res=>{
              this.areaList = res.data;
+             this.form.areaId = '';
+             this.form.countryId = '';
          })
      },
      //获取乡镇
@@ -743,6 +753,7 @@ export default {
              areaId: this.form.areaId
          }).then(res=>{
              this.countryList = res.data;
+             this.form.countryId = '';
          })
      },
     //获取管理人列表
@@ -815,11 +826,16 @@ export default {
         if(this.$store.state.token){
             this.myHeaders.token = this.$store.state.token
         }
+        
+
+       
 
         window.addEventListener('resize', ()=>{
              this.height = window.innerHeight - 240;
         })
 
+
+   
     },
     created(){
          this.height = window.innerHeight - 240;
@@ -836,8 +852,7 @@ export default {
                 that.getMangerList();
             }
         }
-    },
-
+    }
 
 }
 </script>
@@ -906,7 +921,6 @@ display: block;
 .page{
     text-align: right;
     margin: 10px 0 5px;
-
 }
 .circle span.uploadTitle{
     float: left;
@@ -914,7 +928,7 @@ display: block;
     padding-right: 15px;
 }
 .circle .aboutNum{
-    width: 785px;
+    width: 665px;
     height: 30px;
     line-height: 30px;
     margin-top: 10px;
@@ -925,7 +939,7 @@ display: block;
 }
 .circle .aboutNum span:nth-child(2),.circle .aboutNum span:nth-child(3),.circle .aboutNum span:nth-child(4){
     display: inline-block;
-    width: 80px;
+    width: 60px;
     float: right;
     text-align: right;
     padding: 0 10px;
