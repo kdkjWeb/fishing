@@ -57,7 +57,7 @@
                 label="用户图标">
                 <template slot-scope="scope">
                   <div style="width:50px;height:50px;">
-                    <img :src="scope.row.iconStr" style="width:100%;">
+                    <img :src="scope.row.iconUrl" style="width:100%;">
                   </div>
                 </template>
               </el-table-column>
@@ -366,6 +366,7 @@ export default {
 
       //弹出框的确认按钮  /levelRule/addLevelRule
       comfirm(formName){
+
         if(!this.form.icon){
           this.$message({
             message: '请上传等级的图标！',
@@ -374,20 +375,21 @@ export default {
           return;
         }
 
+
         this.$refs[formName].validate((valid) => {
 
           let url = this.circleId ? '/levelRule/updateLevelRule' : '/levelRule/addLevelRule'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+          let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
+          let type  = (this.form.type == '钓友' || this.form.type == '1')? 1:(this.form.type == '农家乐' || this.form.type == '2')? 2 : 3
           if (valid) {
             this.$post(url,{
+              cId: this.circleId ? this.circleId : null,
               number: this.form.number,   //编号
-              status: this.form.status,   //状态
-//              creatTime:this.dataTransform(this.form.creatTime),   //创建时间
+              status: status,   //状态
               cUser:this.form.cUser,     //创建人
-//              modifyTime:this.dataTransform(this.form.modifyTime),  //修改时间
               modifyUser:this.form.modifyUser,  //修改人
               coin:this.form.coin,  //娱乐奖励金币
-              type:this.form.type,  //类型
-//              userType:this.form.userType,  //用户类型
+              type: type,  //类型
               score:this.form.score,  //升级分值
               name:this.form.name,  //等级名称
               userPacote:this.form.userPacote,  //用户分组
@@ -459,6 +461,7 @@ export default {
         },
 //        修改
         edit(){
+
             if(this.multipleSelection.length != 1){
                 this.$message({
                 message: '请选择一条需要修改的数据！',
@@ -475,12 +478,11 @@ export default {
 
           if(this.circleId){
             this.form = data;
-            this.form.icon =  this.form.iconStr
+            console.log(this.form)
+//            this.form.icon =  this.form.iconUrl
             this.form.userType = this.form.type;
             this.form.number = this.rowIndex;
-            this.imageUrl = this.form.icon;
-            // this.form.status = data.status == '正常' ? 1 : 0;
-            console.log(this.form)
+            this.imageUrl = this.form.iconUrl;
           }
 
 
@@ -493,6 +495,17 @@ export default {
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
+
+          // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
+            if(this.multipleSelection.length == 2){
+              for(var i= 0; i<this.tableData.length; i++){
+                if(this.tableData[i].cId == this.multipleSelection[0].cId){
+                  this.$refs.multipleTable.toggleRowSelection(this.tableData[i],false);
+                  break;
+                }
+              }
+            }
+
             //虽然是多选框，但是产品设计每次只能选着一个
             if(this.multipleSelection.length == 1){
                 for(var i= 0; i<this.tableData.length; i++){
