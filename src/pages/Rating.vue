@@ -127,10 +127,11 @@
                         <el-upload
                         class="avatar-uploader"
                         accept="image/jpeg,image/png"
-                        action="http://192.168.20.158:8080/common/uploadOssPic"
+                        :action="`${this.$store.state.baseUrl}common/uploadOssPic`"
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
                         name="picture"
+                        :headers="myHeaders"   
                         :before-upload="beforeAvatarUpload">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -150,7 +151,7 @@
                   </el-col>
                   <el-col :span="12">
                      <el-form-item label="等级：" prop="level">
-                       <el-input v-model="form.level"></el-input>
+                       <el-input v-model.number="form.level" min="0" max="100" placeholder="最高等级100"></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -161,8 +162,8 @@
                      </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                     <el-form-item label="升级分值：">
-                        <el-input v-model="form.score"></el-input>
+                     <el-form-item label="升级分值：" prop="score">
+                        <el-input v-model.number="form.score" placeholder="请输入数字"></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -234,6 +235,9 @@
 export default {
     data(){
         return{
+            myHeaders: {     //上传图片携带token
+                    token: ''
+                },
             height:0,
             dialogVisible: false,   //弹出框是否显示
             imageUrl: '',  //上传图片显示
@@ -265,7 +269,7 @@ export default {
                 score:'',  //升级分值
                 name:'',  //等级名称
                 userPacote:'',  //用户分组
-                level:'',  //等级
+                level: null,  //等级
                 icon: ''   //图标
             },
           rules:{
@@ -276,8 +280,15 @@ export default {
               { required: true, message: '类型不能为空，请选择', trigger: 'change' }
             ],
             level:[
-              { required: true, message: '等级不能为空，请输入', trigger: 'blur' }
-            ]
+              { required: true, message: '等级不能为空，请输入', trigger: 'blur' },
+              { type: 'number', message: '等级必须为数字值', trigger: 'blur' }
+            ],
+            score: {
+                type: 'number',
+                trigger: 'blur',
+                required: false,
+                message: '升级分值必须为数字值'
+            }
           },
             tableList: [   //表格的头部配置
                 {prop: 'status', label: '状态', width: '100', align: ''},
@@ -597,6 +608,10 @@ export default {
       window.addEventListener('resize', ()=>{
         this.height = window.innerHeight - 240;
       })
+    
+     if(this.$store.state.token){
+            this.myHeaders.token = this.$store.state.token
+        }
 
       //获取所有等级列表
       this.getRatingList()
