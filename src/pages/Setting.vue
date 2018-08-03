@@ -24,6 +24,7 @@
                     <el-button size="mini" @click="edit">修改</el-button>
                     <el-button size="mini" @click="exportd">导出</el-button>
                 </el-col>
+
             </el-row>
         </div>
         <!-- end顶部搜索按钮 -->
@@ -98,7 +99,13 @@
                     <el-row>
                       <el-col :span="24">
                         <el-form-item label="类别：">
-                            <el-input v-model="form.number"></el-input>
+                            <el-select v-model="form.category" placeholder="类别">
+                                <el-option
+                                  v-for="data,index in parentList"
+                                  :label="data.codeName"
+                                  :value="data.cId"
+                                  :key="index"></el-option>
+                            </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="24">
@@ -200,19 +207,16 @@ export default {
             total: null,   //总共多少条数据
             circleId: '',
             rowIndex: '',   //每一行的编号
-            codeNameList: [],   //圈子分类
-            provinceList: [],  //省份
-            cityList: [],   //市
-            areaList: [],    //县级
-            countryList: [],   //乡镇
+
             formInline: {   //圈子、详细地址、创建时间的表单
-            name: '',
-            status: ''
+              name: '',
+              status: ''
             },
+            parentList:[],  //所有类别
             form:{
                 number: '',   //编号
                 status: '',   //状态
-                kind: '',   //类型
+              category: '',   //类型
                 level: '',  //等级
                 name: '',   //名称
                 userGroup: '',  //用户分组
@@ -226,18 +230,16 @@ export default {
                 userType: '',   //用户类型
             },
             tableList: [   //表格的头部配置
-                {prop: 'parentId', label: '类别parent_id', width: '120', align: ''},
-                {prop: 'name', label: '名称', width: '120', align: ''},
+                {prop: 'category', label: '类别parent_id', width: '120', align: ''},
+                {prop: 'codeName', label: '名称', width: '120', align: ''},
                 {prop: 'status', label: '状态', width: '80', align: ''},
                 {prop: 'sort', label: '排序', width: '80', align: ''},
-                {prop: 'moneyReward', label: '打赏渔乐', width: '120', align: ''},
-                {prop: 'founder', label: '创建人', width: '100', align: ''},
-                {prop: 'createTime', label: '创建时间', width: '', align: 'right'},
+                {prop: 'rewards', label: '打赏渔乐', width: '120', align: ''},
+                {prop: 'creator', label: '创建人', width: '100', align: ''},
+                {prop: 'creatTime', label: '创建时间', width: '', align: 'right'},
                 {prop: 'modifier', label: '修改人', width: '100', align: ''},
                 {prop: 'modifyTime', label: '修改时间', width: '', align: 'right'},
 
-
-                
             ],
             tableData: []//表格的数据
         }
@@ -245,7 +247,7 @@ export default {
     methods:{
         //获取圈子列表
         getCircleList(pageSize,pageNum){
-            this.$post('circle/queryByRecord',{
+            this.$get('/sysCategory/queryAll',{
                 pageSize: pageSize ? pageSize : 10,
                 pageNum: pageNum ? pageNum : 1,
                 circleName: this.formInline.name ? this.formInline.name : null,
@@ -254,18 +256,36 @@ export default {
                 createTime2: this.formInline.date ? this.dataTransform(this.formInline.date[1]) : null,
             }).then(res=>{
                 if(res.code == 0){
-                  //  this.tableData = res.data.list;
-                    if(res.data.list.length <= 0){   //如果后面没返回数据就直接赋值
-                        this.tableData = res.data.list;
+                  console.log(res)
+                    if(res.data.length <= 0){   //如果后面没返回数据就直接赋值
+                        this.tableData = res.data;
                     }else{   //返回数据之后进行数据处理
-                        let arr = res.data.list;
+                        let arr = res.data;
                         arr.forEach((e,index) => {
-                           arr[index].manager = e.manager ? e.manager.nickname : '';
-                           arr[index].creator = e.creator ? e.creator.nickname : '';
-                           arr[index].modifier = e.modifier ? e.modifier.nickname : '';
                            arr[index].status = e.status ? '正常' : '已关闭';
-                           arr[index].createTime = e.createTime.split(' ')[0];
-                           this.tableData = JSON.parse(JSON.stringify(arr))
+
+                           switch(arr[index].category){
+                             case 30:
+                                 arr[index].category = '钓场分类';
+                                 break;
+                             case 31:
+                                 arr[index].category = '视频分类';
+                                 break;
+                             case 32:
+                                 arr[index].category = '圈子分类';
+                                 break;
+                             case 33:
+                                 arr[index].category = '钓法';
+                                 break;
+                             case 34:
+                                 arr[index].category = '饵料';
+                                 break;
+                             case 35:
+                                 arr[index].category = '鱼类';
+                                 break;
+                           }
+
+                          this.tableData = arr
                         });
                          this.$nextTick(function(){
                             this.checked();//每次更新了数据，触发这个函数即可。
@@ -279,6 +299,16 @@ export default {
         search(){
             this.getCircleList();
         },
+
+      //获取类别  /sysCategory/queryParent
+      getParen(){
+            this.$get('/sysCategory/queryParent',{}).then(res=>{
+                if(res.code == 0){
+                  this.parentList = res.data;
+                    console.log( this.parentList)
+                }
+            })
+      },
         //新增
         add(){
             this.dialogVisible = true;
@@ -319,7 +349,7 @@ export default {
                 this.$message({
                     type: 'info',
                     message: '已取消删除'
-                });          
+                });
                 });
         },
         //修改
@@ -335,31 +365,7 @@ export default {
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
             let data = this.multipleSelection[0];
 
-            // 修改圈子数据回显
-            // this.form.circleName = data.circleName;
-            // this.form.number = this.rowIndex;
-            // this.form.status = data.status;
-            // this.form.sort = data.sort;
-            // this.form.codeName = data.codeName;
-            // this.form.commentCount = data.commentCount;
-            // this.form.kind = data.kind;
-            // this.form.viewCount = data.viewCount;
-            // this.form.province = data.provinceName;
-            // this.form.provinceName = data.cityName;
-            // this.form.memberCount = data.memberCount;
-            // this.form.areaName = data.areaName;
-            // this.form.countryName = data.countryName;
-            // this.form.longitude = data.longitude;
-            // this.form.latitude = data.latitude;
-            // this.form.creator = data.creator;
-            // this.form.createTime = data.createTime;
-            // this.form.manager = data.manager;
-            // this.form.modifier = data.modifier;
-            // this.form.modifyTime = data.modifyTime;
-            // this.form.location = data.location;
-            // // this.form.intro = data.intro;
-            // this.form.remark = data.remark;
-            
+
             this.form = data;
             this.form.number = this.rowIndex;
             // this.form.status = data.status == '正常' ? 1 : 0;
@@ -372,14 +378,12 @@ export default {
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
-             console.log(this.multipleSelection)
 
             //虽然是多选框，但是产品设计每次只能选着一个
             if(this.multipleSelection.length == 1){
                 for(var i= 0; i<this.tableData.length; i++){
                     if(this.tableData[i].cId == this.multipleSelection[0].cId){
                         this.rowIndex = (this.currentPage - 1)*this.pageSize + i + 1;
-                        console.log(this.rowIndex)
                         break;
                     }
                 }
@@ -408,7 +412,7 @@ export default {
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
             this.$refs.multipleTable.toggleRowSelection(this.tableData[0],true);
-            
+
             if(this.currentPage == 1){
                 this.rowIndex = 1;
             }
@@ -424,7 +428,7 @@ export default {
             var h = date.getHours();
             var minute = date.getMinutes();
             minute = minute < 10 ? ('0' + minute) : minute;
-            var second = date.getSeconds();	
+            var second = date.getSeconds();
             second = second < 10 ? ('0' + second) : second;
             return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
         }else{
@@ -443,51 +447,9 @@ export default {
      index(index){
          return (this.currentPage - 1)*this.pageSize + index + 1;
      },
-     //获取圈子分类列表
-     getCodeName(){
-         this.$post('sysCategory/queryByCategory',{
-             category: 32
-         }).then(res=>{
-             this.codeNameList = res.data;
-         })
-     },
-     //获取省份列表
-     getProvince(){
-         this.$get('province/queryAll',{}).then(res=>{
-             this.provinceList = res.data
-         })
-     },
-     //获取市列表
-     chooseProvince(){
-        //根据省份id获取城市
-         this.$get('city/queryByProvinceId',{
-             provinceId: this.form.provinceName
-         }).then(res=>{
-             this.cityList = res.data
-         })
-     },
-     //获取县级列表
-     chooseArea(){
-         //根据城市id获取县级
-         this.$get('area/queryByCityId',{
-             cityId: this.form.cityName
-         }).then(res=>{
-             this.areaList = res.data;
-         })
-     },
-     //获取乡镇
-     chooseCountry(){
-         //根据县级id获取乡镇列表
-         this.$get('country/queryByCityId',{
-             areaId: this.form.areaName
-         }).then(res=>{
-             this.countryList = res.data;
-         })
-     },
 
      /**start上传图片 */
       handleAvatarSuccess(res, file) {
-          console.log(file)
         this.imageUrl = URL.createObjectURL(file.raw);
       },
       beforeAvatarUpload(file) {
@@ -510,18 +472,8 @@ export default {
         this.getCircleList()
         //表格第一行默认选中
         this.checked();
-    },
-    watch: {
-        dialogVisible: function(val){
-            let that = this;
-            if(val){
-                console.log(1)
-                //调用圈子分类函数
-                that.getCodeName();
-                //获取省份
-                that.getProvince();
-            }
-        }
+        //获取所有类别
+        this.getParen();
     }
 }
 </script>
