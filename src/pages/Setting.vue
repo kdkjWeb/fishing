@@ -9,7 +9,7 @@
                             <el-input clearable v-model="formInline.name" placeholder="名称"></el-input>
                         </el-form-item>
                         <el-form-item label="状态：">
-                                <el-select v-model="formInline.status" placeholder="状态">
+                                <el-select v-model="formInline.status" placeholder="状态" clearable>
                                 <el-option label="正常" value="1"></el-option>
                                 <el-option label="已关闭" value="0"></el-option>
                                 </el-select>
@@ -32,7 +32,7 @@
         <!-- start表格 -->
         <div class="table">
             <el-table
-                height="300"
+                :max-height="height"
                 ref="multipleTable"
                 :data="tableData"
                 tooltip-effect="dark"
@@ -64,9 +64,9 @@
                 >
                 </el-table-column>
             </el-table>
-            <!-- <div class="aboutNum">
-                <div>合计： <span>{{total}}</span></div>
-            </div> -->
+            <div class="aboutNum">
+              <div> <span>合计：{{total}}</span></div>
+            </div>
         </div>
         <!-- end表格 -->
 
@@ -76,7 +76,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="currentPage"
-            :page-sizes="[10, 50, 80, 100]"
+            :page-sizes="[30, 50, 80, 100]"
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -92,13 +92,13 @@
         top="8vh"
         width="600px">
         <div class="dialog_content">
-            <el-form label-position="right" label-width="100px" :model="form" size="mini">
+            <el-form label-position="right" label-width="100px" :model="form" size="mini"  ref="form" :rules="rules"  >
 
                 <el-row>
                   <el-col :span="12">
                     <el-row>
                       <el-col :span="24">
-                        <el-form-item label="类别：">
+                        <el-form-item label="类别：" prop="category">
                             <el-select v-model="form.category" placeholder="类别">
                                 <el-option
                                   v-for="data,index in parentList"
@@ -109,8 +109,8 @@
                         </el-form-item>
                       </el-col>
                       <el-col :span="24">
-                        <el-form-item label="名称：">
-                            <el-input v-model="form.number"></el-input>
+                        <el-form-item label="名称：" prop="codeName">
+                            <el-input v-model="form.codeName"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="24">
@@ -123,12 +123,12 @@
                       </el-col>
                        <el-col :span="24">
                         <el-form-item label="排序：">
-                            <el-input v-model="form.number"></el-input>
+                            <el-input v-model="form.sort"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="24">
                         <el-form-item label="打赏：">
-                            <el-input v-model="form.number"></el-input>
+                            <el-input v-model="form.rewards"></el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
@@ -138,7 +138,7 @@
                         <el-upload
                         class="avatar-uploader"
                         accept="image/jpeg,image/png"
-                        action="http://192.168.20.158:8080/common/uploadOssPic"
+                        :action="`${this.$store.state.baseUrl}common/uploadOssPic`"
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
                         name="picture"
@@ -152,13 +152,14 @@
                 <el-row>
                   <el-col :span="12">
                       <el-form-item label="创建人：">
-                          <el-input v-model="form.founder"></el-input>
+                          <el-input v-model="form.creator" disabled></el-input>
                       </el-form-item>
                   </el-col>
                   <el-col :span="12">
                       <el-form-item label="创建时间：">
                           <el-date-picker
-                              v-model="form.createTime"
+                              disabled
+                              v-model="form.creatTime"
                               type="datetime"
                               placeholder="选择日期时间"
                               default-time="12:00:00">
@@ -169,12 +170,13 @@
                    <el-row>
                     <el-col :span="12">
                         <el-form-item label="修改人：">
-                            <el-input v-model="form.modifier"></el-input>
+                            <el-input v-model="form.modifier" disabled></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
                         <el-form-item label="修改时间：">
                             <el-date-picker
+                                disabled
                                 v-model="form.modifyTime"
                                 type="datetime"
                                 placeholder="选择日期时间"
@@ -187,8 +189,8 @@
 
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button size="mini" @click="cancel">取 消</el-button>
-            <el-button size="mini" type="primary" @click="comfirm">确 定</el-button>
+            <el-button size="mini" @click="cancel('form')">取 消</el-button>
+            <el-button size="mini" type="primary" @click="comfirm('form')">确 定</el-button>
         </span>
         </el-dialog>
         <!-- end弹出框 -->
@@ -199,11 +201,12 @@
 export default {
     data(){
         return{
+            height:0,
             dialogVisible: false,   //弹出框是否显示
             imageUrl: '',  //上传图片显示
             multipleSelection: [],   //存放勾选的数据
             currentPage: 1, //当前第几页
-            pageSize: 10,   //每页显示多少条
+            pageSize: 30,   //每页显示多少条
             total: null,   //总共多少条数据
             circleId: '',
             rowIndex: '',   //每一行的编号
@@ -214,20 +217,16 @@ export default {
             },
             parentList:[],  //所有类别
             form:{
-                number: '',   //编号
-                status: '',   //状态
-              category: '',   //类型
-                level: '',  //等级
-                name: '',   //名称
-                userGroup: '',  //用户分组
-                upScore: '',  //升级分值
-                moneyReward: '',  //娱乐币奖励
-                userIcon: '',  //用户图标
-                founder: '',  //创建人
-                createTime: '',   //创建时间
-                modifier: '',   //修改人
-                modifyTime: '',   //修改时间
-                userType: '',   //用户类型
+              category:'',  //类别
+              codeName:'',  //名称
+              status:'',    //状态
+              sort:'',      //排序
+              rewards:'',   //打赏渔乐币
+              creator:'',   //创建人
+              creatTime:'',  //创建时间
+              modifier:'',   //修改人
+              modifyTime:'',  //修改时间
+              icon:''   //图标
             },
             tableList: [   //表格的头部配置
                 {prop: 'category', label: '类别parent_id', width: '120', align: ''},
@@ -239,31 +238,34 @@ export default {
                 {prop: 'creatTime', label: '创建时间', width: '', align: 'right'},
                 {prop: 'modifier', label: '修改人', width: '100', align: ''},
                 {prop: 'modifyTime', label: '修改时间', width: '', align: 'right'},
-
             ],
+          rules:{
+            codeName:[
+              { required: true, message: '名称不能为空，请输入', trigger: 'blur' }
+            ],
+            category:[
+              { required: true, message: '类别不能为空，请选择', trigger: 'change' }
+            ]
+          },
             tableData: []//表格的数据
         }
     },
     methods:{
         //获取圈子列表
         getCircleList(pageSize,pageNum){
-            this.$get('/sysCategory/queryAll',{
-                pageSize: pageSize ? pageSize : 10,
+            this.$post('/sysCategory/queryByRecord',{
+                pageSize: pageSize ? pageSize : 30,
                 pageNum: pageNum ? pageNum : 1,
-                circleName: this.formInline.name ? this.formInline.name : null,
-                location: this.formInline.address ? this.formInline.address : null,
-                createTime: this.formInline.date ? this.dataTransform(this.formInline.date[0]) : null,
-                createTime2: this.formInline.date ? this.dataTransform(this.formInline.date[1]) : null,
+              codeName: this.formInline.name ? this.formInline.name : null,
+                status: this.formInline.status ? this.formInline.status : null,
             }).then(res=>{
                 if(res.code == 0){
-                  console.log(res)
-                    if(res.data.length <= 0){   //如果后面没返回数据就直接赋值
-                        this.tableData = res.data;
+                    if(res.data.list.length <= 0){   //如果后面没返回数据就直接赋值
+                        this.tableData = res.data.list;
                     }else{   //返回数据之后进行数据处理
-                        let arr = res.data;
+                        let arr = res.data.list;
                         arr.forEach((e,index) => {
                            arr[index].status = e.status ? '正常' : '已关闭';
-
                            switch(arr[index].category){
                              case 30:
                                  arr[index].category = '钓场分类';
@@ -291,7 +293,7 @@ export default {
                             this.checked();//每次更新了数据，触发这个函数即可。
                         })
                     }
-                    this.total = res.data.total;
+                  this.total = res.data.total;
                 }
             })
         },
@@ -302,19 +304,85 @@ export default {
 
       //获取类别  /sysCategory/queryParent
       getParen(){
-            this.$get('/sysCategory/queryParent',{}).then(res=>{
+            this.$post('/sysCategory/queryParent',{}).then(res=>{
                 if(res.code == 0){
-                  this.parentList = res.data;
-                    console.log( this.parentList)
+                  this.parentList = res.data.list;
                 }
             })
       },
         //新增
         add(){
+
+            this.imageUrl = '';
             this.dialogVisible = true;
+          this.form = {};
+            this.circleId = ''
         },
+
+      //弹出框的确认按钮
+      comfirm(form){
+        let url = this.circleId ? '/sysCategory/updateSysCategory' : '/sysCategory/addSysCategory'   //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+        let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
+
+        if(this.circleId){
+          switch(this.form.category){
+            case '钓场分类':
+              this.form.category = 30;
+              break;
+            case '视频分类':
+              this.form.category = 31;
+              break;
+            case '圈子分类':
+              this.form.category = 31;
+              break;
+            case '钓法':
+              this.form.category = 33;
+              break;
+            case '饵料':
+              this.form.category = 34;
+              break;
+            case '鱼类':
+              this.form.category = 35;
+              break;
+          }
+
+          console.log(this.form.category)
+        }
+        if(!this.form.icon){
+          this.$message({
+            message: '请上传等级的图标！',
+            type: 'warning'
+          });
+          return;
+        }
+
+        this.$refs[form].validate((valid)=>{
+          if(valid){
+            this.$post(url,{
+              cId: this.circleId ? this.circleId : null,
+              category:this.form.category,  //类别
+              codeName:this.form.codeName,  //名称
+              status:status,    //状态
+              sort:this.form.sort,      //排序
+              rewards:this.form.rewards,   //打赏渔乐币
+              icon:this.form.icon   //图标
+            }).then(res=>{
+              if(res.code == 0){
+                this.dialogVisible = false;
+                this.$message({
+                  message:res.msg,
+                  type: 'success',
+                });
+                this.getCircleList();
+              }
+
+            })
+          }
+        })
+      },
+
         //删除
-        deleted(){
+         deleted(){
             if(this.multipleSelection.length != 1){
                 this.$message({
                 message: '请选择一条需要删除的数据！',
@@ -329,8 +397,8 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
                 }).then(() => {
-                    this.$get('circle/deleteCircle',{
-                        circleId: id
+                    this.$get('/sysCategory/deleteSysCategory',{
+                      sysCategoryId: id
                     }).then(res=>{
                         if(res.code == 0){
                             this.tableData.forEach((val,index)=>{
@@ -352,6 +420,7 @@ export default {
                 });
                 });
         },
+
         //修改
         edit(){
             if(this.multipleSelection.length != 1){
@@ -365,20 +434,30 @@ export default {
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
             let data = this.multipleSelection[0];
 
-
-            this.form = data;
-            this.form.number = this.rowIndex;
-            // this.form.status = data.status == '正常' ? 1 : 0;
-
+            console.log(data)
+            if(this.circleId){
+              this.form = data;
+              this.imageUrl = this.form.iconUrl;
+            }
         },
+
         //导出
         exportd(){
 
         },
+
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
-
+           // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
+            if(this.multipleSelection.length == 2){
+              for(var i= 0; i<this.tableData.length; i++){
+                if(this.tableData[i].cId == this.multipleSelection[0].cId){
+                  this.$refs.multipleTable.toggleRowSelection(this.tableData[i],false);
+                  break;
+                }
+              }
+                }
             //虽然是多选框，但是产品设计每次只能选着一个
             if(this.multipleSelection.length == 1){
                 for(var i= 0; i<this.tableData.length; i++){
@@ -390,24 +469,25 @@ export default {
             }
 
         },
+
         //每页显示多少条数据
         handleSizeChange(val) {
             this.pageSize = val;
             this.getCircleList(val,this.currentPage);
         },
+
         //当前第几页
         handleCurrentChange(val) {
             this.currentPage = val;
             this.getCircleList(this.pageSize,val)
         },
-        //弹出框的确认按钮
-        comfirm(){
-            console.log(this.form.kind)
-        },
+
         //弹出框的取消按钮
-        cancel(){
+        cancel(form){
+          this.$refs[form].resetFields();
             this.dialogVisible = false;
         },
+
         //默认选中第一行
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
@@ -417,64 +497,75 @@ export default {
                 this.rowIndex = 1;
             }
       },
-      //标准时间格式转换
-      dataTransform(date){
-        if(date){
-            var y = date.getFullYear();
-            var m = date.getMonth() + 1;
-            m = m < 10 ? ('0' + m) : m;
-            var d = date.getDate();
-            d = d < 10 ? ('0' + d) : d;
-            var h = date.getHours();
-            var minute = date.getMinutes();
-            minute = minute < 10 ? ('0' + minute) : minute;
-            var second = date.getSeconds();
-            second = second < 10 ? ('0' + second) : second;
-            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
-        }else{
-            return null;
-        }
-      },
-      //设置表头的背景颜色
-      getRowClass({ row, column, rowIndex, columnIndex }) {
-            if (rowIndex == 0) {
-                return 'background:#EFEFEF'
-            } else {
-                return ''
-            }
+
+        //标准时间格式转换
+        dataTransform(date){
+          if(date){
+              var y = date.getFullYear();
+              var m = date.getMonth() + 1;
+              m = m < 10 ? ('0' + m) : m;
+              var d = date.getDate();
+              d = d < 10 ? ('0' + d) : d;
+              var h = date.getHours();
+              var minute = date.getMinutes();
+              minute = minute < 10 ? ('0' + minute) : minute;
+              var second = date.getSeconds();
+              second = second < 10 ? ('0' + second) : second;
+              return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+          }else{
+              return null;
+          }
         },
-     //设置表格索引序号
-     index(index){
-         return (this.currentPage - 1)*this.pageSize + index + 1;
-     },
 
-     /**start上传图片 */
-      handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
-      },
-      beforeAvatarUpload(file) {
-        const isJPG = file.type === 'image/jpeg';
-        const isPNG = file.type === 'image/png';
-        const isLt2M = file.size / 1024 / 1024 < 2;
+        //设置表头的背景颜色
+        getRowClass({ row, column, rowIndex, columnIndex }) {
+              if (rowIndex == 0) {
+                  return 'background:#EFEFEF'
+              } else {
+                  return ''
+              }
+          },
 
-        if (!isJPG && !isPNG) {
-          this.$message.error('请选择我们支持的格式!');
+       //设置表格索引序号
+       index(index){
+           return (this.currentPage - 1)*this.pageSize + index + 1;
+       },
+
+       /**start上传图片 */
+        handleAvatarSuccess(res, file) {
+         this.imageUrl = URL.createObjectURL(file.raw);
+         this.form.icon = file.response.data;
+        },
+        beforeAvatarUpload(file) {
+          const isJPG = file.type === 'image/jpeg';
+          const isPNG = file.type === 'image/png';
+          const isLt2M = file.size / 1024 / 1024 < 2;
+
+          if (!isJPG && !isPNG) {
+            this.$message.error('请选择我们支持的格式!');
+          }
+          if (!isLt2M) {
+            this.$message.error('上传图片大小不能超过 2MB!');
+          }
+          return (isJPG || isPNG) && isLt2M;
         }
-        if (!isLt2M) {
-          this.$message.error('上传图片大小不能超过 2MB!');
-        }
-        return (isJPG || isPNG) && isLt2M;
-      }
-     /**end上传图片 */
+       /**end上传图片 */
     },
     mounted(){
+      window.addEventListener('resize', ()=>{
+        this.height = window.innerHeight - 240;
+      })
         //获取圈子列表
         this.getCircleList()
         //表格第一行默认选中
         this.checked();
         //获取所有类别
         this.getParen();
-    }
+    },
+  created() {
+    //页面加载时获取屏幕高度
+    this.height = window.innerHeight - 240;
+  },
 }
 </script>
 
@@ -501,27 +592,27 @@ export default {
 
 
 .setting .avatar-uploader .el-upload {
-border: 1px dashed #d9d9d9;
-border-radius: 6px;
-cursor: pointer;
-position: relative;
-overflow: hidden;
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 .setting .avatar-uploader .el-upload:hover {
-border-color: #409EFF;
+  border-color: #409EFF;
 }
 .setting .avatar-uploader-icon {
-font-size: 28px;
-color: #8c939d;
-width: 150px;
-height: 150px;
-line-height: 150px;
-text-align: center;
+  font-size: 28px;
+  color: #8c939d;
+  width: 150px;
+  height: 150px;
+  line-height: 150px;
+  text-align: center;
 }
 .setting .avatar {
-width: 150px;
-height: 150px;
-display: block;
+  width: 150px;
+  height: 150px;
+  display: block;
 }
 
 .setting .el-upload__tip{
@@ -540,12 +631,22 @@ display: block;
     width: 100%;
 }
 .page{
-    text-align: right;
-    margin: 10px 0 40px;
+  text-align: right;
+  margin: 20px 0 0px;
 }
 .setting span.uploadTitle{
     float: left;
     line-height: 100px;
     padding-right: 15px;
+}
+.aboutNum{
+  width: 785px;
+  height: 30px;
+  line-height: 30px;
+  margin-top: 10px;
+  box-sizing: border-box;
+}
+.aboutNum span:nth-child(1){
+  padding-left: 10px;
 }
 </style>

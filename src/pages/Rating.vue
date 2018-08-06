@@ -309,6 +309,7 @@ export default {
     methods:{
         //获取所有等级列表
         getRatingList(pageSize,pageNum){
+
             this.$post('levelRule/queryByRecord',{
                 pageSize: pageSize? pageSize : 30,
                 pageNum: pageNum ? pageNum : 1,
@@ -386,7 +387,6 @@ export default {
         }
 
         this.$refs[formName].validate((valid) => {
-
           let url = this.circleId ? '/levelRule/updateLevelRule' : '/levelRule/addLevelRule'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
           let type  = (this.form.type == '钓友' || this.form.type == '1')? 1:(this.form.type == '农家乐' || this.form.type == '2')? 2 : 3
@@ -487,8 +487,6 @@ export default {
 
           if(this.circleId){
             this.form = data;
-            console.log(this.form)
-//            this.form.icon =  this.form.iconUrl
             this.form.userType = this.form.type;
             this.form.number = this.rowIndex;
             this.imageUrl = this.form.iconUrl;
@@ -619,8 +617,6 @@ export default {
   created() {
     //页面加载时获取屏幕高度
     this.height = window.innerHeight - 240;
-
-
   },
 }
 </script>
