@@ -488,18 +488,18 @@ export default {
                 }
             }
 
-
+        this.circleId = ''
             
         },
         //删除
         deleted(){
-            if(this.multipleSelection.length != 1){
+            /*if(this.multipleSelection.length != 1){
                 this.$message({
                 message: '请选择一条需要删除的数据！',
                 type: 'warning'
                 });
                 return;
-            }
+            }*/
             let id = this.multipleSelection[0].cId;   //保存选中的数据的cId
 
                this.$confirm('此操作将永久删除该圈子, 是否继续?', '提示', {
@@ -519,6 +519,10 @@ export default {
                                         type: 'success',
                                         message: '删除成功!'
                                     });
+                                    //表格第一行默认选中
+                                    this.$nextTick(()=>{
+                                         this.checked();
+                                    })
                                 }
                             })
                         }
@@ -532,13 +536,13 @@ export default {
         },
         //修改
         edit(){
-            if(this.multipleSelection.length != 1){
+            /*if(this.multipleSelection.length != 1){
                 this.$message({
                 message: '请选择一条需要修改的数据！',
                 type: 'warning'
                 });
                 return;
-            }
+            }*/
             this.dialogVisible = true;
             this.disabled = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
@@ -725,7 +729,7 @@ export default {
          this.$post('sysCategory/queryByCategory',{
              category: 32
          }).then(res=>{
-             this.codeNameList = res.data;
+             this.codeNameList = res.data.list;
          })
      },
      //获取省份列表

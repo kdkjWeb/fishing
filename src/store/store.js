@@ -4,7 +4,7 @@ Vue.use(Vuex);
 
 const state = {
     token: '',
-    baseUrl: 'http://192.168.20.158:8080/'
+    baseUrl: 'http://192.168.20.3:8080/'
 };
 export default new Vuex.Store({
     state: state,
