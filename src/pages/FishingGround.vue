@@ -100,13 +100,13 @@
         top="8vh"
         width="870px">
         <div class="dialog_content">
-            <el-form label-position="right" label-width="100px" :model="form" size="mini">
+            <el-form label-position="right" :rules="rules" ref="form" label-width="100px" :model="form" size="mini">
 
                 <el-row>
                     <el-col :span="16">
                         <el-row>
                         <el-col :span="24">
-                            <el-form-item label="钓场名称：">
+                            <el-form-item label="钓场名称：" prop="name" ref="name">
                                 <el-input v-model="form.name"></el-input>
                             </el-form-item>
                         </el-col>
@@ -114,7 +114,7 @@
                         <el-row>
                         <el-col :span="12">
                             <el-form-item label="编号：">
-                                <el-input v-model="form.number"></el-input>
+                                <el-input v-model="form.number" :disabled="disabled"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -144,12 +144,12 @@
                         </el-row>
                         <el-row>
                        <el-col :span="12">
-                            <el-form-item label="钓场电话：">
+                            <el-form-item label="钓场电话：" prop="phone" ref="phone">
                                 <el-input v-model.number="form.phone"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                             <el-form-item label="圈子分类：">
+                             <el-form-item label="圈子分类：" prop="type" ref="type">
                                 <el-select v-model="form.type" placeholder="圈子分类">
                                 <el-option :label="item.codeName" :value="item.cId" v-for="item in codeNameList" :key="item.cId"></el-option>
                                 </el-select>
@@ -202,7 +202,7 @@
                             </el-form-item>
                       </el-col> -->
                       <el-col :span="24">
-                           <el-form-item label="有什么鱼：">
+                           <el-form-item label="有什么鱼：" prop="fishType" ref="fishType">
                                 <el-select v-model="form.fishType" multiple  placeholder="有什么鱼">
                                 <el-option v-for="item in fishList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
                                 </el-select>
@@ -212,11 +212,11 @@
                     <el-row>
                       <el-col :span="8">
                          <el-form-item label="帖子数：">
-                            <el-input v-model="form.topicNum"></el-input>
+                            <el-input v-model="form.topicNum" :disabled="disabled"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="16">
-                           <el-form-item label="允许钓法：">
+                           <el-form-item label="允许钓法："  prop="fishingType" ref="fishingType">
                                 <el-select v-model="form.fishingType" multiple  placeholder="允许钓法">
                                 <el-option v-for="item in fishMethodList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
                                 </el-select>
@@ -226,7 +226,7 @@
                     <el-row>
                       <el-col :span="8">
                            <el-form-item label="成员数：">
-                                <el-input v-model="form.attentionNum"></el-input>
+                                <el-input v-model="form.attentionNum" :disabled="disabled"></el-input>
                             </el-form-item>
                       </el-col>
                       <el-col :span="16">
@@ -244,7 +244,7 @@
                             </el-form-item>
                       </el-col>
                       <el-col :span="16">
-                           <el-form-item label="允许饵料：">
+                           <el-form-item label="允许饵料：" prop="baits" ref="baits">
                                 <el-select v-model="form.baits" multiple placeholder="允许饵料">
                                 <el-option v-for="item in baitList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
                                 </el-select>
@@ -299,12 +299,13 @@
                     <el-row>
                       <el-col :span="8">
                           <el-form-item label="创建人：">
-                            <el-input v-model="form.cUser"></el-input>
+                            <el-input v-model="form.cUser" :disabled="disabled"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
                           <el-form-item label="创建时间：">
                             <el-date-picker
+                                :disabled="disabled"
                                 v-model="form.cdate"
                                 type="datetime"
                                 placeholder="选择日期时间"
@@ -325,13 +326,14 @@
                     <el-row>
                       <el-col :span="8">
                           <el-form-item label="修改人：">
-                            <el-input v-model="form.modifier"></el-input>
+                            <el-input v-model="form.updater" :disabled="disabled"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
                            <el-form-item label="修改时间：">
                                 <el-date-picker
-                                    v-model="form.modifyTime"
+                                   :disabled="disabled"
+                                    v-model="form.updateDate"
                                     type="datetime"
                                     placeholder="选择日期时间"
                                     default-time="12:00:00">
@@ -346,7 +348,7 @@
                           </el-form-item>
                       </el-col>
                       <el-col :span="24">
-                          <el-form-item label="地址：">
+                          <el-form-item label="地址：" prop="location" ref="location">
                                       <el-input v-model="form.location"></el-input>
                           </el-form-item>
                       </el-col>
@@ -366,7 +368,7 @@
         </div>
         <span slot="footer" class="dialog-footer">
             <el-button size="mini" @click="cancel">取 消</el-button>
-            <el-button size="mini" type="primary" @click="comfirm">确 定</el-button>
+            <el-button size="mini" type="primary" @click="comfirm('form')">确 定</el-button>
         </span>
         </el-dialog>
         <!-- end弹出框 -->
@@ -377,6 +379,7 @@
 export default {
     data(){
         return{
+            disabled: false,   //是否禁止填写
             myHeaders: {     //上传图片携带token
                     token: ''
                 },
@@ -387,7 +390,7 @@ export default {
             currentPage: 1, //当前第几页
             pageSize: 10,   //每页显示多少条
             total: null,   //总共多少条数据
-            circleId: '',
+            circleId: '',    //修改，删除保存的id
             rowIndex: '',   //每一行的编号
             codeNameList: [],   //圈子分类
             fishList: [],   //鱼类分类
@@ -428,6 +431,10 @@ export default {
                 attentionNum: '',   //成员数
                 cUser: '',   //创建人
                 cdate: '',   //创建时间
+                remark: '',   //备注
+                updater: '',   //修改人
+                updateDate: '',   //修改时间
+
                 fishType: [],   //有什么鱼
                 fishingType: [],  //允许钓法
                 forbiddenFishing: [],   //禁止钓法
@@ -435,23 +442,47 @@ export default {
                 baits: []   //允许饵料
             },
             tableList: [   //表格的头部配置
-                {prop: 'name', label: '钓场', width: '120', align: ''},
-                {prop: 'status', label: '审核状态', width: '120', align: ''},
+                {prop: 'name', label: '钓场', width: '90', align: ''},
+                {prop: 'status', label: '审核状态', width: '90', align: ''},
                 {prop: 'type', label: '类型', width: '80', align: ''},
                 {prop: 'type', label: '钓场分类', width: '80', align: ''},
-                {prop: 'sort', label: '排序号', width: '80', align: 'right'},
-                {prop: 'commentCount', label: '评论', width: '80', align: 'right'},
-                {prop: 'viewCount', label: '阅读', width: '80', align: 'right'},
-                {prop: 'memberCount', label: '成员', width: '100', align: 'right'},
+                {prop: 'position', label: '排序号', width: '70', align: 'right'},
+                {prop: 'topicNum', label: '贴子', width: '80', align: 'right'},
+                {prop: 'attentionNum', label: '成员', width: '80', align: 'right'},
                 {prop: 'location', label: '详细地址', width: '', align: ''},
                 {prop: 'manager', label: '管理人', width: '100', align: ''},
                 {prop: 'cUser', label: '创建人', width: '100', align: ''},
                 {prop: 'cdate', label: '创建时间', width: '120', align: 'right'},
-                {prop: 'modifier', label: '修改人', width: '100', align: ''},
-                {prop: 'modifyTime', label: '修改时间', width: '150', align: 'right'},
+                {prop: 'updater', label: '修改人', width: '100', align: ''},
+                {prop: 'updateDate', label: '修改时间', width: '160', align: 'right'},
                 {prop: 'remark', label: '备注', width: '', align: ''}
             ],
-            tableData: []//表格的数据
+            tableData: [],   //表格的数据
+            rules: {
+                name: [
+                      { required: true, message: '请输入钓场名称', trigger: 'blur' },
+                      { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+                ],
+                phone: [
+                    { required: true, message: '电话号码不能为空', trigger: 'blur'},
+                    { type: 'number', message: '电话号码必须为数字值', trigger: 'blur'}
+                ],
+                fishType:[
+                    { required: true, message: '有什么鱼不能为空', trigger: 'change'},
+                ],
+                fishingType: [
+                    { required: true, message: '允许钓法不能为空', trigger: 'change'},
+                ],
+                baits: [
+                    { required: true, message: '允许饵料不能为空', trigger: 'change'},
+                ],
+                location: [
+                    { required: true, message: '详细地址不能为空', trigger: 'blur' },
+                ],
+                type: [
+                    { required: true, message: '请选择圈子分类', trigger: 'change' }
+                ]
+            }
         }
     },
     methods:{
@@ -466,23 +497,11 @@ export default {
                 enddate: this.formInline.cdate ? `${this.dataTransform(this.formInline.cdate[1])} 23:59:59`: null,
             }).then(res=>{
                 if(res.code == 0){
-                  //  this.tableData = res.data.list;
-                    if(res.data.list.length <= 0){   //如果后面没返回数据就直接赋值
-                        this.tableData = res.data.list;
-                    }else{   //返回数据之后进行数据处理
-                        let arr = res.data.list;
-                        arr.forEach((e,index) => {
-                           arr[index].manager = e.manager ? e.manager.nickname : '';
-                           arr[index].creator = e.creator ? e.creator.nickname : '';
-                           arr[index].modifier = e.modifier ? e.modifier.nickname : '';
-                           arr[index].status = e.status ? '正常' : '已关闭';
-                        //    arr[index].createTime = e.createTime.split(' ')[0];
-                           this.tableData = JSON.parse(JSON.stringify(arr))
-                        });
-                         this.$nextTick(function(){
-                            this.checked();//每次更新了数据，触发这个函数即可。
-                        })
-                    }
+                    console.log(res)
+                     this.tableData = res.data.list;
+                     this.$nextTick(function(){
+                        this.checked();//每次更新了数据，触发这个函数即可。
+                    })
                     this.total = res.data.total;
                 }
             })
@@ -494,25 +513,65 @@ export default {
         //新增
         add(){
             this.dialogVisible = true;
+             //新增有些字段禁止填写
+            this.disabled = true;
+            
+
+                 //点击新增清空表单
+                for(var i in this.form){
+                if(i == 'status'){  //遇到默认项跳过，执行下面的循环
+                    continue;
+                }else if(this.form[i] != ''){
+                  
+                    this.$nextTick(() => {
+                            this.$refs['name'].resetField();
+                            this.$refs['phone'].resetField();
+                            this.$refs['type'].resetField();
+                            this.$refs['fishType'].resetField();
+                            this.$refs['fishingType'].resetField();
+                            this.$refs['baits'].resetField();
+                            this.$refs['location'].resetField();
+                            this.form = {};
+                            this.form.status = '1';
+                            this.form.fishType = [];
+                            this.form.fishingType = [];
+                            this.form.forbiddenFishing = [];
+                            this.form.forbiddenBaits = [];
+                            this.form.baits = [];
+
+
+ 
+
+                            // this.$refs['form'].resetFields();
+                            this.imageUrl = '';
+                        });
+
+                    
+                }
+                }
+
+        
+
+            this.circleId = '';
         },
         //删除
         deleted(){
-            if(this.multipleSelection.length != 1){
+            /*if(this.multipleSelection.length != 1){
                 this.$message({
                 message: '请选择一条需要删除的数据！',
                 type: 'warning'
                 });
                 return;
-            }
+            }*/
             let id = this.multipleSelection[0].cId;   //保存选中的数据的cId
 
-               this.$confirm('此操作将永久删除该圈子, 是否继续?', '提示', {
+               this.$confirm('此操作将永久删除该钓场, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
                 }).then(() => {
-                    this.$get('circle/deleteCircle',{
-                        circleId: id
+                    this.$get('fishplace/deleteFishPlace',{
+                        id: id
                     }).then(res=>{
                         if(res.code == 0){
                             this.tableData.forEach((val,index)=>{
@@ -523,6 +582,10 @@ export default {
                                         type: 'success',
                                         message: '删除成功!'
                                     });
+                                    //表格第一行默认选中
+                                    this.$nextTick(()=>{
+                                         this.checked();
+                                    })
                                 }
                             })
                         }
@@ -536,23 +599,75 @@ export default {
         },
         //修改
         edit(){
-            if(this.multipleSelection.length != 1){
+            /*if(this.multipleSelection.length != 1){
                 this.$message({
                 message: '请选择一条需要修改的数据！',
                 type: 'warning'
                 });
                 return;
-            }
+            }*/
             this.dialogVisible = true;
+            this.disabled = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-            let data = this.multipleSelection[0];
+    
+             if(this.circleId){
+                let data = this.multipleSelection[0];
+                console.log(data.fishType)
+                data.phone = parseInt(data.phone);
 
-          
-            
-            this.form = data;
-            this.form.number = this.rowIndex;
-            // this.form.status = data.status == '正常' ? 1 : 0;
 
+                if(this.isArray(data.fishType)){
+                    data.fishType = data.fishType
+                }else{
+                     data.fishType = data.fishType.split(',');
+                }
+                
+                if(this.isArray( data.fishingType)){
+                     data.fishingType =  data.fishingType;
+                }else{
+                     data.fishingType = data.fishingType.split(',');
+                }
+
+                if(this.isArray(data.baits)){
+                    data.baits = data.baits
+                }else{
+                     data.baits = data.baits.split(',');
+                }
+
+                for(var i = 0; i< data.forbiddenFishing.length; i++){
+                    if( data.forbiddenFishing[0] == ''){
+                        data.forbiddenFishing = [];
+                        break;
+                    }else{
+                        if(this.isArray(data.forbiddenFishing)){
+                            data.forbiddenFishing = data.forbiddenFishing
+                        }else{
+                            data.forbiddenFishing = data.forbiddenFishing.split(',');
+                        }
+                    }
+                }
+                
+                for(var i = 0; i< data.forbiddenBaits.length; i++){
+                    if( data.forbiddenBaits[0] == ''){
+                        data.forbiddenBaits = [];
+                        break;
+                    }else{
+                        if(this.isArray(data.forbiddenBaits)){
+                            data.forbiddenBaits = data.forbiddenBaits
+                        }else{
+                            data.forbiddenBaits = data.forbiddenBaits.split(',');
+                        }
+                    }
+                }
+                this.form = data;
+                this.form.number = this.rowIndex;
+                this.imageUrl = this.form.iconUrl;
+            }
+
+        },
+        //判断是不是一个数组
+        isArray(o){
+            return Object.prototype.toString.call(o) == '[object Array]'
         },
         //导出
         exportd(){
@@ -594,8 +709,73 @@ export default {
             this.getGroundList(this.pageSize,val)
         },
         //弹出框的确认按钮
-        comfirm(){
-            console.log(this.form.kind)
+        comfirm(formName){
+            //必须上传图标
+            /*if(!this.form.icon){
+                this.$message({
+                message: '请上传钓场的图标！',
+                type: 'warning'
+                });
+
+                return;
+            }*/
+
+
+                 this.$refs[formName].validate((valid)=>{
+                if(valid){
+                    let url = this.circleId ? 'fishplace/updateFishplace' : 'fishplace/addFishplace'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+                    // let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
+                    this.$post(url,{
+                        cId: this.circleId ? this.circleId : null,
+                        name: this.form.name,
+                        status: this.form.status,
+                        ispass: this.form.ispass,
+                        phone: this.form.phone,
+                        type: this.form.type,
+                        ownertype: this.form.ownertype,
+                        needPay: this.form.needPay,
+                        fishType: this.form.fishType.join(','),
+                        fishingType: this.form.fishingType.join(','),
+                        forbiddenFishing: this.form.forbiddenFishing.join(','),
+                        forbiddenBaits: this.form.forbiddenBaits.join(','),
+                        baits: this.form.baits.join(','),
+                        longitude: this.form.longitude,
+                        latitude: this.form.latitude,
+                        provinceId: this.form.provinceId,
+                        cityId: this.form.cityId,
+                        areaId: this.form.areaId,
+                        countryId: this.form.countryId,
+                        manager: this.form.manager,
+                        payDetails: this.form.payDetails,
+                        location: this.form.location,
+                        remark: this.form.remark,
+                        detailsRule: this.form.detailsRule,
+                        icon: this.form.icon
+                    }).then(res=>{
+                        if(res.code == 0){
+                            //隐藏dialog框
+                            this.dialogVisible = false;
+                            //提示添加成功
+                            this.$message({
+                            message: res.msg,
+                            type: 'success'
+                            });
+                             //重新获取圈子列表
+                            this.getGroundList();
+
+                           this.circleId = ''
+                        }else{
+                            this.$message({
+                            message: res.msg,
+                            type: 'warning'
+                            });
+                            this.circleId = ''
+                        }
+                    })
+                }else{
+                    return false;
+                }
+            })
         },
         //弹出框的取消按钮
         cancel(){
@@ -646,7 +826,7 @@ export default {
          this.$post('sysCategory/queryByCategory',{
              category: 32
          }).then(res=>{
-             this.codeNameList = res.data;
+             this.codeNameList = res.data.list;
          })
      },
      //获取鱼类分类
@@ -654,7 +834,7 @@ export default {
          this.$post('sysCategory/queryByCategory',{
              category: 35
          }).then(res=>{
-            this.fishList = res.data;
+            this.fishList = res.data.list;
          })
      },
      //获取有什么钓法
@@ -662,7 +842,7 @@ export default {
          this.$post('sysCategory/queryByCategory',{
              category: 33
          }).then(res=>{
-            this.fishMethodList = res.data;
+            this.fishMethodList = res.data.list;
          })
      },
      //获取有什么饵料
@@ -670,7 +850,7 @@ export default {
          this.$post('sysCategory/queryByCategory',{
              category: 34
          }).then(res=>{
-            this.baitList = res.data;
+            this.baitList = res.data.list;
          })
      },
      //获取省份列表
@@ -683,7 +863,7 @@ export default {
      chooseProvince(){
         //根据省份id获取城市
          this.$get('city/queryByProvinceId',{
-             provinceId: this.form.provinceName
+             provinceId: this.form.provinceId
          }).then(res=>{
              this.cityList = res.data
          })
@@ -692,7 +872,7 @@ export default {
      chooseArea(){
          //根据城市id获取县级
          this.$get('area/queryByCityId',{
-             cityId: this.form.cityName
+             cityId: this.form.cityId
          }).then(res=>{
              this.areaList = res.data;
          })
@@ -701,7 +881,7 @@ export default {
      chooseCountry(){
          //根据县级id获取乡镇列表
          this.$get('country/queryByCityId',{
-             areaId: this.form.areaName
+             areaId: this.form.areaId
          }).then(res=>{
              this.countryList = res.data;
          })
@@ -721,6 +901,8 @@ export default {
       handleAvatarSuccess(res, file) {
           console.log(file)
         this.imageUrl = URL.createObjectURL(file.raw);
+        this.form.icon = file.response.data;
+        console.log(this.form.icon)
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
