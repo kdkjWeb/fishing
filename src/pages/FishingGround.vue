@@ -826,7 +826,7 @@ export default {
          this.$post('sysCategory/queryByCategory',{
              category: 32
          }).then(res=>{
-             this.codeNameList = res.data.list;
+             this.codeNameList = res.data;
          })
      },
      //获取鱼类分类
@@ -834,7 +834,7 @@ export default {
          this.$post('sysCategory/queryByCategory',{
              category: 35
          }).then(res=>{
-            this.fishList = res.data.list;
+            this.fishList = res.data;
          })
      },
      //获取有什么钓法
@@ -842,7 +842,7 @@ export default {
          this.$post('sysCategory/queryByCategory',{
              category: 33
          }).then(res=>{
-            this.fishMethodList = res.data.list;
+            this.fishMethodList = res.data;
          })
      },
      //获取有什么饵料
@@ -850,7 +850,7 @@ export default {
          this.$post('sysCategory/queryByCategory',{
              category: 34
          }).then(res=>{
-            this.baitList = res.data.list;
+            this.baitList = res.data;
          })
      },
      //获取省份列表

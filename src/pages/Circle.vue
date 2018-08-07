@@ -729,7 +729,7 @@ export default {
          this.$post('sysCategory/queryByCategory',{
              category: 32
          }).then(res=>{
-             this.codeNameList = res.data.list;
+             this.codeNameList = res.data;
          })
      },
      //获取省份列表
