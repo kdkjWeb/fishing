@@ -139,16 +139,16 @@
                         <el-col :span="12">
                             <el-form-item label="状态：">
                                 <el-select v-model="form.status" placeholder="状态">
-                                <el-option label="官方" value="官方"></el-option>
-                                <el-option label="个人" value="个人"></el-option>
+                                <el-option label="正常" value="1"></el-option>
+                                <el-option label="禁用" value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="性别：">
                                 <el-select v-model="form.gender" placeholder="性别">
-                                <el-option label="男" value="男"></el-option>
-                                <el-option label="女" value="女"></el-option>
+                                <el-option label="男" value="1"></el-option>
+                                <el-option label="女" value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
@@ -159,11 +159,13 @@
                         <el-upload
                         class="avatar-uploader"
                         accept="image/jpeg,image/png"
-                        action="http://192.168.20.158:8080/common/uploadOssPic"
+                        :action="`${this.$store.state.baseUrl}common/uploadOssPic`"
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
                         name="picture"
-                        :before-upload="beforeAvatarUpload">
+                        auto-upload
+                        :before-upload="beforeAvatarUpload"
+                        :on-error="upError">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         <!-- <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div> -->
@@ -186,14 +188,14 @@
                       </el-col>
                       <el-col :span="8">
                           <el-form-item label="密码：" prop="password">
-                            <el-input  type="password" v-model="form.password"></el-input>
+                            <el-input  type="password" v-model="form.password" :disabled="disabled1"></el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
                      <el-row>
                       <el-col :span="8">
                           <el-form-item label="手机号：" prop="phone">
-                            <el-input v-model="form.phone"></el-input>
+                            <el-input v-model="form.phone" :disabled="disabled1"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
@@ -221,8 +223,8 @@
                       <el-col :span="8">
                           <el-form-item label="微信显示：">
                                 <el-select v-model="form.showWechat" placeholder="微信显示">
-                                <el-option label="官方" value="官方"></el-option>
-                                <el-option label="个人" value="个人"></el-option>
+                                <el-option label="是" value="1"></el-option>
+                                <el-option label="否" value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -231,16 +233,16 @@
                       <el-col :span="8">
                            <el-form-item label="电话显示：">
                                 <el-select v-model="form.showPhone" placeholder="电话显示">
-                                <el-option label="官方" value="官方"></el-option>
-                                <el-option label="个人" value="个人"></el-option>
+                                <el-option label="是" value="1"></el-option>
+                                <el-option label="否" value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
                       <el-col :span="8">
                          <el-form-item label="QQ显示：">
                                 <el-select v-model="form.showQq" placeholder="QQ显示">
-                                <el-option label="官方" value="官方"></el-option>
-                                <el-option label="个人" value="个人"></el-option>
+                                <el-option label="是" value="1"></el-option>
+                                <el-option label="否" value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -256,9 +258,12 @@
                     <el-row>
                       <el-col :span="8">
                           <el-form-item label="用户类别：">
-                                <el-select v-model="form.role" placeholder="用户类别">
-                                <el-option label="官方" value="官方"></el-option>
-                                <el-option label="个人" value="个人"></el-option>
+                                <el-select v-model="form.role" placeholder="用户类别"  :disabled="disabled2">
+                                <el-option label="超级管理" value="0"></el-option>
+                                <el-option label="管理" value="1"></el-option>
+                                <el-option label="钓友" value="2"></el-option>
+                                <el-option label="农家乐" value="3"></el-option>
+                                <el-option label="农家乐" value="4"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -342,6 +347,7 @@
                         <el-col :span="8">
                           <el-form-item label="最后登录：">
                              <el-date-picker
+                              :disabled="disabled"
                                 v-model="form.lastLoginTime"
                                 type="datetime"
                                 placeholder="选择日期时间"
@@ -381,6 +387,7 @@
                         <el-col :span="8">
                            <el-form-item label="注册时间：">
                             <el-date-picker
+                             :disabled="disabled"
                                 v-model="form.cDate"
                                 type="datetime"
                                 placeholder="选择日期时间"
@@ -390,12 +397,13 @@
                       </el-col>
                       <el-col :span="8">
                           <el-form-item label="修改人：">
-                            <el-input v-model="form.updatePeople"></el-input>
+                            <el-input v-model="form.updatePeople" :disabled="disabled"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
                           <el-form-item label="修改时间：">
                             <el-date-picker
+                                :disabled="disabled"
                                 v-model="form.updateTime"
                                 type="datetime"
                                 placeholder="选择日期时间"
@@ -430,8 +438,8 @@
 
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button size="mini" @click="cancel">取 消</el-button>
-            <el-button size="mini" type="primary" @click="comfirm">确 定</el-button>
+            <el-button size="mini" @click="cancel('form')">取 消</el-button>
+            <el-button size="mini" type="primary" @click="comfirm('form')">确 定</el-button>
         </span>
         </el-dialog>
         <!-- end弹出框 -->
@@ -443,6 +451,8 @@ export default {
     data(){
         return{
             disabled: false,   //是否禁止填写
+            disabled1: false,   //是否禁止填写
+            disabled2: true,   //是否禁止填写
             dialogVisible: false,   //弹出框是否显示
             imageUrl: '',  //上传图片显示
             multipleSelection: [],   //存放勾选的数据
@@ -466,10 +476,11 @@ export default {
             },
             form:{
                 number: '',   //编号
+                icon: '',   //图标
                 forumId: '',   //论坛id
                 nickname: '',    //昵称
                 motorcade: '',   //车贴编号
-                status: '',   //状态
+                status: '1',   //状态
                 gender: '',    //性别
                 rank: '',   //头衔
                 password: '',    //密码
@@ -524,15 +535,15 @@ export default {
             tableData: [],    //表格的数据
             rules: {
                 nickname: [
-                      { required: true, message: '请输入圈子名称', trigger: 'blur' },
+                      { required: true, message: '请输入昵称', trigger: 'blur' },
                       { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
                 ],
                 password: [
                     { required: true, message: '请输入密码', trigger: 'change' }
                 ],
                 phone: [
-                    { required: true, message: '手机号不能为空，请输入', trigger: 'blur' },
-                    {pattern:  /^1[3|4|5|6|8|7|9][0-9]\d{4,8}$/, message: '请输入正确的手机号', trigger: 'blur' }
+                    { required: true, message: '请输入手机号', trigger: 'blur' },
+                    {pattern:  /^1[3|4|5|6|8|7|9][0-9]\d{8}$/, message: '请输入正确的手机号', trigger: 'blur' }
                 ],
             }
         }
@@ -563,6 +574,7 @@ export default {
         add(){
             this.dialogVisible = true;
             this.circleId = '';
+            this.disabled = true;
         },
         //删除
         deleted(){
@@ -613,13 +625,17 @@ export default {
                 return;
             }
             this.dialogVisible = true;
+            this.disabled = true;
+            this.disabled1 = true;
+            this.disabled2 = false;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
             let data = this.multipleSelection[0];
 
-          
+          console.log(data)
             
             this.form = data;
             this.form.password = '******'
+            this.form.status = data.status + "";
             this.form.number = this.rowIndex;
         },
         //导出
@@ -629,8 +645,7 @@ export default {
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
-             console.log(this.multipleSelection)
-
+        
             //虽然是多选框，但是产品设计每次只能选着一个
             if(this.multipleSelection.length == 1){
                 for(var i= 0; i<this.tableData.length; i++){
@@ -654,8 +669,71 @@ export default {
             this.getUserList(this.pageSize,val)
         },
         //弹出框的确认按钮
-        comfirm(){
-            console.log(this.form.kind)
+        comfirm(formName){            
+            this.$refs[formName].validate((valid)=>{
+                if(valid){
+                    let url = this.circleId ? 'user/updateUserByManager' : 'user/addManager'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+                    // let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
+                    this.$post(url,{
+                        cId: this.circleId ? this.circleId : null,
+                        forumId: this.form.forumId,
+                        nickname: this.form.nickname,
+                        motorcade: this.form.motorcade,
+                        status:  this.form.status,  //因为修改回显如果状态不改变，那么传给后台的会是’正常‘汉字，需要进行转换成1，否则就是正常的
+                        gender: this.form.gender,
+                        rank: this.form.rank,
+                        token: this.form.password,
+                        phone: this.form.phone,
+                        birthday: this.form.birthday,
+                        wechat: this.form.wechat,
+                        seatPhone: this.form.seatPhone,
+                        qq: this.form.qq,
+                        showWechat: this.form.showWechat,
+                        showPhone: this.form.showPhone,
+                        showQq: this.form.showQq,
+                        role: this.form.role,
+                        level: this.form.level,
+                        targetFish: this.form.targetFish.join(','),
+                        fishWay: this.form.fishWay.join(','),
+                        bait: this.form.bait.join(','),
+                        address: this.form.address,
+                        province: this.form.province,
+                        city: this.form.city,
+                        area: this.form.area,
+                        country: this.form.country,
+                        longitude: this.form.longitude,
+                        latitude: this.form.latitude,
+                        lastLoginTime: this.form.lastLoginTime,
+                        cDate: this.form.cDate,
+                        updatePeople: this.form.updatePeople,
+                        updateTime: this.form.updateTime,
+                        description: this.form.description,
+                        remark: this.form.remark,
+                    }).then(res=>{
+                        if(res.code == 0){
+                            //隐藏dialog框
+                            this.dialogVisible = false;
+                            //提示添加成功
+                            this.$message({
+                            message: res.msg,
+                            type: 'success'
+                            });
+                             //重新获取圈子列表
+                            this.getCircleList();
+
+                           this.circleId = ''
+                        }else{
+                            this.$message({
+                            message: res.msg,
+                            type: 'warning'
+                            });
+                            this.circleId = ''
+                        }
+                    })
+                }else{
+                    return false;
+                }
+            })
         },
         //弹出框的取消按钮
         cancel(){
@@ -764,6 +842,7 @@ export default {
       handleAvatarSuccess(res, file) {
           console.log(file)
         this.imageUrl = URL.createObjectURL(file.raw);
+        this.form.icon = file.response.data;
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
@@ -776,7 +855,33 @@ export default {
         if (!isLt2M) {
           this.$message.error('上传图片大小不能超过 2MB!');
         }
-        return (isJPG || isPNG) && isLt2M;
+
+        /*const isSize = new Promise(function(resolve, reject) {
+            let _URL = window.URL || window.webkitURL;
+            let img = new Image();
+            img.onload = function() {
+                let volid = img.width / img.height;
+                volid == 1 ? resolve() : reject();
+            }
+            img.src = _URL.createObjectURL(file);
+        }).then(() => {
+            return file;
+        }, () => {
+            this.$message.error('上传图标长宽必须相等');
+            return Promise.reject();
+        });
+
+
+        return (isJPG || isPNG) && isLt2M && isSize;*/
+
+
+        return (isJPG || isPNG) && isLt2M
+      },
+      //上传图片失败
+      upError(err){
+        if(err){
+             this.$message.error('上传图标失败');
+        }
       }
      /**end上传图片 */
     },
