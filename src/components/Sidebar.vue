@@ -44,15 +44,15 @@ export default {
                     title: '帖子'
                 },{
                     icon: 'icon-xiaoxi',
-                    index: '1',
+                    index: 'CommentReply',
                     title: '评论回复'
                 },{
                     icon: 'icon-dianzan3',
-                    index: '2',
+                    index: 'GiveUp',
                     title: '点赞'
                 },{
                     icon: 'icon-dashang',
-                    index: '3',
+                    index: 'Reward',
                     title: '打赏'
                 },{
                     icon: 'icon-shipin2',
@@ -88,49 +88,49 @@ export default {
                     title: '查询',
                     subs: [
                         {
-                            index: '5',
+                            index: 'MineCollection',
                             title: '我的收藏'
                         },{
-                            index: '6',
+                            index: 'JoinCircle',
                             title: '加入圈子'
                         },{
-                            index: '7',
+                            index: 'Visitorsrecord',
                             title: '访客记录'
                         },{
-                            index: '8',
+                            index: 'Minefollow',
                             title: '我的关注'
                         },{
-                            index: '9',
+                            index: 'BeenFishGround',
                             title: '去过钓场'
                         },{
-                            index: '10',
+                            index: 'SignIn',
                             title: '签到'
                         },{
-                            index: '11',
+                            index: 'SignUser',
                             title: '签到用户'
                         },{
-                            index: '12',
+                            index: 'Wallet',
                             title: '钱包'
                         },{
-                            index: '13',
+                            index: 'GoldNotes',
                             title: '金币记录'
                         },{
-                            index: '14',
+                            index: 'IntegralRecord',
                             title: '积分记录'
                         },{
-                            index: '15',
+                            index: 'IntegralRule',
                             title: '积分规则'
                         },{
-                            index: '16',
+                            index: 'PostCircle',
                             title: '帖子圈子'
                         },{
-                            index: '17',
+                            index: 'WaterLevel',
                             title: '水位'
                         },{
-                            index: '18',
+                            index: 'WaterSituation',
                             title: '水情'
                         },{
-                            index: '19',
+                            index: 'RechargeRecord',
                             title: '充值记录'
                         }
                     ]

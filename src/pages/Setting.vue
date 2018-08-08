@@ -230,14 +230,14 @@ export default {
             },
             tableList: [   //表格的头部配置
                 {prop: 'category', label: '类别parent_id', width: '120', align: ''},
-                {prop: 'codeName', label: '名称', width: '120', align: ''},
+                {prop: 'codeName', label: '名称', width: '100', align: ''},
                 {prop: 'status', label: '状态', width: '80', align: ''},
                 {prop: 'sort', label: '排序', width: '80', align: ''},
-                {prop: 'rewards', label: '打赏渔乐', width: '120', align: ''},
+                {prop: 'rewards', label: '打赏渔乐', width: '', align: ''},
                 {prop: 'creator', label: '创建人', width: '100', align: ''},
-                {prop: 'creatTime', label: '创建时间', width: '', align: 'right'},
+                {prop: 'creatTime', label: '创建时间', width: '160', align: 'right'},
                 {prop: 'modifier', label: '修改人', width: '100', align: ''},
-                {prop: 'modifyTime', label: '修改时间', width: '', align: 'right'},
+                {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right'},
             ],
           rules:{
             codeName:[
@@ -577,7 +577,7 @@ export default {
 .topSearch .el-date-editor{
     width: 220px;
 }
-.topSearch .el-table{
+.setting .table .el-table .el-table__body-wrapper{
     overflow-y: scroll;
 }
 .setting .el-dialog .el-dialog__header .el-dialog__title{

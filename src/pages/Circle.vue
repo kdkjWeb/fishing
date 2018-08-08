@@ -161,8 +161,7 @@
                         <span class="uploadTitle">上传图标：</span>
                         <el-upload
                         class="avatar-uploader"
-                        accept="image/jpeg,image/png"
-          
+                        accept="image/jpeg,image/png"    
                         :action="`${this.$store.state.baseUrl}common/uploadOssPic`"
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
@@ -880,7 +879,7 @@ export default {
 .topSearch .el-date-editor{
     width: 220px;
 }
-.topSearch .el-table{
+.circle .table .el-table .el-table__body-wrapper{
     overflow-y: scroll;
 }
 .circle .el-dialog .el-dialog__header .el-dialog__title{

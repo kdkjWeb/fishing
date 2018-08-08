@@ -5,11 +5,17 @@
             <el-row>
                 <el-col :span="14">
                     <el-form :inline="true" :model="formInline" class="demo-form-inline" size="mini">
-                        <el-form-item label="圈子：">
-                            <el-input clearable v-model="formInline.name" placeholder="圈子"></el-input>
+                        <el-form-item label="昵称：">
+                            <el-input clearable v-model="formInline.name" placeholder="昵称"></el-input>
                         </el-form-item>
-                        <el-form-item label="详细地址：">
-                            <el-input clearable v-model="formInline.address" placeholder="详细地址"></el-input>
+                        <el-form-item label="手机号：">
+                            <el-input clearable v-model="formInline.address" placeholder="手机号"></el-input>
+                        </el-form-item>
+                         <el-form-item label="状态：">
+                            <el-select v-model="form.kind" placeholder="状态">
+                            <el-option label="官方" value="官方"></el-option>
+                            <el-option label="个人" value="个人"></el-option>
+                            </el-select>
                         </el-form-item>
                         <el-form-item label="创建时间：">
                             <el-date-picker
@@ -100,7 +106,7 @@
         top="8vh"
         width="870px">
         <div class="dialog_content">
-            <el-form label-position="right" label-width="100px" :model="form" size="mini">
+            <el-form label-position="right" label-width="100px" :model="form" ref="form" :rules="rules"  size="mini">
 
                 <el-row>
                     <el-col :span="16">
@@ -108,41 +114,41 @@
                         <el-row>
                         <el-col :span="12">
                             <el-form-item label="编号：">
-                                <el-input v-model="form.number"></el-input>
+                                <el-input v-model="form.number" :disabled="disabled"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="论坛ID：">
-                                <el-input v-model="form.number"></el-input>
+                                <el-input v-model="form.forumId"></el-input>
                             </el-form-item>
                         </el-col>
                         </el-row>
                         <el-row>
                        <el-col :span="12">
-                            <el-form-item label="昵称：">
-                                <el-input v-model="form.sort"></el-input>
+                            <el-form-item label="昵称：" prop="nickname">
+                                <el-input v-model="form.nickname"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                              <el-form-item label="车贴编号：">
-                                <el-input v-model="form.sort"></el-input>
+                                <el-input v-model="form.motorcade"></el-input>
                             </el-form-item>
                         </el-col>
                         </el-row>
                         <el-row>
                         <el-col :span="12">
                             <el-form-item label="状态：">
-                                <el-select v-model="form.kind" placeholder="状态">
-                                <el-option label="官方" value="官方"></el-option>
-                                <el-option label="个人" value="个人"></el-option>
+                                <el-select v-model="form.status" placeholder="状态">
+                                <el-option label="正常" value="1"></el-option>
+                                <el-option label="禁用" value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="性别：">
-                                <el-select v-model="form.kind" placeholder="性别">
-                                <el-option label="男" value="男"></el-option>
-                                <el-option label="女" value="女"></el-option>
+                                <el-select v-model="form.gender" placeholder="性别">
+                                <el-option label="男" value="1"></el-option>
+                                <el-option label="女" value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
@@ -153,11 +159,13 @@
                         <el-upload
                         class="avatar-uploader"
                         accept="image/jpeg,image/png"
-                        action="http://192.168.20.158:8080/common/uploadOssPic"
+                        :action="`${this.$store.state.baseUrl}common/uploadOssPic`"
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
                         name="picture"
-                        :before-upload="beforeAvatarUpload">
+                        auto-upload
+                        :before-upload="beforeAvatarUpload"
+                        :on-error="upError">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         <!-- <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div> -->
@@ -168,152 +176,158 @@
                    
 
                     <el-row>
-                      <el-col :span="8">
-                          <el-form-item label="创建人：">
+                      <!-- <el-col :span="8">
+                          <el-form-item label="级别：">
                             <el-input v-model="form.creator"></el-input>
+                        </el-form-item>
+                      </el-col> -->
+                      <el-col :span="8">
+                          <el-form-item label="头衔：">
+                            <el-input v-model="form.rank"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                          <el-form-item label="创建人：">
-                            <el-input v-model="form.creator"></el-input>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="8">
-                          <el-form-item label="管理人：">
-                            <el-input v-model="form.manager"></el-input>
+                          <el-form-item label="密码：" prop="password">
+                            <el-input  type="password" v-model="form.password" :disabled="disabled1"></el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
                      <el-row>
                       <el-col :span="8">
-                          <el-form-item label="创建人：">
-                            <el-input v-model="form.creator"></el-input>
+                          <el-form-item label="手机号：" prop="phone">
+                            <el-input v-model="form.phone" :disabled="disabled1"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                          <el-form-item label="创建人：">
-                            <el-input v-model="form.creator"></el-input>
+                          <el-form-item label="生日：">
+                            <el-input v-model="form.birthday"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                          <el-form-item label="管理人：">
-                            <el-input v-model="form.manager"></el-input>
+                          <el-form-item label="微信：">
+                            <el-input v-model="form.wechat"></el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
                      <el-row>
                       <el-col :span="8">
-                          <el-form-item label="创建人：">
-                            <el-input v-model="form.creator"></el-input>
+                          <el-form-item label="电话：">
+                            <el-input v-model="form.seatPhone"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                          <el-form-item label="创建人：">
-                            <el-input v-model="form.creator"></el-input>
+                          <el-form-item label="QQ：">
+                            <el-input v-model="form.qq"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                          <el-form-item label="类型：">
-                                <el-select v-model="form.kind" placeholder="类型">
-                                <el-option label="官方" value="官方"></el-option>
-                                <el-option label="个人" value="个人"></el-option>
+                          <el-form-item label="微信显示：">
+                                <el-select v-model="form.showWechat" placeholder="微信显示">
+                                <el-option label="是" value="1"></el-option>
+                                <el-option label="否" value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
                     </el-row>
                      <el-row>
                       <el-col :span="8">
-                          <el-form-item label="创建人：">
-                            <el-input v-model="form.creator"></el-input>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="8">
-                         <el-form-item label="类型：">
-                                <el-select v-model="form.kind" placeholder="类型">
-                                <el-option label="官方" value="官方"></el-option>
-                                <el-option label="个人" value="个人"></el-option>
+                           <el-form-item label="电话显示：">
+                                <el-select v-model="form.showPhone" placeholder="电话显示">
+                                <el-option label="是" value="1"></el-option>
+                                <el-option label="否" value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                          <el-form-item label="类型：">
-                                <el-select v-model="form.kind" placeholder="类型">
+                         <el-form-item label="QQ显示：">
+                                <el-select v-model="form.showQq" placeholder="QQ显示">
+                                <el-option label="是" value="1"></el-option>
+                                <el-option label="否" value="0"></el-option>
+                                </el-select>
+                            </el-form-item>
+                      </el-col>
+                      <!-- <el-col :span="8">
+                          <el-form-item label="认证方式：">
+                                <el-select v-model="form.kind" placeholder="认证方式">
                                 <el-option label="官方" value="官方"></el-option>
                                 <el-option label="个人" value="个人"></el-option>
                                 </el-select>
                             </el-form-item>
-                      </el-col>
+                      </el-col> -->
                     </el-row>
                     <el-row>
                       <el-col :span="8">
-                          <el-form-item label="修改人：">
-                            <el-input v-model="form.modifier"></el-input>
-                        </el-form-item>
+                          <el-form-item label="用户类别：">
+                                <el-select v-model="form.role" placeholder="用户类别"  :disabled="disabled2">
+                                <el-option label="超级管理" value="0"></el-option>
+                                <el-option label="管理" value="1"></el-option>
+                                <el-option label="钓友" value="2"></el-option>
+                                <el-option label="农家乐" value="3"></el-option>
+                                <el-option label="农家乐" value="4"></el-option>
+                                </el-select>
+                            </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                           <el-form-item label="修改人：">
-                            <el-input v-model="form.modifier"></el-input>
+                           <el-form-item label="用户组：">
+                            <el-input v-model="form.level"></el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
                      <el-row>
                       <el-col :span="8">
-                          <el-form-item label="类型：">
-                                <el-select v-model="form.kind" placeholder="类型">
-                                <el-option label="官方" value="官方"></el-option>
-                                <el-option label="个人" value="个人"></el-option>
+                          <el-form-item label="对象鱼：">
+                               <el-select v-model="form.targetFish" multiple  placeholder="对象鱼">
+                                <el-option v-for="item in fishList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                         <el-form-item label="类型：">
-                                <el-select v-model="form.kind" placeholder="类型">
-                                <el-option label="官方" value="官方"></el-option>
-                                <el-option label="个人" value="个人"></el-option>
+                         <el-form-item label="钓法：">
+                                <el-select v-model="form.fishWay" multiple placeholder="钓法">
+                                <el-option v-for="item in fishMethodList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                          <el-form-item label="类型：">
-                                <el-select v-model="form.kind" placeholder="类型">
-                                <el-option label="官方" value="官方"></el-option>
-                                <el-option label="个人" value="个人"></el-option>
+                          <el-form-item label="饵料：">
+                                <el-select v-model="form.bait" multiple placeholder="饵料">
+                                <el-option v-for="item in baitList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
                     </el-row>
                     <el-row>
                       <el-col :span="24">
-                             <el-form-item label="修改人：">
-                            <el-input v-model="form.modifier"></el-input>
+                             <el-form-item label="地址：">
+                            <el-input v-model="form.address"></el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
                       <el-row>
                       <el-col :span="6">
                            <el-form-item label="省：">
-                            <el-select v-model="form.provinceName" placeholder="请选择省份" @change="chooseProvince">
+                            <el-select v-model="form.province" placeholder="请选择省份" @change="chooseProvince">
                             <el-option :label="item.codeName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
                           <el-form-item label="市：">
-                            <el-select v-model="form.cityName" placeholder="请选择市"  @change="chooseArea">
+                            <el-select v-model="form.city" placeholder="请选择市"  @change="chooseArea">
                             <el-option :label="item.codeName" :value="item.cId" v-for="item in cityList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
                           <el-form-item label="县：">
-                            <el-select v-model="form.areaName" placeholder="圈子分类" @change="chooseCountry">
+                            <el-select v-model="form.area" placeholder="圈子分类" @change="chooseCountry">
                             <el-option :label="item.codeName" :value="item.cId" v-for="item in areaList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
                           <el-form-item label="乡：">
-                            <el-select v-model="form.countryName" placeholder="圈子分类">
+                            <el-select v-model="form.country" placeholder="圈子分类">
                                 <el-option :label="item.codeName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
@@ -321,26 +335,20 @@
                     </el-row>
                      <el-row>
                       <el-col :span="8">
-                          <el-form-item label="修改人：">
-                            <el-input v-model="form.modifier"></el-input>
+                          <el-form-item label="经度：">
+                            <el-input v-model="form.longitude"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                           <el-form-item label="修改人：">
-                            <el-input v-model="form.modifier"></el-input>
+                           <el-form-item label="纬度：">
+                            <el-input v-model="form.latitude"></el-input>
                         </el-form-item>
                       </el-col>
-                    </el-row>
-                     <el-row>
-                      <el-col :span="8">
-                          <el-form-item label="修改人：">
-                            <el-input v-model="form.modifier"></el-input>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="8">
-                           <el-form-item label="创建时间：">
-                            <el-date-picker
-                                v-model="form.createTime"
+                        <el-col :span="8">
+                          <el-form-item label="最后登录：">
+                             <el-date-picker
+                              :disabled="disabled"
+                                v-model="form.lastLoginTime"
                                 type="datetime"
                                 placeholder="选择日期时间"
                                 default-time="12:00:00">
@@ -348,15 +356,15 @@
                         </el-form-item>
                       </el-col>
                     </el-row>
-                        <el-row>
+                     <!-- <el-row>
                       <el-col :span="8">
                           <el-form-item label="创建人：">
-                            <el-input v-model="form.creator"></el-input>
+                            <el-input v-model="form.modifier"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                          <el-form-item label="创建时间：">
-                            <el-date-picker
+                          <el-form-item label="最后登录：">
+                             <el-date-picker
                                 v-model="form.createTime"
                                 type="datetime"
                                 placeholder="选择日期时间"
@@ -365,15 +373,59 @@
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                          <el-form-item label="管理人：">
-                            <el-input v-model="form.manager"></el-input>
+                           <el-form-item label="注册时间：">
+                            <el-date-picker
+                                v-model="form.createTime"
+                                type="datetime"
+                                placeholder="选择日期时间"
+                                default-time="12:00:00">
+                            </el-date-picker>
                         </el-form-item>
                       </el-col>
+                    </el-row> -->
+                    <el-row>
+                        <el-col :span="8">
+                           <el-form-item label="注册时间：">
+                            <el-date-picker
+                             :disabled="disabled"
+                                v-model="form.cDate"
+                                type="datetime"
+                                placeholder="选择日期时间"
+                                default-time="12:00:00">
+                            </el-date-picker>
+                        </el-form-item>
+                      </el-col>
+                      <el-col :span="8">
+                          <el-form-item label="修改人：">
+                            <el-input v-model="form.updatePeople" :disabled="disabled"></el-input>
+                        </el-form-item>
+                      </el-col>
+                      <el-col :span="8">
+                          <el-form-item label="修改时间：">
+                            <el-date-picker
+                                :disabled="disabled"
+                                v-model="form.updateTime"
+                                type="datetime"
+                                placeholder="选择日期时间"
+                                default-time="12:00:00">
+                            </el-date-picker>
+                        </el-form-item>
+                      </el-col>
+                      <!-- <el-col :span="8">
+                          <el-form-item label="最后登录：">
+                             <el-date-picker
+                                v-model="form.createTime"
+                                type="datetime"
+                                placeholder="选择日期时间"
+                                default-time="12:00:00">
+                            </el-date-picker>
+                        </el-form-item>
+                      </el-col> -->
                     </el-row>
                     <el-row>
                       <el-col :span="24">
                           <el-form-item label="简介：">
-                                      <el-input type="textarea" v-model="form.intro"></el-input>
+                                      <el-input type="textarea" v-model="form.description"></el-input>
                           </el-form-item>
                       </el-col>
                       <el-col :span="24">
@@ -386,8 +438,8 @@
 
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button size="mini" @click="cancel">取 消</el-button>
-            <el-button size="mini" type="primary" @click="comfirm">确 定</el-button>
+            <el-button size="mini" @click="cancel('form')">取 消</el-button>
+            <el-button size="mini" type="primary" @click="comfirm('form')">确 定</el-button>
         </span>
         </el-dialog>
         <!-- end弹出框 -->
@@ -398,6 +450,9 @@
 export default {
     data(){
         return{
+            disabled: false,   //是否禁止填写
+            disabled1: false,   //是否禁止填写
+            disabled2: true,   //是否禁止填写
             dialogVisible: false,   //弹出框是否显示
             imageUrl: '',  //上传图片显示
             multipleSelection: [],   //存放勾选的数据
@@ -406,108 +461,120 @@ export default {
             total: null,   //总共多少条数据
             circleId: '',
             rowIndex: '',   //每一行的编号
-            codeNameList: [],   //圈子分类
+         
             provinceList: [],  //省份
             cityList: [],   //市
             areaList: [],    //县级
             countryList: [],   //乡镇
+            baitList: [],   //饵料列表
+            fishMethodList: [],   //有什么钓法
+            fishList: [],   //鱼类分类
             formInline: {   //圈子、详细地址、创建时间的表单
             name: '',
             address: '',
             date: ''
             },
             form:{
-                fishingGround: '',  //圈子
                 number: '',   //编号
+                icon: '',   //图标
+                forumId: '',   //论坛id
+                nickname: '',    //昵称
+                motorcade: '',   //车贴编号
                 status: '1',   //状态
-                sort: '',   //排序号
-                codeName: '',   //圈子分类
-                commentCount: '',  //评论数
-                kind: '',   //类型
-                viewCount: '',   //阅读数
-                provinceName: '',  //省份
-                cityName: '',   //市
-                memberCount: '',  //成员数
-                areaName: '',   //县
-                countryName: '',  //乡
-                longitude: '',  //经度
-                latitude: '',   //维度
-                creator: '',   //创建人
-                createTime: '',   //创建时间
-                manager: '',   //管理人
-                modifier: '',   //修改人
-                modifyTime: '',   //修改时间
-                location: '',   //地址
-                intro: '',   //简介
-                remark: '',    //备注
+                gender: '',    //性别
+                rank: '',   //头衔
+                password: '',    //密码
+                phone: '',    //手机号
+                birthday: '',    //生日
+                wechat: '',   //微信
+                seatPhone: '',   //电话
+                qq: '',   //qq
+                showWechat: '',   //微信显示
+                showPhone: '',   //电话显示
+                showQq: '',   //qq显示
+                role: '',   //用户类型
+                level: '',   //用户组
+                targetFish: '',   //对象鱼
+                fishWay: '',   //钓法
+                bait: '',   //饵料
+                address: '',   //地址
+                province: '',  //省份
+                city: '',   //市
+                area: '',   //县
+                country: '',  //乡
+                longitude: '',   //经度
+                latitude: '',   //纬度
+                lastLoginTime: '',   //最后登录
+                cDate: '',   //注册时间
+                updatePeople: '',   //修改人
+                updateTime: '',   //修改时间
+                description: '',   //简介
+                remark: '',  //备注
             },
             tableList: [   //表格的头部配置
-                {prop: 'forum', label: '论坛ID', width: '70', align: ''},
-                {prop: 'carNumber', label: '车贴编号', width: '80', align: ''},
-                {prop: 'phone', label: '手机号', width: '160', align: ''},
-                {prop: 'nickname', label: '昵称', width: '150', align: ''},
+                {prop: 'forumId', label: '论坛ID', width: '80', align: 'right'},
+                {prop: 'motorcade', label: '车贴编号', width: '80', align: 'right'},
+                {prop: 'phone', label: '手机号', width: '120', align: 'right'},
+                {prop: 'nickname', label: '昵称', width: '120', align: ''},
                 {prop: 'status', label: '状态', width: '80', align: ''},
-                {prop: 'level', label: '级别', width: '80', align: ''},
-                {prop: 'userType', label: '用户类别', width: '80', align: ''},
-                {prop: 'userGroup', label: '用户组（积分或自定义）', width: '180', align: ''},
+                // {prop: 'level', label: '级别', width: '80', align: ''},
+                {prop: 'role', label: '用户类别', width: '80', align: ''},
+                {prop: 'level', label: '用户组（积分或自定义）', width: '180', align: ''},
                 {prop: 'gender', label: '性别', width: '60', align: ''},
-                {prop: 'birthday', label: '生日', width: '120', align: ''},
-                {prop: 'phone1', label: '电话', width: '130', align: ''},
+                {prop: 'birthday', label: '生日', width: '120', align: 'right'},
+                {prop: 'seatPhone', label: '电话', width: '120', align: 'right'},
                 {prop: 'address', label: '住址', width: '130', align: ''},
                 {prop: 'remark', label: '备注', width: '150', align: ''},
-                {prop: 'registerTime', label: '注册时间', width: '', align: ''},
-                {prop: 'creator', label: '创建人', width: '80', align: ''},
-                {prop: 'createTime', label: '创建时间', width: '120', align: 'right'},
-                {prop: 'modifier', label: '修改人', width: '80', align: ''},
-                {prop: 'modifyTime', label: '修改时间', width: '150', align: 'right'},
-
-             
-                
+                {prop: 'cDate', label: '注册时间', width: '100', align: 'right'},
+                // {prop: 'creator', label: '创建人', width: '80', align: ''},
+                {prop: 'cDate', label: '创建时间', width: '100', align: 'right'},
+                {prop: 'updatePeople', label: '修改人', width: '80', align: ''},
+                {prop: 'updateTime', label: '修改时间', width: '100', align: 'right'},
                 
             ],
-            tableData: []//表格的数据
+            tableData: [],    //表格的数据
+            rules: {
+                nickname: [
+                      { required: true, message: '请输入昵称', trigger: 'blur' },
+                      { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+                ],
+                password: [
+                    { required: true, message: '请输入密码', trigger: 'change' }
+                ],
+                phone: [
+                    { required: true, message: '请输入手机号', trigger: 'blur' },
+                    {pattern:  /^1[3|4|5|6|8|7|9][0-9]\d{8}$/, message: '请输入正确的手机号', trigger: 'blur' }
+                ],
+            }
         }
     },
     methods:{
-        //获取圈子列表
-        getCircleList(pageSize,pageNum){
-            this.$post('circle/queryByRecord',{
+        //获取用户列表
+        getUserList(pageSize,pageNum){
+            this.$post('user/getUserList',{
                 pageSize: pageSize ? pageSize : 10,
                 pageNum: pageNum ? pageNum : 1,
-                circleName: this.formInline.name ? this.formInline.name : null,
-                location: this.formInline.address ? this.formInline.address : null,
-                createTime: this.formInline.date ? this.dataTransform(this.formInline.date[0]) : null,
-                createTime2: this.formInline.date ? this.dataTransform(this.formInline.date[1]) : null,
             }).then(res=>{
                 if(res.code == 0){
-                  //  this.tableData = res.data.list;
-                    if(res.data.list.length <= 0){   //如果后面没返回数据就直接赋值
-                        this.tableData = res.data.list;
-                    }else{   //返回数据之后进行数据处理
-                        let arr = res.data.list;
-                        arr.forEach((e,index) => {
-                           arr[index].manager = e.manager ? e.manager.nickname : '';
-                           arr[index].creator = e.creator ? e.creator.nickname : '';
-                           arr[index].modifier = e.modifier ? e.modifier.nickname : '';
-                           arr[index].status = e.status ? '正常' : '已关闭';
-                           arr[index].createTime = e.createTime.split(' ')[0];
-                           this.tableData = JSON.parse(JSON.stringify(arr))
-                        });
-                         this.$nextTick(function(){
+                    console.log(res)
+      
+                    this.tableData = res.data.list;
+                    this.total = res.data.total;
+                    this.$nextTick(function(){
                             this.checked();//每次更新了数据，触发这个函数即可。
                         })
-                    }
-                    this.total = res.data.total;
                 }
             })
         },
         //查询
         search(){
-            this.getCircleList();
+            this.getUserList();
         },
         //新增
         add(){
             this.dialogVisible = true;
+            this.circleId = '';
+            this.disabled = true;
         },
         //删除
         deleted(){
@@ -558,38 +625,18 @@ export default {
                 return;
             }
             this.dialogVisible = true;
+            this.disabled = true;
+            this.disabled1 = true;
+            this.disabled2 = false;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
             let data = this.multipleSelection[0];
 
-            // 修改圈子数据回显
-            // this.form.circleName = data.circleName;
-            // this.form.number = this.rowIndex;
-            // this.form.status = data.status;
-            // this.form.sort = data.sort;
-            // this.form.codeName = data.codeName;
-            // this.form.commentCount = data.commentCount;
-            // this.form.kind = data.kind;
-            // this.form.viewCount = data.viewCount;
-            // this.form.province = data.provinceName;
-            // this.form.provinceName = data.cityName;
-            // this.form.memberCount = data.memberCount;
-            // this.form.areaName = data.areaName;
-            // this.form.countryName = data.countryName;
-            // this.form.longitude = data.longitude;
-            // this.form.latitude = data.latitude;
-            // this.form.creator = data.creator;
-            // this.form.createTime = data.createTime;
-            // this.form.manager = data.manager;
-            // this.form.modifier = data.modifier;
-            // this.form.modifyTime = data.modifyTime;
-            // this.form.location = data.location;
-            // // this.form.intro = data.intro;
-            // this.form.remark = data.remark;
+          console.log(data)
             
             this.form = data;
+            this.form.password = '******'
+            this.form.status = data.status + "";
             this.form.number = this.rowIndex;
-            // this.form.status = data.status == '正常' ? 1 : 0;
-
         },
         //导出
         exportd(){
@@ -598,8 +645,7 @@ export default {
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
-             console.log(this.multipleSelection)
-
+        
             //虽然是多选框，但是产品设计每次只能选着一个
             if(this.multipleSelection.length == 1){
                 for(var i= 0; i<this.tableData.length; i++){
@@ -615,16 +661,79 @@ export default {
         //每页显示多少条数据
         handleSizeChange(val) {
             this.pageSize = val;
-            this.getCircleList(val,this.currentPage);
+            this.getUserList(val,this.currentPage);
         },
         //当前第几页
         handleCurrentChange(val) {
             this.currentPage = val;
-            this.getCircleList(this.pageSize,val)
+            this.getUserList(this.pageSize,val)
         },
         //弹出框的确认按钮
-        comfirm(){
-            console.log(this.form.kind)
+        comfirm(formName){            
+            this.$refs[formName].validate((valid)=>{
+                if(valid){
+                    let url = this.circleId ? 'user/updateUserByManager' : 'user/addManager'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+                    // let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
+                    this.$post(url,{
+                        cId: this.circleId ? this.circleId : null,
+                        forumId: this.form.forumId,
+                        nickname: this.form.nickname,
+                        motorcade: this.form.motorcade,
+                        status:  this.form.status,  //因为修改回显如果状态不改变，那么传给后台的会是’正常‘汉字，需要进行转换成1，否则就是正常的
+                        gender: this.form.gender,
+                        rank: this.form.rank,
+                        token: this.form.password,
+                        phone: this.form.phone,
+                        birthday: this.form.birthday,
+                        wechat: this.form.wechat,
+                        seatPhone: this.form.seatPhone,
+                        qq: this.form.qq,
+                        showWechat: this.form.showWechat,
+                        showPhone: this.form.showPhone,
+                        showQq: this.form.showQq,
+                        role: this.form.role,
+                        level: this.form.level,
+                        targetFish: this.form.targetFish.join(','),
+                        fishWay: this.form.fishWay.join(','),
+                        bait: this.form.bait.join(','),
+                        address: this.form.address,
+                        province: this.form.province,
+                        city: this.form.city,
+                        area: this.form.area,
+                        country: this.form.country,
+                        longitude: this.form.longitude,
+                        latitude: this.form.latitude,
+                        lastLoginTime: this.form.lastLoginTime,
+                        cDate: this.form.cDate,
+                        updatePeople: this.form.updatePeople,
+                        updateTime: this.form.updateTime,
+                        description: this.form.description,
+                        remark: this.form.remark,
+                    }).then(res=>{
+                        if(res.code == 0){
+                            //隐藏dialog框
+                            this.dialogVisible = false;
+                            //提示添加成功
+                            this.$message({
+                            message: res.msg,
+                            type: 'success'
+                            });
+                             //重新获取圈子列表
+                            this.getCircleList();
+
+                           this.circleId = ''
+                        }else{
+                            this.$message({
+                            message: res.msg,
+                            type: 'warning'
+                            });
+                            this.circleId = ''
+                        }
+                    })
+                }else{
+                    return false;
+                }
+            })
         },
         //弹出框的取消按钮
         cancel(){
@@ -669,14 +778,7 @@ export default {
      index(index){
          return (this.currentPage - 1)*this.pageSize + index + 1;
      },
-     //获取圈子分类列表
-     getCodeName(){
-         this.$post('sysCategory/queryByCategory',{
-             category: 32
-         }).then(res=>{
-             this.codeNameList = res.data;
-         })
-     },
+ 
      //获取省份列表
      getProvince(){
          this.$get('province/queryAll',{}).then(res=>{
@@ -710,11 +812,37 @@ export default {
              this.countryList = res.data;
          })
      },
+     //获取有什么钓法
+     getFishMethodList(){
+         this.$post('sysCategory/queryByCategory',{
+             category: 33
+         }).then(res=>{
+            this.fishMethodList = res.data;
+         })
+     },
+     //获取有什么饵料
+     getBaitList(){
+         this.$post('sysCategory/queryByCategory',{
+             category: 34
+         }).then(res=>{
+            this.baitList = res.data;
+         })
+     },
+       //获取鱼类分类
+     getFishList(){
+         this.$post('sysCategory/queryByCategory',{
+             category: 35
+         }).then(res=>{
+            this.fishList = res.data;
+         })
+     },
+
 
      /**start上传图片 */
       handleAvatarSuccess(res, file) {
           console.log(file)
         this.imageUrl = URL.createObjectURL(file.raw);
+        this.form.icon = file.response.data;
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
@@ -727,13 +855,39 @@ export default {
         if (!isLt2M) {
           this.$message.error('上传图片大小不能超过 2MB!');
         }
-        return (isJPG || isPNG) && isLt2M;
+
+        /*const isSize = new Promise(function(resolve, reject) {
+            let _URL = window.URL || window.webkitURL;
+            let img = new Image();
+            img.onload = function() {
+                let volid = img.width / img.height;
+                volid == 1 ? resolve() : reject();
+            }
+            img.src = _URL.createObjectURL(file);
+        }).then(() => {
+            return file;
+        }, () => {
+            this.$message.error('上传图标长宽必须相等');
+            return Promise.reject();
+        });
+
+
+        return (isJPG || isPNG) && isLt2M && isSize;*/
+
+
+        return (isJPG || isPNG) && isLt2M
+      },
+      //上传图片失败
+      upError(err){
+        if(err){
+             this.$message.error('上传图标失败');
+        }
       }
      /**end上传图片 */
     },
     mounted(){
-        //获取圈子列表
-        this.getCircleList()
+        //获取用户列表
+        this.getUserList()
         //表格第一行默认选中
         this.checked();
     },
@@ -741,11 +895,14 @@ export default {
         dialogVisible: function(val){
             let that = this;
             if(val){
-                console.log(1)
-                //调用圈子分类函数
-                that.getCodeName();
                 //获取省份
                 that.getProvince();
+                //获取有什么钓法
+                that.getFishMethodList();
+                //获取有什么饵料
+                that.getBaitList();
+                //获取鱼有什么分类
+                that.getFishList();
             }
         }
     }
@@ -760,7 +917,7 @@ export default {
 .topSearch .el-date-editor{
     width: 220px;
 }
-.topSearch .el-table{
+.user .table .el-table .el-table__body-wrapper{
     overflow-y: scroll;
 }
 .user .el-dialog .el-dialog__header .el-dialog__title{

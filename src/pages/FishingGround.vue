@@ -969,7 +969,7 @@ export default {
 .topSearch .el-date-editor{
     width: 220px;
 }
-.topSearch .el-table{
+.fishingGround .table .el-table .el-table__body-wrapper{
     overflow-y: scroll;
 }
 .fishingGround .el-dialog .el-dialog__header .el-dialog__title{
