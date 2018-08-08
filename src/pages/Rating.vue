@@ -629,7 +629,7 @@ export default {
 .rating .topSearch .el-date-editor{
     width: 220px;
 }
-.rating.topSearch .el-table{
+.rating .table .el-table .el-table__body-wrapper{
     overflow-y: scroll;
 }
 .rating .el-dialog .el-dialog__header .el-dialog__title{
