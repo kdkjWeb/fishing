@@ -9,10 +9,10 @@
                             <el-input clearable v-model="formInline.name" placeholder="名称"></el-input>
                         </el-form-item>
                         <el-form-item label="状态：">
-                                <el-select v-model="formInline.status" placeholder="状态" clearable>
-                                <el-option label="正常" value="1"></el-option>
-                                <el-option label="已关闭" value="0"></el-option>
-                                </el-select>
+                            <el-select v-model="formInline.status" placeholder="状态" clearable>
+                              <el-option label="正常" value="1"></el-option>
+                              <el-option label="已关闭" value="0"></el-option>
+                            </el-select>
                         </el-form-item>
                         </el-form>
                 </el-col>

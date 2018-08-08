@@ -16,7 +16,7 @@
             <div class="content">
                 <transition name="move" mode="out-in">
                     <router-view></router-view>
-                </transition>  
+                </transition>
             </div>
         </div>
     </div>
@@ -44,10 +44,10 @@ export default {
         })
 
 
-     
+
 
     },
-   
+
 }
 </script>
 
@@ -60,6 +60,7 @@ export default {
     left: 175px;
     transition: all .3s ease-in;
     overflow-y: auto;
+    /*background:pink;*/
 }
 .content_collapse{
     position: absolute;
