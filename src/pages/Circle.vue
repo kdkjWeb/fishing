@@ -161,13 +161,13 @@
                         <span class="uploadTitle">上传图标：</span>
                         <el-upload
                         class="avatar-uploader"
-                        accept="image/jpeg,image/png"    
+                        accept="image/jpeg,image/png"
                         :action="`${this.$store.state.baseUrl}common/uploadOssPic`"
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
                         name="picture"
                         :before-upload="beforeAvatarUpload"
-                        :headers="myHeaders"   
+                        :headers="myHeaders"
                         auto-upload
                         :on-error="upError">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
@@ -380,7 +380,7 @@ export default {
                 intro: '',   //简介
                 remark: '',    //备注
                 icon: ''   //图标
-   
+
             },
             tableList: [   //表格的头部配置
                 {prop: 'circleName', label: '圈子', width: '100', align: ''},
@@ -468,13 +468,13 @@ export default {
             //新增有些字段禁止填写
             this.disabled = true;
 
-  
+
             //点击新增清空表单
                 for(var i in this.form){
                 if(i == 'status'){  //遇到默认项跳过，执行下面的循环
                     continue;
                 }else if(this.form[i] != ''){
-                  
+
                     this.$nextTick(() => {
                             this.$refs['codeName'].resetField();
                             this.$refs['kind'].resetField();
@@ -483,12 +483,12 @@ export default {
                             this.imageUrl = '';
                         });
 
-                    
+
                 }
             }
 
         this.circleId = ''
-            
+
         },
         //删除
         deleted(){
@@ -530,7 +530,7 @@ export default {
                 this.$message({
                     type: 'info',
                     message: '已取消删除'
-                });          
+                });
                 });
         },
         //修改
@@ -545,7 +545,7 @@ export default {
             this.dialogVisible = true;
             this.disabled = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
- 
+
             if(this.circleId){
                 let data = this.multipleSelection[0];
                 this.form = data;
@@ -561,7 +561,7 @@ export default {
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
-             
+
 
             // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
             if(this.multipleSelection.length == 2){
@@ -598,7 +598,7 @@ export default {
         },
         //弹出框的确认按钮
         comfirm(formName){
-            
+
             if(!this.form.icon){
                 this.$message({
                 message: '请上传新圈子的图标！',
@@ -666,27 +666,15 @@ export default {
         },
 
 
-        //关闭dialog弹出框
-        closeDialog(done){
-              this.dialogVisible = false;
-              this.disabled = false;
-            //   this.$refs[formName].resetFields();
-            //   this.imageUrl = '';
-        　　/*this.$confirm('确认关闭？')
-        　　.then(_ => {
-        　　done();
-            location.reload();
-        })
-        .catch(_ => { });*/
-        },
 
 
-        
+
+
         //默认选中第一行
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
             this.$refs.multipleTable.toggleRowSelection(this.tableData[0],true);
-            
+
             if(this.currentPage == 1){
                 this.rowIndex = 1;
             }
@@ -702,7 +690,7 @@ export default {
             // var h = date.getHours();
             // var minute = date.getMinutes();
             // minute = minute < 10 ? ('0' + minute) : minute;
-            // var second = date.getSeconds();	
+            // var second = date.getSeconds();
             // second = second < 10 ? ('0' + second) : second;
             // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
 
@@ -840,16 +828,16 @@ export default {
         if(this.$store.state.token){
             this.myHeaders.token = this.$store.state.token
         }
-        
 
-       
+
+
 
         window.addEventListener('resize', ()=>{
              this.height = window.innerHeight - 240;
         })
 
 
-   
+
     },
     created(){
          this.height = window.innerHeight - 240;
