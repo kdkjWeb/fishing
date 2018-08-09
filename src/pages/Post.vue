@@ -6,17 +6,17 @@
         <el-row>
           <el-col :span="14">
             <el-form :inline="true" :model="formInline" class="demo-form-inline" size="mini">
-              <el-form-item label="标题：">
-                <el-input clearable placeholder="圈子"></el-input>
+              <el-form-item label="标题：" >
+                <el-input clearable placeholder="标题" v-model="formInline.cityName"></el-input>
               </el-form-item>
               <el-form-item label="作者：">
-                <el-input clearable  placeholder="详细地址"></el-input>
+                <el-input clearable  placeholder="作者" v-model="formInline.authorId"></el-input>
               </el-form-item>
-              <el-form-item label="备注：">
-                <el-input clearable  placeholder="详细地址"></el-input>
+              <el-form-item label="备注：" >
+                <el-input clearable  placeholder="备注" v-model="formInline.remark"></el-input>
               </el-form-item>
               <el-form-item label="状态：">
-                <el-select  placeholder="状态" clearable>
+                <el-select  placeholder="状态" clearable v-model="formInline.status">
                   <el-option label="正常" value="1"></el-option>
                   <el-option label="已关闭" value="0"></el-option>
                 </el-select>
@@ -84,7 +84,7 @@
             </el-table-column>
           </el-table>
           <div class="aboutNum">
-            <div> <span>合计：{{total}}</span></div>
+            <div> <span>合计：{{total}}</span><span>{{allNum.clickNum}}</span><span>{{allNum.collects}}</span><span>{{allNum.commentNum}}</span></div>
           </div>
         </div>
 
@@ -104,6 +104,216 @@
         <!-- end分页 -->
       </div>
       <!-- end表格 -->
+
+      <!-- start弹出框 -->
+      <el-dialog
+        title="圈子-圈子详情"
+        :visible.sync="dialogVisible"
+        top="8vh"
+        width="870px"
+        :before-close="closeDialog">
+        <div class="dialog_content">
+          <el-form label-position="right" ref="form" :rules="rules"  label-width="100px" :model="form" size="mini">
+
+            <el-row>
+              <el-col :span="16">
+                <el-row>
+                  <el-col :span="24">
+                    <el-form-item label="圈子：" prop="circleName">
+                      <el-input v-model="form.circleName"></el-input>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="编号：" prop="number">
+                      <el-input v-model="form.number" :disabled="disabled"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="状态：" prop="status">
+                      <el-select v-model="form.status" placeholder="状态">
+                        <el-option label="正常" value="1"></el-option>
+                        <el-option label="已关闭" value="0"></el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="排序号：" prop="sort">
+                      <el-input v-model="form.sort"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="圈子分类：" prop="codeName" ref="codeName">
+                      <el-select v-model="form.circleCategoryId" placeholder="圈子分类">
+                        <el-option :label="item.codeName" :value="item.cId" v-for="item in codeNameList" :key="item.cId"></el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="评论数：" prop="commentCount">
+                      <el-input v-model="form.commentCount" :disabled="disabled"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="类型：" prop="kind" ref="kind">
+                      <el-select v-model="form.kind" placeholder="类型">
+                        <el-option label="官方" value="官方"></el-option>
+                        <el-option label="个人" value="个人"></el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="16">
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="阅读数：" prop="viewCount">
+                      <el-input v-model="form.viewCount" :disabled="disabled"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="省：" prop="provinceId">
+                      <el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince">
+                        <el-option :label="item.codeName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="市：" prop="cityId">
+                  <el-select v-model="form.cityId" placeholder="请选择市"  @change="chooseArea">
+                    <el-option :label="item.codeName" :value="item.cId" v-for="item in cityList" :key="item.cId"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="16">
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="成员数：" prop="memberCount">
+                      <el-input v-model="form.memberCount" :disabled="disabled"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="县：" prop="areaId">
+                      <el-select v-model="form.areaId" placeholder="县" @change="chooseCountry">
+                        <el-option :label="item.codeName" :value="item.cId" v-for="item in areaList" :key="item.cId"></el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="乡：" prop="countryId">
+                  <el-select v-model="form.countryId" placeholder="乡">
+                    <el-option :label="item.codeName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="16">
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="经度：" prop="longitude">
+                      <el-input v-model="form.longitude"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="纬度：" prop="latitude">
+                      <el-input v-model="form.latitude"></el-input>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="16">
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="创建人：" prop="creator">
+                      <el-input v-model="form.creator" :disabled="disabled"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="创建时间：" prop="createTime">
+                      <el-date-picker
+                        :disabled="disabled"
+                        v-model="form.createTime"
+                        type="datetime"
+                        placeholder="选择日期时间"
+                        default-time="12:00:00">
+                      </el-date-picker>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="管理人：" prop="manager">
+                  <el-select v-model="form.manager" placeholder="管理人">
+                    <el-option :label="item.nickname" :value="item.cId" v-for="item in managerList" :key="item.cId"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="16">
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="修改人：" prop="modifier">
+                      <el-input v-model="form.modifier" :disabled="disabled"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="修改时间：" prop="modifyTime">
+                      <el-date-picker
+                        :disabled="disabled"
+                        v-model="form.modifyTime"
+                        type="datetime"
+                        placeholder="选择日期时间"
+                        default-time="12:00:00">
+                      </el-date-picker>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="地址：" prop="location">
+                  <el-input v-model="form.location"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="简介：" prop="intro">
+                  <el-input type="textarea" v-model="form.intro"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="备注：" prop="remark">
+                  <el-input type="textarea" v-model="form.remark"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button size="mini" @click="cancel('form')">取 消</el-button>
+            <el-button size="mini" type="primary" @click="comfirm('form')">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- end弹出框 -->
+
     </div>
     <div style="height: 30px;background: #42475B;margin:10px 0;margin-left: -20px;"></div>
     <div id="comment">
@@ -198,8 +408,24 @@
   export default {
       data(){
           return{
+            allNum: {
+              commentNum: 0,   //评论总数
+              collects: 0,    //收藏总数
+              clickNum: 0   //点赞总数
+            },
+            //查询
             formInline:{
               status: '',
+              cityName:'',
+              remark:'',
+              authorId:'',
+              date:'',
+              publishTime:'',
+              publishTime2:''
+            },
+            //增加
+            dialogVisible:false,
+            form:{
 
             },
             multipleSelection: [],   //存放勾选的数据
@@ -214,14 +440,14 @@
               {prop: 'isTop', label: '置顶', width: '100', align: ''},
               {prop: 'isBest', label: '精华', width: '100', align: ''},
               {prop: 'orderBy', label: '排序号', width: '100', align: ''},
-              {prop: 'viewNum', label: '浏览', width: '100', align: 'right'},
-              {prop: 'commentNum', label: '评论', width: '120', align: 'right'},
-              {prop: 'collects', label: '收藏', width: '100', align: 'right'},
-              {prop: 'clickNum', label: '点赞', width: '150', align: 'right'},
-              {prop: 'isVisibleCategoryId', label: '打赏', width: '100', align: 'right'},
-              {prop: 'authorId', label: '作者', width: '', align: 'right'},
-              {prop: 'publishTime', label: '发布时间', width: '100', align: 'right'},
-              {prop: 'modifyTime', label: '修改时间', width: '', align: 'right'},
+              {prop: 'viewNum', label: '浏览', width: '80', align: 'right'},
+              {prop: 'commentNum', label: '评论', width: '80', align: 'right'},
+              {prop: 'collects', label: '收藏', width: '80', align: 'right'},
+              {prop: 'clickNum', label: '点赞', width: '80', align: 'right'},
+              {prop: 'isVisibleCategoryId', label: '打赏', width: '80', align: 'right'},
+              {prop: 'authorStr', label: '作者', width: '100', align: ''},
+              {prop: 'publishTime', label: '发布时间', width: '150', align: 'right'},
+              {prop: 'modifyTime', label: '修改时间', width: '150', align: 'right'},
               {prop: 'remark', label: '备注', width: '', align: ''},
             ],
             commentList: [   //表格的头部配置
@@ -242,7 +468,6 @@
           }
       },
     methods:{
-
       //设置表头的背景颜色
       getRowClass({ row, column, rowIndex, columnIndex }) {
         if (rowIndex == 0) {
@@ -251,33 +476,51 @@
           return ''
         }
       },
+
       //设置表格索引序号
       index(index){
         return (this.currentPage - 1)*this.pageSize + index + 1;
       },
+
       //获取所有帖子列表 /basicTopic/queryCommon
       getPostList(pageSize,pageNum){
         this.$post('/basicTopic/queryCommon',{
           pageSize: pageSize? pageSize : 30,
           pageNum: pageNum ? pageNum : 1,
+          status: this.formInline.status? this.formInline.status:null,
+          cityName:this.formInline.cityName? this.formInline.cityName:null,
+          remark:this.formInline.remark? this.formInline.remark:null,
+          authorName:this.formInline.authorId? this.formInline.authorId:null,
+          publishTime: this.formInline.date?  this.dataTransform(this.formInline.date[0]):null,
+          publishTime2: this.formInline.date?  this.dataTransform(this.formInline.date[1]):null,
         }).then(res=>{
             if(res.code == 0){
-                console.log(res)
+                console.log(res.data.total)
               this.tableData = res.data.list
-              res.data.list.forEach((val)=>{
-                val.status  = val.status ? '正常' : '已关闭';
-              })
+              this.allNum.commentNum = this.allNum.collects = this.allNum.clickNum = 0;   //
+             if(res.data.list) {
+               res.data.list.forEach((val)=>{
+                 val.status  = val.status ? '正常' : '已关闭';
+                 val.authorStr = val.author.nickname;
+                 val.isTop = val.isTop? '是':'否';
+                 val.isBest = val.isBest? '是':'否';
+
+                 //合计
+                 this.allNum.commentNum += val.commentNum;
+                 this.allNum.collects += val.collects;
+                 this.allNum.clickNum += val.clickNum;
+               })
+             }
               this.total = res.data.total;
             }
         })
       },
+
       //多选框选中之后存放的数据
       handleSelectionChange(val){
         this.multipleSelection = val;
         // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
-        console.log(this.multipleSelection)
         if(this.multipleSelection.length == 2){
-            alert(1)
           for(var i= 0; i<this.tableData.length; i++){
             if(this.tableData[i].cId == this.multipleSelection[0].cId){
               this.$refs.multipleTable.toggleRowSelection(this.tableData[i],false);
@@ -295,6 +538,7 @@
           }
         }
       },
+
       //默认选中第一行
       checked(){
         //首先el-table添加ref="multipleTable"引用标识
@@ -304,23 +548,48 @@
           this.rowIndex = 1;
         }
       },
+
       //每页显示多少条数据
       handleSizeChange(val) {
         this.pageSize = val;
         this.getPostList(val,this.currentPage);
       },
+
       //当前第几页
       handleCurrentChange(val) {
         this.currentPage = val;
         this.getRatingList(this.pageSize,val)
       },
+
+      //标准时间格式转换
+      dataTransform(date){
+        if(date){
+          var y = date.getFullYear();
+          var m = date.getMonth() + 1;
+          m = m < 10 ? ('0' + m) : m;
+          var d = date.getDate();
+          d = d < 10 ? ('0' + d) : d;
+
+           var h = date.getHours();
+           var minute = date.getMinutes();
+           minute = minute < 10 ? ('0' + minute) : minute;
+           var second = date.getSeconds();
+           second = second < 10 ? ('0' + second) : second;
+           return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+//          return y + '-' + m + '-' + d;
+        }else{
+          return null;
+        }
+      },
+
       //查询
       search(){
-
+        this.getPostList()
       },
+
       //新增
       add(){
-
+        this.dialogVisible = true;
       },
       //删除
       deleted(){
@@ -429,7 +698,7 @@
   padding-right: 15px;
 }
 .aboutNum{
-  width: 785px;
+  width: 923px;
   height: 30px;
   line-height: 30px;
   margin-top: 10px;
@@ -438,4 +707,12 @@
 .aboutNum span:nth-child(1){
   padding-left: 10px;
 }
+ .aboutNum span:nth-child(2),.aboutNum span:nth-child(3),.aboutNum span:nth-child(4){
+    display: inline-block;
+    width: 80px;
+    float: right;
+    text-align: right;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
 </style>
