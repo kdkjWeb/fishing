@@ -1,20 +1,20 @@
 <template>
-    <div class="reward">
+    <div class="giveUp">
          <!-- start顶部搜索按钮 -->
         <div class="topSearch">
             <el-row>
                 <el-col :span="14">
                     <el-form :inline="true" :model="formInline" class="demo-form-inline" size="mini">
-                        <el-form-item label="用户：">
-                            <el-input clearable v-model="formInline.name" placeholder="用户"></el-input>
+                        <el-form-item label="收款人：">
+                            <el-input clearable v-model="formInline.getter" placeholder="收款人"></el-input>
                         </el-form-item>
-                        <el-form-item label="打赏人：">
-                            <el-input clearable v-model="formInline.address" placeholder="点赞人"></el-input>
+                        <el-form-item label="付款人：">
+                            <el-input clearable v-model="formInline.payer" placeholder="付款人"></el-input>
                         </el-form-item>
                         <el-form-item label="手机号：">
-                            <el-input clearable v-model="formInline.address" placeholder="手机号"></el-input>
+                            <el-input clearable v-model="formInline.phone" placeholder="手机号"></el-input>
                         </el-form-item>
-                        <el-form-item label="打赏时间：">
+                        <el-form-item label="点赞时间：">
                             <el-date-picker
                             v-model="formInline.date"
                             type="daterange"
@@ -99,15 +99,19 @@ export default {
         return {
             height: null,
             formInline: {   //圈子、详细地址、创建时间的表单
-                name: '',
-                address: '',
+                payer: '',
+                phone: '',
+                getter: '',
                 date: ''
             },
             tableList: [   //表格的头部配置
-                {prop: 'circleName', label: '用户', width: '150', align: ''},
-                {prop: 'status', label: '圈子', width: '180', align: ''},
-                {prop: 'modifyTime', label: '加入时间', width: '', align: 'right'},
-               
+                {prop: 'getter', label: '收款人', width: '100', align: ''},
+                {prop: 'payer', label: '付款人', width: '100', align: ''},
+                {prop: 'num', label: '打赏金额', width: '80', align: 'right'},
+                {prop: 'cdate', label: '打赏时间', width: '160', align: 'right'},
+                {prop: 'phone', label: '打赏人电话', width: '120', align: 'right'},
+                {prop: 'type', label: '打赏类型', width: '80', align: ''},
+                {prop: '', label: '', width: '', align: ''}
             ],
             tableData: [],//表格的数据
             multipleSelection: [],   //选中之后存放的数据
@@ -117,9 +121,53 @@ export default {
         }
     },
     methods: {
+        //获取所有点赞列表
+        getAllCoinList(pageSize,pageNum){
+            this.$post('scorecoin/getAllCoinList',{
+                pageSize: pageSize ? pageSize : 30,
+                pageNum: pageNum ? pageNum : 1,
+                getter: this.formInline.getter ? this.formInline.getter : null,
+                payer: this.formInline.payer ? this.formInline.payer : null,
+                phone: this.formInline.phone ? this.formInline.phone : null,
+                type: '打赏',
+                cdate: this.formInline.date ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
+                enddate: this.formInline.date ?  `${this.dataTransform(this.formInline.date[1])} 23:59:59`: null,
+            }).then(res=>{
+                console.log(res)
+                if(res.code == 0){
+                  
+                        this.tableData = res.data.list;
+                        this.total = res.data.total;
+                    
+
+/**
+ * 
+ * else{
+                        let arr = res.data.list;
+                        arr.forEach((e,index)=>{
+                            if(e.type == 1){
+                                arr[index].type = '帖子'
+                            }else if(e.type == 3){
+                                arr[index].type = '评论'
+                            }else{
+                                arr[index].type = '视频'
+                            } 
+                        })
+                        this.tableData = JSON.parse(JSON.stringify(arr));
+                        this.total = res.data.total;
+                    }
+ */
+
+
+                      this.$nextTick(function(){
+                            this.checked();//每次更新了数据，触发这个函数即可。
+                        })
+                }
+            })
+        },
         //查询
         search(){
-
+            this.getAllCoinList();
         },
         //导出
         exportd(){
@@ -129,9 +177,10 @@ export default {
         handleSelectionChange(val){
              this.multipleSelection = val;
              
-
+        
             // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
             if(this.multipleSelection.length == 2){
+                console.log(1)
                      for(var i= 0; i<this.tableData.length; i++){
                     if(this.tableData[i].cId == this.multipleSelection[0].cId){
                         this.$refs.multipleTable.toggleRowSelection(this.tableData[i],false);
@@ -175,15 +224,33 @@ export default {
          return (this.currentPage - 1)*this.pageSize + index + 1;
      },
       //每页显示多少条数据
-        handleSizeChange(val) {
+     handleSizeChange(val) {
             this.pageSize = val;
-            this.getCircleList(val,this.currentPage);
+            this.getAllCoinList(val,this.currentPage);
         },
         //当前第几页
-        handleCurrentChange(val) {
+      handleCurrentChange(val) {
             this.currentPage = val;
-            this.getCircleList(this.pageSize,val)
+            this.getAllCoinList(this.pageSize,val)
         },
+        //标准时间格式转换
+      dataTransform(date){
+        if(date){
+            var y = date.getFullYear();
+            var m = date.getMonth() + 1;
+            m = m < 10 ? ('0' + m) : m;
+            var d = date.getDate();
+            d = d < 10 ? ('0' + d) : d;
+            // var h = date.getHours();
+            // var minute = date.getMinutes();
+            // minute = minute < 10 ? ('0' + minute) : minute;
+            // var second = date.getSeconds();	
+            // second = second < 10 ? ('0' + second) : second;
+            // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+
+            return y + '-' + m + '-' + d;
+        }
+      }
     },
     created(){
          this.height = window.innerHeight - 240;
@@ -191,6 +258,8 @@ export default {
     mounted(){
         //表格第一行默认选中
         this.checked();
+        //获取所有打赏列表
+        this.getAllCoinList();
 
         window.addEventListener('resize', ()=>{
              this.height = window.innerHeight - 240;
@@ -206,19 +275,19 @@ export default {
 .topSearch .el-date-editor{
     width: 220px;
 }
-.reward .table .el-table .el-table__body-wrapper{
+.giveUp .table .el-table .el-table__body-wrapper{
     overflow-y: scroll;
 }
 
-.reward .el-date-editor--datetime input{
+.giveUp .el-date-editor--datetime input{
     width: 176.66px;
 }
-/* .reward .el-dialog .el-dialog__header .el-dialog__title{
+/* .giveUp .el-dialog .el-dialog__header .el-dialog__title{
     font-size: 14px ;
     border-left: 2px solid #2693fa;
     padding-left: 8px;
 }
-.reward .el-upload__tip{
+.giveUp .el-upload__tip{
     text-align: right;
 } */
 </style>
@@ -236,6 +305,5 @@ export default {
     margin: 10px 0 5px;
 }
 </style>
-
 
 

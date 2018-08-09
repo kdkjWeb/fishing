@@ -418,7 +418,7 @@ export default {
         //获取圈子列表
         getCircleList(pageSize,pageNum){
             this.$post('circle/queryByRecord',{
-                pageSize: pageSize ? pageSize : 20,
+                pageSize: pageSize ? pageSize : 30,
                 pageNum: pageNum ? pageNum : 1,
                 circleName: this.formInline.name ? this.formInline.name : null,
                 location: this.formInline.address ? this.formInline.address : null,

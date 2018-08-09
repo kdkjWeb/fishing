@@ -593,7 +593,8 @@ export default {
                 creaenddateteTime2: this.formInline.date ?  `${this.dataTransform(this.formInline.date[0])} 23:59:59`: null,
 
             }).then(res=>{
-                if(res.code == 0){
+                console.log(res)
+               if(res.code == 0){
                     if(res.data.list <=0){
                     this.tableData = res.data.list;
                     this.total = res.data.total;
