@@ -428,6 +428,7 @@ export default {
                 if(res.code == 0){
                     if(res.data.list.length <= 0){   //如果后面没返回数据就直接赋值
                         this.tableData = res.data.list;
+                        this.total = 0;
                         this.allNum.commentCount = this.allNum.viewCount = this.allNum.memberCount = 0;   //dom每次更新数据都清零
                     }else{   //返回数据之后进行数据处理
                         let arr = res.data.list;
@@ -436,9 +437,8 @@ export default {
                            arr[index].creator = e.creator ? e.creator.nickname : '';
                            arr[index].modifier = e.modifier ? e.modifier.nickname : '';
                            arr[index].status = e.status ? '正常' : '已关闭';
-                        //    arr[index].createTime = e.createTime.split(' ')[0];
-                           this.tableData = JSON.parse(JSON.stringify(arr))
                         });
+                         this.tableData = JSON.parse(JSON.stringify(arr))
                          this.$nextTick(function(){
                             this.checked();//每次更新了数据，触发这个函数即可。
 

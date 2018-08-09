@@ -6,20 +6,29 @@
                 <el-col :span="14">
                     <el-form :inline="true" :model="formInline" class="demo-form-inline" size="mini">
                         <el-form-item label="昵称：">
-                            <el-input clearable v-model="formInline.name" placeholder="昵称"></el-input>
+                            <el-input clearable v-model="formInline.nickname" placeholder="昵称"></el-input>
                         </el-form-item>
                         <el-form-item label="手机号：">
-                            <el-input clearable v-model="formInline.address" placeholder="手机号"></el-input>
+                            <el-input clearable v-model="formInline.phone" placeholder="手机号"></el-input>
+                        </el-form-item>
+                        <el-form-item label="用户类别：">
+                                <el-select clearable v-model="formInline.role" placeholder="用户类别">
+                                <el-option label="超级管理" value="0"></el-option>
+                                <el-option label="管理" value="1"></el-option>
+                                <el-option label="钓友" value="2"></el-option>
+                                <el-option label="农家乐" value="3"></el-option>
+                                <el-option label="渔具店" value="4"></el-option>
+                                </el-select>
                         </el-form-item>
                          <el-form-item label="状态：">
-                            <el-select v-model="form.kind" placeholder="状态">
-                            <el-option label="官方" value="官方"></el-option>
-                            <el-option label="个人" value="个人"></el-option>
+                            <el-select clearable v-model="formInline.status" placeholder="状态">
+                            <el-option label="正常" value="1"></el-option>
+                            <el-option label="禁用" value="0"></el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="创建时间：">
                             <el-date-picker
-                            v-model="formInline.date"
+                            v-model="formInline.cDate"
                             type="daterange"
                             align="right"
                             unlink-panels
@@ -46,7 +55,7 @@
         <!-- start表格 -->
         <div class="table">
             <el-table
-                height="300"
+                :max-height="height"
                 ref="multipleTable"
                 :data="tableData"
                 tooltip-effect="dark"
@@ -90,7 +99,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="currentPage"
-            :page-sizes="[10, 50, 80, 100]"
+            :page-sizes="[30, 50, 80, 100]"
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -119,13 +128,13 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="论坛ID：">
-                                <el-input v-model="form.forumId"></el-input>
+                                <el-input v-model="form.forumId" :disabled="disabled2"></el-input>
                             </el-form-item>
                         </el-col>
                         </el-row>
                         <el-row>
                        <el-col :span="12">
-                            <el-form-item label="昵称：" prop="nickname">
+                            <el-form-item label="昵称：" prop="nickname" ref="nickname">
                                 <el-input v-model="form.nickname"></el-input>
                             </el-form-item>
                         </el-col>
@@ -163,13 +172,13 @@
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
                         name="picture"
+                        :headers="myHeaders"   
                         auto-upload
-                        :before-upload="beforeAvatarUpload"
-                        :on-error="upError">
+                        :before-upload="beforeAvatarUpload">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                        <!-- <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div> -->
-                        </el-upload>
+                        <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div>
+                        </el-upload>             
                     </el-col>
                     </el-row>
 
@@ -187,20 +196,26 @@
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                          <el-form-item label="密码：" prop="password">
+                          <el-form-item label="密码：" prop="password" ref="password">
                             <el-input  type="password" v-model="form.password" :disabled="disabled1"></el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
                      <el-row>
                       <el-col :span="8">
-                          <el-form-item label="手机号：" prop="phone">
+                          <el-form-item label="手机号：" prop="phone" ref="phone">
                             <el-input v-model="form.phone" :disabled="disabled1"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
                           <el-form-item label="生日：">
-                            <el-input v-model="form.birthday"></el-input>
+                            <!-- <el-input v-model="form.birthday"></el-input> -->
+                            <el-date-picker
+                                v-model="form.birthday"
+                                type="date"
+                                :picker-options="pickerOptions"
+                                placeholder="选择出生日期">
+                             </el-date-picker>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
@@ -211,13 +226,13 @@
                     </el-row>
                      <el-row>
                       <el-col :span="8">
-                          <el-form-item label="电话：">
-                            <el-input v-model="form.seatPhone"></el-input>
+                          <el-form-item label="电话：" prop="seatPhone">
+                            <el-input v-model.number="form.seatPhone"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                          <el-form-item label="QQ：">
-                            <el-input v-model="form.qq"></el-input>
+                          <el-form-item label="QQ：" prop="qq">
+                            <el-input v-model.number="form.qq"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
@@ -263,13 +278,13 @@
                                 <el-option label="管理" value="1"></el-option>
                                 <el-option label="钓友" value="2"></el-option>
                                 <el-option label="农家乐" value="3"></el-option>
-                                <el-option label="农家乐" value="4"></el-option>
+                                <el-option label="渔具店" value="4"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
                       <el-col :span="8">
                            <el-form-item label="用户组：">
-                            <el-input v-model="form.level"></el-input>
+                            <el-input v-model="form.level" :disabled="disabled1"></el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
@@ -450,6 +465,7 @@
 export default {
     data(){
         return{
+            height: null,
             disabled: false,   //是否禁止填写
             disabled1: false,   //是否禁止填写
             disabled2: true,   //是否禁止填写
@@ -457,11 +473,13 @@ export default {
             imageUrl: '',  //上传图片显示
             multipleSelection: [],   //存放勾选的数据
             currentPage: 1, //当前第几页
-            pageSize: 10,   //每页显示多少条
+            pageSize: 30,   //每页显示多少条
             total: null,   //总共多少条数据
             circleId: '',
             rowIndex: '',   //每一行的编号
-         
+            myHeaders: {     //上传图片携带token
+                    token: ''
+                },
             provinceList: [],  //省份
             cityList: [],   //市
             areaList: [],    //县级
@@ -470,9 +488,11 @@ export default {
             fishMethodList: [],   //有什么钓法
             fishList: [],   //鱼类分类
             formInline: {   //圈子、详细地址、创建时间的表单
-            name: '',
-            address: '',
-            date: ''
+                nickname: '',
+                phone: '',
+                role: '',
+                status: '',
+                cDate: ''
             },
             form:{
                 number: '',   //编号
@@ -494,9 +514,9 @@ export default {
                 showQq: '',   //qq显示
                 role: '',   //用户类型
                 level: '',   //用户组
-                targetFish: '',   //对象鱼
-                fishWay: '',   //钓法
-                bait: '',   //饵料
+                targetFish: [],   //对象鱼
+                fishWay: [],   //钓法
+                bait: [],   //饵料
                 address: '',   //地址
                 province: '',  //省份
                 city: '',   //市
@@ -519,7 +539,7 @@ export default {
                 {prop: 'status', label: '状态', width: '80', align: ''},
                 // {prop: 'level', label: '级别', width: '80', align: ''},
                 {prop: 'role', label: '用户类别', width: '80', align: ''},
-                {prop: 'level', label: '用户组（积分或自定义）', width: '180', align: ''},
+                {prop: 'token', label: '用户组（积分或自定义）', width: '180', align: ''},   //level等级数字   token等级数字对应的汉字
                 {prop: 'gender', label: '性别', width: '60', align: ''},
                 {prop: 'birthday', label: '生日', width: '120', align: 'right'},
                 {prop: 'seatPhone', label: '电话', width: '120', align: 'right'},
@@ -545,24 +565,69 @@ export default {
                     { required: true, message: '请输入手机号', trigger: 'blur' },
                     {pattern:  /^1[3|4|5|6|8|7|9][0-9]\d{8}$/, message: '请输入正确的手机号', trigger: 'blur' }
                 ],
-            }
+                /*seatPhone: [
+                    { required: false, type: 'number', message: '电话必须为数字值', trigger: 'blur'}
+                ],
+                qq: [
+                    { required: false, type: 'number', message: '电话必须为数字值', trigger: 'blur'}
+                ]*/
+            },
+            pickerOptions: {
+                disabledDate(time) {
+                    return time.getTime() > Date.now() - 8.64e6
+                }
+                }, 
         }
     },
     methods:{
         //获取用户列表
         getUserList(pageSize,pageNum){
             this.$post('user/getUserList',{
-                pageSize: pageSize ? pageSize : 10,
+                pageSize: pageSize ? pageSize : 30,
                 pageNum: pageNum ? pageNum : 1,
+                nickname: this.formInline.nickname ?  this.formInline.nickname : null,
+                phone: this.formInline.phone ? this.formInline.phone : null,
+                role: this.formInline.role ? this.formInline.role : null,
+                status: this.formInline.status ? this.formInline.status : null,
+                cDate: this.formInline.date ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
+                creaenddateteTime2: this.formInline.date ?  `${this.dataTransform(this.formInline.date[0])} 23:59:59`: null,
+
             }).then(res=>{
                 if(res.code == 0){
-                    console.log(res)
-      
+                    if(res.data.list <=0){
                     this.tableData = res.data.list;
                     this.total = res.data.total;
-                    this.$nextTick(function(){
+                    }else{
+                        console.log(res.data.list)
+                        let arr = res.data.list;
+                        arr.forEach((e,index)=>{
+                           arr[index].status = e.status == 0? '禁用' : '正常'
+                           if(e.gender != undefined){
+                               arr[index].gender = e.gender == 0 ? '女' : '男'
+                           } 
+
+                           if(e.role == 0){
+                               arr[index].role = '超级管理'
+                           }else if(e.role == 1){
+                               arr[index].role = '管理'
+                           }else if(e.role == 2){
+                               arr[index].role = '钓友'
+                           }else if(e.role == 3){
+                               arr[index].role = '农家乐'
+                           }else{
+                                arr[index].role = '渔具店'
+                           }
+                             this.tableData = JSON.parse(JSON.stringify(arr))
+                             this.total = res.data.total;
+                        })
+
+                      
+                        this.$nextTick(()=>{
                             this.checked();//每次更新了数据，触发这个函数即可。
                         })
+                    }
+
+                    
                 }
             })
         },
@@ -575,6 +640,36 @@ export default {
             this.dialogVisible = true;
             this.circleId = '';
             this.disabled = true;
+            this.disabled1 = false;
+            //点击新增清空表单
+                for(var i in this.form){
+                if(i == 'status'){  //遇到默认项跳过，执行下面的循环
+                    continue;
+                }else if(this.form[i] != ''){
+                  
+                    this.$nextTick(() => {
+                            this.$refs['nickname'].resetField();
+                            this.$refs['phone'].resetField();
+                            this.$refs['password'].resetField();
+                           // this.form = {};
+
+                            //将对象还原   shabisheji
+                            Object.keys(this.form).forEach((key)=>{
+                                // console.log(key)
+                                if(key == 'targetFish' || key == 'fishWay' || key == 'bait'){
+                                    this.form[key] = []
+                                }else if(key == 'status'){
+                                    this.form[key] = '1'
+                                }else{
+                                    this.form[key] = ''
+                                }
+                            })
+                            this.imageUrl = '';
+                        });
+
+                    
+                }
+            }
         },
         //删除
         deleted(){
@@ -592,8 +687,8 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
                 }).then(() => {
-                    this.$get('circle/deleteCircle',{
-                        circleId: id
+                    this.$get('user/onOffUser',{
+                        id: id
                     }).then(res=>{
                         if(res.code == 0){
                             this.tableData.forEach((val,index)=>{
@@ -629,14 +724,23 @@ export default {
             this.disabled1 = true;
             this.disabled2 = false;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-            let data = this.multipleSelection[0];
 
-          console.log(data)
-            
-            this.form = data;
-            this.form.password = '******'
-            this.form.status = data.status + "";
-            this.form.number = this.rowIndex;
+           // let data = {};
+            this.$get('user/getUserInfo',{
+                id: this.circleId
+            }).then(res=>{
+                console.log(res)
+                this.form = res.data;
+                this.form.password = '******';
+                this.form.status = this.form.status + "";
+                this.form.gender = this.form.gender + "";
+                this.form.number = this.rowIndex;
+                // this.form.level = this.form.token;
+                this.form.targetFish = this.form.targetFish ? this.form.targetFish.split(',') : [];
+                this.form.fishWay = this.form.fishWay ? this.form.fishWay.split(',') : []
+                this.form.bait = this.form.bait ? this.form.bait.split(',') : []
+            })
+
         },
         //导出
         exportd(){
@@ -645,13 +749,22 @@ export default {
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
+
+                    // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
+            if(this.multipleSelection.length == 2){
+                     for(var i= 0; i<this.tableData.length; i++){
+                    if(this.tableData[i].cId == this.multipleSelection[0].cId){
+                        this.$refs.multipleTable.toggleRowSelection(this.tableData[i],false);
+                        break;
+                    }
+                }
+            }
         
             //虽然是多选框，但是产品设计每次只能选着一个
             if(this.multipleSelection.length == 1){
                 for(var i= 0; i<this.tableData.length; i++){
                     if(this.tableData[i].cId == this.multipleSelection[0].cId){
                         this.rowIndex = (this.currentPage - 1)*this.pageSize + i + 1;
-                        console.log(this.rowIndex)
                         break;
                     }
                 }
@@ -673,14 +786,26 @@ export default {
             this.$refs[formName].validate((valid)=>{
                 if(valid){
                     let url = this.circleId ? 'user/updateUserByManager' : 'user/addManager'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
-                    // let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
+                    let role;
+                    if(this.form.role == 0 ||  this.form.role == '超级管理'){
+                        role = 0;
+                    }else if(this.form.role == 1 ||  this.form.role == '管理'){
+                        role = 1;
+                    }else if(this.form.role == 2 ||  this.form.role == '钓友'){
+                        role = 2;
+                    }else if(this.form.role == 3 ||  this.form.role == '农家乐'){
+                        role = 3;
+                    }else{
+                        role = 4;
+                    }
+                    console.log(this.form.targetFish.length)
                     this.$post(url,{
                         cId: this.circleId ? this.circleId : null,
                         forumId: this.form.forumId,
                         nickname: this.form.nickname,
                         motorcade: this.form.motorcade,
-                        status:  this.form.status,  //因为修改回显如果状态不改变，那么传给后台的会是’正常‘汉字，需要进行转换成1，否则就是正常的
-                        gender: this.form.gender,
+                        status:  (this.form.status == '正常' || this.form.status == 1) ? 1 : 0,  //因为修改回显如果状态不改变，那么传给后台的会是’正常‘汉字，需要进行转换成1，否则就是正常的
+                        gender: (this.form.gender == '男' || this.form.gender == 1) ? 1 : 0,
                         rank: this.form.rank,
                         token: this.form.password,
                         phone: this.form.phone,
@@ -691,11 +816,11 @@ export default {
                         showWechat: this.form.showWechat,
                         showPhone: this.form.showPhone,
                         showQq: this.form.showQq,
-                        role: this.form.role,
+                        role: role,
                         level: this.form.level,
-                        targetFish: this.form.targetFish.join(','),
-                        fishWay: this.form.fishWay.join(','),
-                        bait: this.form.bait.join(','),
+                        targetFish: (this.form.targetFish.length > 0) ? this.form.targetFish.join(',') : '',
+                        fishWay: (this.form.fishWay.length > 0) ? this.form.fishWay.join(',') : '',
+                        bait: (this.form.bait.length > 0) ? this.form.bait.join(',') : '',
                         address: this.form.address,
                         province: this.form.province,
                         city: this.form.city,
@@ -718,8 +843,9 @@ export default {
                             message: res.msg,
                             type: 'success'
                             });
-                             //重新获取圈子列表
-                            this.getCircleList();
+                             
+                             //获取用户列表
+                           this.getUserList()
 
                            this.circleId = ''
                         }else{
@@ -755,13 +881,14 @@ export default {
             var m = date.getMonth() + 1;
             m = m < 10 ? ('0' + m) : m;
             var d = date.getDate();
-            d = d < 10 ? ('0' + d) : d;
-            var h = date.getHours();
-            var minute = date.getMinutes();
-            minute = minute < 10 ? ('0' + minute) : minute;
-            var second = date.getSeconds();	
-            second = second < 10 ? ('0' + second) : second;
-            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+            // d = d < 10 ? ('0' + d) : d;
+            // var h = date.getHours();
+            // var minute = date.getMinutes();
+            // minute = minute < 10 ? ('0' + minute) : minute;
+            // var second = date.getSeconds();	
+            // second = second < 10 ? ('0' + second) : second;
+            // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+            return y + '-' + m + '-' + d;
         }else{
             return null;
         }
@@ -890,6 +1017,17 @@ export default {
         this.getUserList()
         //表格第一行默认选中
         this.checked();
+
+        window.addEventListener('resize', ()=>{
+             this.height = window.innerHeight - 240;
+        })
+
+        if(this.$store.state.token){
+            this.myHeaders.token = this.$store.state.token
+        }
+    },
+    created(){
+         this.height = window.innerHeight - 240;
     },
     watch: {
         dialogVisible: function(val){
@@ -924,6 +1062,9 @@ export default {
     font-size: 14px ;
     border-left: 2px solid #2693fa;
     padding-left: 8px;
+}
+.user .el-dialog .el-date-editor .el-input__inner{
+    width: 176.66px;
 }
 .user .el-date-editor--datetime input{
     width: 176.66px;
