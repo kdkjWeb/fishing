@@ -204,7 +204,7 @@
                       <el-col :span="24">
                            <el-form-item label="有什么鱼：" prop="fishType" ref="fishType">
                                 <el-select v-model="form.fishType" multiple  placeholder="有什么鱼">
-                                <el-option v-for="item in fishList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
+                                <el-option v-for="item in fishList" :label="item.codeName"  :value="item.codeName" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -218,7 +218,7 @@
                       <el-col :span="16">
                            <el-form-item label="允许钓法："  prop="fishingType" ref="fishingType">
                                 <el-select v-model="form.fishingType" multiple  placeholder="允许钓法">
-                                <el-option v-for="item in fishMethodList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
+                                <el-option v-for="item in fishMethodList" :label="item.codeName"  :value="item.codeName" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -232,7 +232,7 @@
                       <el-col :span="16">
                            <el-form-item label="禁止钓法：">
                                 <el-select v-model="form.forbiddenFishing" multiple placeholder="禁止钓法">
-                                <el-option v-for="item in fishMethodList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
+                                <el-option v-for="item in fishMethodList" :label="item.codeName"  :value="item.codeName" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -246,7 +246,7 @@
                       <el-col :span="16">
                            <el-form-item label="允许饵料：" prop="baits" ref="baits">
                                 <el-select v-model="form.baits" multiple placeholder="允许饵料">
-                                <el-option v-for="item in baitList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
+                                <el-option v-for="item in baitList" :label="item.codeName"  :value="item.codeName" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -260,7 +260,7 @@
                       <el-col :span="16">
                            <el-form-item label="禁止饵料：">
                                 <el-select v-model="form.forbiddenBaits" multiple placeholder="禁止饵料">
-                                <el-option v-for="item in baitList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
+                                <el-option v-for="item in baitList" :label="item.codeName"  :value="item.codeName" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -443,7 +443,7 @@ export default {
             },
             tableList: [   //表格的头部配置
                 {prop: 'name', label: '钓场', width: '90', align: ''},
-                {prop: 'status', label: '审核状态', width: '90', align: ''},
+                {prop: 'ispass', label: '审核状态', width: '90', align: ''},
                 {prop: 'type', label: '类型', width: '80', align: ''},
                 {prop: 'type', label: '钓场分类', width: '80', align: ''},
                 {prop: 'position', label: '排序号', width: '70', align: 'right'},
@@ -498,11 +498,35 @@ export default {
             }).then(res=>{
                 if(res.code == 0){
                     console.log(res)
-                     this.tableData = res.data.list;
+
+                    if(res.data.list.length <=0){
+                        this.tableData = res.data.list;
+                        this.total = 0;
+                    }else{
+                        let arr =  res.data.list;
+                        arr.forEach((e,index)=>{
+                            if(e.ispass == 0){
+                               arr[index].ispass = '待审核'
+                            }else if(e.ispass == 1){
+                                arr[index].ispass = '通过'
+                            }else{
+                                arr[index].ispass = '不通过'
+                            }
+
+                            this.tableData = JSON.parse(JSON.stringify(arr))
+                            this.total = res.data.total;
+                        })
+                    }
+
+                      this.$nextTick(function(){
+                        this.checked();//每次更新了数据，触发这个函数即可。
+                    })
+
+                     /*this.tableData = res.data.list;
                      this.$nextTick(function(){
                         this.checked();//每次更新了数据，触发这个函数即可。
                     })
-                    this.total = res.data.total;
+                    this.total = res.data.total;*/
                 }
             })
         },
@@ -531,18 +555,18 @@ export default {
                             this.$refs['fishingType'].resetField();
                             this.$refs['baits'].resetField();
                             this.$refs['location'].resetField();
-                            this.form = {};
-                            this.form.status = '1';
-                            this.form.fishType = [];
-                            this.form.fishingType = [];
-                            this.form.forbiddenFishing = [];
-                            this.form.forbiddenBaits = [];
-                            this.form.baits = [];
 
-
- 
-
-                            // this.$refs['form'].resetFields();
+                            //将对象还原   shabisheji
+                            Object.keys(this.form).forEach((key)=>{
+                                // console.log(key)
+                                if(key == 'fishType' || key == 'fishingType' || key == 'forbiddenFishing' || key == 'forbiddenBaits' || key == 'baits'){
+                                    this.form[key] = []
+                                }else if(key == 'status'){
+                                    this.form[key] = '1'
+                                }else{
+                                    this.form[key] = ''
+                                }
+                            })
                             this.imageUrl = '';
                         });
 
@@ -610,59 +634,25 @@ export default {
             this.disabled = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
     
-             if(this.circleId){
-                let data = this.multipleSelection[0];
-                console.log(data.fishType)
-                data.phone = parseInt(data.phone);
+            this.$get('fishplace/getFishPlaceById',{
+                id: this.circleId
+            }).then(res=>{
+                console.log(res)
+                this.form = res.data;
+                this.form.phone = parseInt(this.form.phone);
 
 
-                if(this.isArray(data.fishType)){
-                    data.fishType = data.fishType
-                }else{
-                     data.fishType = data.fishType.split(',');
-                }
-                
-                if(this.isArray( data.fishingType)){
-                     data.fishingType =  data.fishingType;
-                }else{
-                     data.fishingType = data.fishingType.split(',');
-                }
+                this.form.fishType = this.form.fishType ? this.form.fishType.split(',') : [];
+                this.form.fishingType = this.form.fishingType ? this.form.fishingType.split(',') : [];
+                this.form.baits = this.form.baits ? this.form.baits.split(',') : [];
 
-                if(this.isArray(data.baits)){
-                    data.baits = data.baits
-                }else{
-                     data.baits = data.baits.split(',');
-                }
+                this.form.forbiddenBaits = this.form.forbiddenBaits ? this.form.forbiddenBaits.split(',') : [];
+                this.form.forbiddenFishing = this.form.forbiddenFishing ? this.form.forbiddenFishing.split(',') : [];
 
-                for(var i = 0; i< data.forbiddenFishing.length; i++){
-                    if( data.forbiddenFishing[0] == ''){
-                        data.forbiddenFishing = [];
-                        break;
-                    }else{
-                        if(this.isArray(data.forbiddenFishing)){
-                            data.forbiddenFishing = data.forbiddenFishing
-                        }else{
-                            data.forbiddenFishing = data.forbiddenFishing.split(',');
-                        }
-                    }
-                }
-                
-                for(var i = 0; i< data.forbiddenBaits.length; i++){
-                    if( data.forbiddenBaits[0] == ''){
-                        data.forbiddenBaits = [];
-                        break;
-                    }else{
-                        if(this.isArray(data.forbiddenBaits)){
-                            data.forbiddenBaits = data.forbiddenBaits
-                        }else{
-                            data.forbiddenBaits = data.forbiddenBaits.split(',');
-                        }
-                    }
-                }
-                this.form = data;
                 this.form.number = this.rowIndex;
                 this.imageUrl = this.form.iconUrl;
-            }
+
+            })
 
         },
         //判断是不是一个数组

@@ -593,7 +593,8 @@ export default {
                 creaenddateteTime2: this.formInline.date ?  `${this.dataTransform(this.formInline.date[0])} 23:59:59`: null,
 
             }).then(res=>{
-                if(res.code == 0){
+                console.log(res)
+               if(res.code == 0){
                     if(res.data.list <=0){
                     this.tableData = res.data.list;
                     this.total = res.data.total;
@@ -725,11 +726,9 @@ export default {
             this.disabled2 = false;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
 
-           // let data = {};
             this.$get('user/getUserInfo',{
                 id: this.circleId
             }).then(res=>{
-                console.log(res)
                 this.form = res.data;
                 this.form.password = '******';
                 this.form.status = this.form.status + "";

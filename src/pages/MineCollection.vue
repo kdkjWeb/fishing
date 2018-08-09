@@ -1,17 +1,26 @@
 <template>
-    <div class="MineCollection">
+    <div class="giveUp">
          <!-- start顶部搜索按钮 -->
         <div class="topSearch">
             <el-row>
                 <el-col :span="14">
                     <el-form :inline="true" :model="formInline" class="demo-form-inline" size="mini">
-                        <el-form-item label="用户：">
+                        <!-- <el-form-item label="用户：">
                             <el-input clearable v-model="formInline.name" placeholder="用户"></el-input>
+                        </el-form-item> -->
+                        <el-form-item label="收藏者：">
+                            <el-input clearable v-model="formInline.userId" placeholder="收藏者"></el-input>
                         </el-form-item>
-                        <el-form-item label="圈子：">
-                            <el-input clearable v-model="formInline.address" placeholder="圈子"></el-input>
+                        <el-form-item label="收藏标题：">
+                            <el-input clearable v-model="formInline.favoriteId" placeholder="收藏标题"></el-input>
                         </el-form-item>
-                        <el-form-item label="加入时间：">
+                         <el-form-item label="收藏类型：">
+                            <el-select clearable v-model="formInline.type" placeholder="收藏类型">
+                            <el-option label="帖子" value="帖子"></el-option>
+                            <el-option label="视频" value="视频"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="收藏时间：">
                             <el-date-picker
                             v-model="formInline.date"
                             type="daterange"
@@ -96,15 +105,18 @@ export default {
         return {
             height: null,
             formInline: {   //圈子、详细地址、创建时间的表单
-                name: '',
-                address: '',
+                userId: '',
+                favoriteId: '',
+                type: '',
                 date: ''
             },
             tableList: [   //表格的头部配置
-                {prop: 'circleName', label: '用户', width: '150', align: ''},
-                {prop: 'status', label: '圈子', width: '180', align: ''},
-                {prop: 'modifyTime', label: '加入时间', width: '', align: 'right'},
-               
+            
+                {prop: 'userId', label: '收藏者', width: '100', align: ''},
+                {prop: 'type', label: '收藏类型', width: '80', align: ''},
+                {prop: 'favoriteId', label: '被收藏标题', width: '200', align: ''},
+                {prop: 'cdate', label: '收藏时间', width: '160', align: 'right'},
+                {prop: '', label: '', width: '', align: ''}
             ],
             tableData: [],//表格的数据
             multipleSelection: [],   //选中之后存放的数据
@@ -114,9 +126,30 @@ export default {
         }
     },
     methods: {
+        //获取所有点赞列表
+        getAllFavoriteList(pageSize,pageNum){
+            this.$post('favorite/managerGetFavoriteList',{
+                pageSize: pageSize ? pageSize : 30,
+                pageNum: pageNum ? pageNum : 1,
+                userId: this.formInline.userId ? this.formInline.userId : null,
+                favoriteId: this.formInline.favoriteId ? this.formInline.favoriteId : null,
+                type: this.formInline.type ? this.formInline.type : null,
+                cdate: this.formInline.date ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
+                enddate: this.formInline.date ?  `${this.dataTransform(this.formInline.date[1])} 23:59:59`: null,
+            }).then(res=>{
+                console.log(res)
+                if(res.code == 0){
+                        this.tableData = res.data.list;
+                        this.total = res.data.total;
+                      this.$nextTick(function(){
+                            this.checked();//每次更新了数据，触发这个函数即可。
+                        })
+                }
+            })
+        },
         //查询
         search(){
-
+            this.getAllFavoriteList();
         },
         //导出
         exportd(){
@@ -126,9 +159,10 @@ export default {
         handleSelectionChange(val){
              this.multipleSelection = val;
              
-
+        
             // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
             if(this.multipleSelection.length == 2){
+                console.log(1)
                      for(var i= 0; i<this.tableData.length; i++){
                     if(this.tableData[i].cId == this.multipleSelection[0].cId){
                         this.$refs.multipleTable.toggleRowSelection(this.tableData[i],false);
@@ -172,15 +206,33 @@ export default {
          return (this.currentPage - 1)*this.pageSize + index + 1;
      },
       //每页显示多少条数据
-        handleSizeChange(val) {
+     handleSizeChange(val) {
             this.pageSize = val;
-            this.getCircleList(val,this.currentPage);
+            this.getAllFavoriteList(val,this.currentPage);
         },
         //当前第几页
-        handleCurrentChange(val) {
+      handleCurrentChange(val) {
             this.currentPage = val;
-            this.getCircleList(this.pageSize,val)
+            this.getAllFavoriteList(this.pageSize,val)
         },
+        //标准时间格式转换
+      dataTransform(date){
+        if(date){
+            var y = date.getFullYear();
+            var m = date.getMonth() + 1;
+            m = m < 10 ? ('0' + m) : m;
+            var d = date.getDate();
+            d = d < 10 ? ('0' + d) : d;
+            // var h = date.getHours();
+            // var minute = date.getMinutes();
+            // minute = minute < 10 ? ('0' + minute) : minute;
+            // var second = date.getSeconds();	
+            // second = second < 10 ? ('0' + second) : second;
+            // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+
+            return y + '-' + m + '-' + d;
+        }
+      }
     },
     created(){
          this.height = window.innerHeight - 240;
@@ -188,6 +240,8 @@ export default {
     mounted(){
         //表格第一行默认选中
         this.checked();
+        //获取所有点赞列表
+        this.getAllFavoriteList();
 
         window.addEventListener('resize', ()=>{
              this.height = window.innerHeight - 240;
@@ -203,19 +257,19 @@ export default {
 .topSearch .el-date-editor{
     width: 220px;
 }
-.MineCollection .table .el-table .el-table__body-wrapper{
+.giveUp .table .el-table .el-table__body-wrapper{
     overflow-y: scroll;
 }
 
-.MineCollection .el-date-editor--datetime input{
+.giveUp .el-date-editor--datetime input{
     width: 176.66px;
 }
-/* .MineCollection .el-dialog .el-dialog__header .el-dialog__title{
+/* .giveUp .el-dialog .el-dialog__header .el-dialog__title{
     font-size: 14px ;
     border-left: 2px solid #2693fa;
     padding-left: 8px;
 }
-.MineCollection .el-upload__tip{
+.giveUp .el-upload__tip{
     text-align: right;
 } */
 </style>
@@ -233,4 +287,5 @@ export default {
     margin: 10px 0 5px;
 }
 </style>
+
 
