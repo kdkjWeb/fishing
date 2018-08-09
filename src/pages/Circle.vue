@@ -403,7 +403,7 @@ export default {
             rules: {
                 circleName: [
                       { required: true, message: '请输入圈子名称', trigger: 'blur' },
-                      { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+                      { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
                 ],
                   circleCategoryId: [
                     { required: true, message: '请选择圈子分类', trigger: 'change' }
@@ -546,12 +546,27 @@ export default {
             this.disabled = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
  
-            if(this.circleId){
+
+            this.$get('circle/queryById',{
+                circleId: this.circleId
+            }).then(res=>{
+                console.log(res)
+                this.form = res.data;
+                this.form.status = this.form.status + "";
+                this.form.number = this.rowIndex;
+                this.imageUrl = this.form.iconUrl;
+                this.form.creator = this.form.creator.nickname;
+                this.form.manager = this.form.manager.nickname;
+                this.form.modifier = this.form.modifier.nickname;
+            })
+
+            /*if(this.circleId){
                 let data = this.multipleSelection[0];
                 this.form = data;
                 this.form.number = this.rowIndex;
                 this.imageUrl = this.form.iconUrl;
             }
+            */
 
         },
         //导出
