@@ -14,7 +14,7 @@
                         <el-form-item label="手机号：">
                             <el-input clearable v-model="formInline.phone" placeholder="手机号"></el-input>
                         </el-form-item>
-                        <el-form-item label="点赞时间：">
+                        <el-form-item label="打赏时间：">
                             <el-date-picker
                             v-model="formInline.date"
                             type="daterange"

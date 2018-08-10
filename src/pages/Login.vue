@@ -79,22 +79,22 @@ export default {
             if(this.userInfo.userName == '' || this.userInfo.userPas == ''){
                 this.show = false;
                 this.text = '请输入用户名和密码'
-                return
+                return;
             }
             if(this.userInfo.userCode == ''){
                 this.show = false;
                 this.text = '请输入验证码'
-                return
+                return;
             }
             if(this.userInfo.userCode != this.verification){
+                this.show = false;
                 this.text = '验证码输入错误'
-                return
+                return;
             }
             this.$post('adminLogin',{
                 phone: this.userInfo.userName,
                 password: this.userInfo.userPas
             }).then(res=>{
-                console.log(res)
                 if(res.code == 0){
                     //存放后台返回的用户信息
                     localStorage.setItem('userInfo',JSON.stringify(res.data))
