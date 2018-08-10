@@ -1,18 +1,18 @@
 <template>
-    <div class="Minefollow">
+    <div class="giveUp">
          <!-- start顶部搜索按钮 -->
         <div class="topSearch">
             <el-row>
                 <el-col :span="14">
                     <el-form :inline="true" :model="formInline" class="demo-form-inline" size="mini">
                         <el-form-item label="关注人：">
-                            <el-input clearable v-model="formInline.name" placeholder="关注人"></el-input>
+                            <el-input clearable v-model="formInline.userId" placeholder="关注人"></el-input>
                         </el-form-item>
                         <el-form-item label="被关注人：">
-                            <el-input clearable v-model="formInline.address" placeholder="被关注人"></el-input>
+                            <el-input clearable v-model="formInline.attentionId" placeholder="被关注人"></el-input>
                         </el-form-item>
                         <el-form-item label="被关注钓场：">
-                            <el-input clearable v-model="formInline.address" placeholder="被关注人"></el-input>
+                            <el-input clearable v-model="formInline.placeId" placeholder="被关注钓场"></el-input>
                         </el-form-item>
                         <el-form-item label="关注时间：">
                             <el-date-picker
@@ -99,17 +99,18 @@ export default {
         return {
             height: null,
             formInline: {   //圈子、详细地址、创建时间的表单
-                name: '',
-                address: '',
+                userId: '',
+                attentionId: '',
+                placeId: '',
                 date: ''
             },
             tableList: [   //表格的头部配置
-                {prop: 'circleName', label: '用户', width: '100', align: ''},
-                {prop: 'status', label: '关注类型', width: '120', align: ''},
-                {prop: 'kind', label: '被关注人', width: '120', align: ''},
-                {prop: 'codeName', label: '被关注钓场', width: '150', align: ''},
-                {prop: 'modifyTime', label: '关注时间', width: '', align: 'right'},
-               
+            
+                {prop: 'userId', label: '关注人', width: '100', align: ''},
+                {prop: 'attentionId', label: '被关注人', width: '100', align: ''},
+                {prop: 'placeId', label: '被关注钓场', width: '100', align: ''},
+                {prop: 'cdate', label: '关注时间', width: '160', align: 'right'},
+                {prop: '', label: '', width: '', align: ''}
             ],
             tableData: [],//表格的数据
             multipleSelection: [],   //选中之后存放的数据
@@ -119,9 +120,30 @@ export default {
         }
     },
     methods: {
+        //获取所有点赞列表
+        getAllAttentionList(pageSize,pageNum){
+            this.$post('myattention/getAllAttentionList',{
+                pageSize: pageSize ? pageSize : 30,
+                pageNum: pageNum ? pageNum : 1,
+                userId: this.formInline.userId ? this.formInline.userId : null,
+                attentionId: this.formInline.attentionId ? this.formInline.attentionId : null,
+                placeId: this.formInline.placeId ? this.formInline.placeId : null,
+                cdate: this.formInline.date ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
+                enddate: this.formInline.date ?  `${this.dataTransform(this.formInline.date[1])} 23:59:59`: null,
+            }).then(res=>{
+                console.log(res)
+                if(res.code == 0){
+                        this.tableData = res.data.list;
+                        this.total = res.data.total;
+                      this.$nextTick(function(){
+                            this.checked();//每次更新了数据，触发这个函数即可。
+                        })
+                }
+            })
+        },
         //查询
         search(){
-
+            this.getAllAttentionList();
         },
         //导出
         exportd(){
@@ -131,9 +153,10 @@ export default {
         handleSelectionChange(val){
              this.multipleSelection = val;
              
-
+        
             // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
             if(this.multipleSelection.length == 2){
+                console.log(1)
                      for(var i= 0; i<this.tableData.length; i++){
                     if(this.tableData[i].cId == this.multipleSelection[0].cId){
                         this.$refs.multipleTable.toggleRowSelection(this.tableData[i],false);
@@ -177,15 +200,33 @@ export default {
          return (this.currentPage - 1)*this.pageSize + index + 1;
      },
       //每页显示多少条数据
-        handleSizeChange(val) {
+     handleSizeChange(val) {
             this.pageSize = val;
-            this.getCircleList(val,this.currentPage);
+            this.getAllAttentionList(val,this.currentPage);
         },
         //当前第几页
-        handleCurrentChange(val) {
+      handleCurrentChange(val) {
             this.currentPage = val;
-            this.getCircleList(this.pageSize,val)
+            this.getAllAttentionList(this.pageSize,val)
         },
+        //标准时间格式转换
+      dataTransform(date){
+        if(date){
+            var y = date.getFullYear();
+            var m = date.getMonth() + 1;
+            m = m < 10 ? ('0' + m) : m;
+            var d = date.getDate();
+            d = d < 10 ? ('0' + d) : d;
+            // var h = date.getHours();
+            // var minute = date.getMinutes();
+            // minute = minute < 10 ? ('0' + minute) : minute;
+            // var second = date.getSeconds();	
+            // second = second < 10 ? ('0' + second) : second;
+            // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+
+            return y + '-' + m + '-' + d;
+        }
+      }
     },
     created(){
          this.height = window.innerHeight - 240;
@@ -193,6 +234,8 @@ export default {
     mounted(){
         //表格第一行默认选中
         this.checked();
+        //获取所有点赞列表
+        this.getAllAttentionList();
 
         window.addEventListener('resize', ()=>{
              this.height = window.innerHeight - 240;
@@ -208,19 +251,19 @@ export default {
 .topSearch .el-date-editor{
     width: 220px;
 }
-.Minefollow .table .el-table .el-table__body-wrapper{
+.giveUp .table .el-table .el-table__body-wrapper{
     overflow-y: scroll;
 }
 
-.Minefollow .el-date-editor--datetime input{
+.giveUp .el-date-editor--datetime input{
     width: 176.66px;
 }
-/* .Minefollow .el-dialog .el-dialog__header .el-dialog__title{
+/* .giveUp .el-dialog .el-dialog__header .el-dialog__title{
     font-size: 14px ;
     border-left: 2px solid #2693fa;
     padding-left: 8px;
 }
-.Minefollow .el-upload__tip{
+.giveUp .el-upload__tip{
     text-align: right;
 } */
 </style>
@@ -238,3 +281,5 @@ export default {
     margin: 10px 0 5px;
 }
 </style>
+
+

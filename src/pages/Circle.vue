@@ -821,8 +821,12 @@ export default {
         if(err){
              this.$message.error('上传图标失败');
         }
-      }
+      },
      /**end上传图片 */
+
+     closeDialog(){
+
+     }
     },
 
 

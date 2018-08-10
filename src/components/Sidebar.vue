@@ -83,7 +83,7 @@ export default {
                     index: 'area',
                     title: '区域'
                 },{
-                    icon: 'icon-xinxichaxun',
+                    icon: 'icon-search',
                     index: '9',
                     title: '查询',
                     subs: [
@@ -105,10 +105,12 @@ export default {
                         },{
                             index: 'SignIn',
                             title: '签到'
-                        },{
+                        },
+                        /*{
                             index: 'SignUser',
                             title: '签到用户'
-                        },{
+                        },*/
+                        {
                             index: 'Wallet',
                             title: '钱包'
                         },{
@@ -129,10 +131,11 @@ export default {
                         },{
                             index: 'WaterSituation',
                             title: '水情'
-                        },{
+                        },
+                        /*{
                             index: 'RechargeRecord',
                             title: '充值记录'
-                        }
+                        }*/
                     ]
                 }
             ]
