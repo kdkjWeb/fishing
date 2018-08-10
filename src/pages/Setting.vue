@@ -256,7 +256,7 @@ export default {
             this.$post('/sysCategory/queryByRecord',{
                 pageSize: pageSize ? pageSize : 30,
                 pageNum: pageNum ? pageNum : 1,
-              codeName: this.formInline.name ? this.formInline.name : null,
+                codeName: this.formInline.name ? this.formInline.name : null,
                 status: this.formInline.status ? this.formInline.status : null,
             }).then(res=>{
                 if(res.code == 0){
@@ -315,14 +315,14 @@ export default {
 
             this.imageUrl = '';
             this.dialogVisible = true;
-          this.form = {};
+            this.form = {};
             this.circleId = ''
         },
 
       //弹出框的确认按钮
       comfirm(form){
         let url = this.circleId ? '/sysCategory/updateSysCategory' : '/sysCategory/addSysCategory'   //如果this.circleId存在，那就是调修改接口，否则就是新增接口
-        let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
+        let status = (this.form.status == '正常'                                                                              ||this.form.status == '1') ? 1 : 0;
 
         if(this.circleId){
           switch(this.form.category){

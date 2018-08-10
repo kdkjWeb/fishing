@@ -672,11 +672,6 @@ export default {
             this.disabled = false;
         },
 
-
-
-
-
-
         //默认选中第一行
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
