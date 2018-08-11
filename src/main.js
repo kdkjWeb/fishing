@@ -24,7 +24,7 @@ Vue.prototype.$post = Server.post;
 
 import store from './store/store'
 
-
+import 'babel-polyfill'
 
 //路由拦截
 router.beforeEach((to,from,next)=>{
