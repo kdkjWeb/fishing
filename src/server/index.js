@@ -184,7 +184,7 @@ export default{
 
   //导出
   exported: (url,obj,time1 = 'cdate',time2 = 'enddate',date = 'date')=>{
-    let path = 'http://192.168.20.3:8080/';
+    let path = 'http://192.168.20.158:8080/';
     let href = path + url;
     let json = {};
 
