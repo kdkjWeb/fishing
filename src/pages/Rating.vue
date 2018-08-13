@@ -390,6 +390,8 @@ export default {
           let url = this.circleId ? '/levelRule/updateLevelRule' : '/levelRule/addLevelRule'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
           let type  = (this.form.type == '钓友' || this.form.type == '1')? 1:(this.form.type == '农家乐' || this.form.type == '2')? 2 : 3
+
+
           if (valid) {
             this.$post(url,{
               cId: this.circleId ? this.circleId : null,

@@ -177,36 +177,37 @@
                 <el-row>
                   <el-col :span="8">
                     <el-form-item label="浏览数：">
-                      <el-input v-model="form.viewNum" disabled></el-input>
+                      <el-input v-model="form.viewNum" ></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="评论数：">
-                      <el-input v-model="form.commentNum" disabled></el-input>
+                      <el-input v-model="form.commentNum" ></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="打赏金额：" >
-                      <el-input v-model="form.reward" disabled></el-input>
+                      <el-input v-model="form.reward" ></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col :span="8">
                     <el-form-item label="收藏数：">
-                      <el-input v-model="form.collects" disabled></el-input>
+                      <el-input v-model="form.collects" ></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="点赞数：">
-                      <el-input v-model="form.clickNum" disabled></el-input>
+                      <el-input v-model="form.clickNum" ></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="是否可见：">
-                      <el-select v-model="form.isAttentionAuthor" placeholder="是否可见">
-                        <el-option label="是" value="1"></el-option>
-                        <el-option label="否" value="0"></el-option>
+                    <el-form-item label="可见类型：">
+                      <el-select v-model="form.isVisibleCategoryId" placeholder="可见类型">
+                        <el-option label="打赏" value="2"></el-option>
+                        <el-option label="自己" value="1"></el-option>
+                        <el-option label="全网" value="0"></el-option>
                       </el-select>
                     </el-form-item>
                   </el-col>
@@ -225,11 +226,11 @@
                         </el-option>
                       </el-select>
 
-                      <el-select v-model="topicCircleArr"  v-else="isShow">
+                      <el-select v-model="topicCircle"  v-else="isShow">
                         <el-option
-                          v-for="item,index in anglingSiteList"
-                          :label="item.name"
-                          :value="item.cId"
+                          v-for="data,index in anglingSiteList"
+                          :label="data.name"
+                          :value="data.cId"
                           :key="index">
                         </el-option>
                       </el-select>
@@ -370,7 +371,7 @@
             <el-row>
               <el-col :span="8">
                 <el-form-item label="创建人：" prop="location">
-                  <el-input v-model="form.author" disabled></el-input>
+                  <el-input v-model="form.authorStr" disabled></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
@@ -393,12 +394,66 @@
             </el-row>
 
             <el-row>
-              <el-col :span="24">
-                <el-form-item label="内容：">
-                  <el-input type="textarea" v-model="form.content"></el-input>
-                </el-form-item>
-              </el-col>
+              <el-button type="primary" size="mini"  class="addNodelist" @click="addloanTrial()" v-if="addIsShow">+ 添加</el-button>
+              <el-button-group v-else="addIsShow"  class="addNodelist">
+                <el-button type="primary" size="mini" >文字</el-button>
+                <el-button type="primary" size="mini" >图片</el-button>
+              </el-button-group>
+
+              <div v-for="item,index in topicContentArr">
+                <el-col :span="24" v-if="item.contentType==1" >
+                  <el-form-item label="内容：">
+                    <el-input type="textarea" v-model="form.content"></el-input>
+                  </el-form-item>
+                </el-col>
+
+                <!--<el-col :span="24" :offset="1"  v-if="item.contentType==2">-->
+                  <!--<span class="uploadTitle">上传图标：</span>-->
+                  <!--<el-upload-->
+                    <!--class="avatar-uploader"-->
+                    <!--accept="image/jpeg,image/png"-->
+                    <!--:action="`${this.$store.state.baseUrl}common/uploadOssPic`"-->
+                    <!--:show-file-list="false"-->
+                    <!--:on-success="handleAvatarSuccess"-->
+                    <!--name="picture"-->
+                    <!--:before-upload="beforeAvatarUpload">-->
+                    <!--<img v-if="imageUrl" :src="imageUrl" class="avatar">-->
+                    <!--<i v-else class="el-icon-plus avatar-uploader-icon"></i>-->
+                    <!--<div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div>-->
+                  <!--</el-upload>-->
+                <!--</el-col>-->
+              </div>
+
             </el-row>
+
+            <el-row>
+
+
+              <!--<el-col :span="7.5" :offset="1" style="float:right">-->
+                <!--<span class="uploadTitle">上传视频：</span>-->
+                <!--<el-upload-->
+                  <!--class="avatar-uploader"-->
+                  <!--accept="image/jpeg,image/png"-->
+                  <!--:action="`${this.$store.state.baseUrl}common/uploadOssPic`"-->
+                  <!--:show-file-list="false"-->
+                  <!--:on-success="handleVideoSuccess"-->
+                  <!--name="picture"-->
+                  <!--:before-upload="beforeUploadVideo"-->
+                  <!--:on-progress="uploadVideoProcess"-->
+                  <!--&gt;-->
+                  <!--<el-progress v-if="videoFlag == true" type="circle" :percentage="videoUploadPercent" style="margin-top:30px;"></el-progress>-->
+                  <!--<video v-if="videoPath" :src="videoPath"  class="avatar"></video>-->
+                  <!--<i v-else class="el-icon-plus avatar-uploader-icon"></i>-->
+                  <!--<div slot="tip" class="el-upload__tip">请确保视频格式正确，且不超过10M</div>-->
+                <!--</el-upload>-->
+              <!--</el-col>-->
+
+              <!--<el-col>-->
+                <!--<my-video :sources="video.sources" :options="video.options"></my-video>-->
+              <!--</el-col>-->
+            </el-row>
+
+
           </el-form>
 
         </div>
@@ -412,96 +467,71 @@
     </div>
     <div style="height: 30px;background: #42475B;margin:10px 0;margin-left: -20px;"></div>
     <div id="comment">
-      <!--<div class="topSearch" style="margin-bottom: 10px;">-->
-        <!--<el-row>-->
-          <!--<el-col :span="14">-->
-            <!--<el-button type="primary" size="mini" @click="search">评论</el-button>-->
-            <!--<el-button size="mini" @click="add">评论回复</el-button>-->
-            <!--<el-button size="mini" @click="deleted">点赞明细</el-button>-->
-            <!--<el-button size="mini" @click="edit">打赏明细</el-button>-->
-          <!--</el-col>-->
+      <div class="topSearch" style="margin-bottom: 10px;">
+        <el-row>
+          <el-col :span="14">
+            <!--<el-button type="primary" size="mini" @click="commentClick">评论</el-button>-->
+            <el-button type="primary"  size="mini" @click="commentReplyClick">评论回复</el-button>
+            <el-button size="mini" @click="pointOfDetailClick">点赞明细</el-button>
+            <el-button size="mini" @click="praiseTheDetailClick">打赏明细</el-button>
+          </el-col>
 
-          <!--<el-col :span="10" class="right">-->
-            <!--<el-button type="primary" size="mini" @click="search">审核</el-button>-->
-            <!--<el-button size="mini" @click="add">取消审核</el-button>-->
-            <!--<el-button size="mini" @click="deleted">删除</el-button>-->
-          <!--</el-col>-->
-        <!--</el-row>-->
-      <!--</div>-->
+          <el-col :span="10" class="right">
+            <el-button type="primary" size="mini" @click="search">审核</el-button>
+            <el-button size="mini" @click="add">取消审核</el-button>
+            <el-button size="mini" @click="deleted">删除</el-button>
+          </el-col>
+        </el-row>
+      </div>
 
-      <!--<div style="padding-right: 20px;">-->
-        <!--<div class="table">-->
-          <!--<el-table-->
-            <!--height="300"-->
-            <!--ref="multipleTable"-->
-            <!--:data="commentData"-->
-            <!--tooltip-effect="dark"-->
-            <!--style="width: 100%"-->
-            <!--stripe-->
-            <!--:header-cell-style="getRowClass"-->
-            <!--@selection-change="handleSelectionChange">-->
-            <!--<el-table-column-->
-              <!--type="selection"-->
-              <!--width="55">-->
-            <!--</el-table-column>-->
-            <!--<el-table-column-->
-              <!--type="index"-->
-              <!--width="50"-->
-              <!--header-align="center"-->
-              <!--align="right"-->
-              <!--:index="index"-->
-              <!--label="编号">-->
-            <!--</el-table-column>-->
-            <!--<el-table-column-->
-              <!--width="100"-->
-              <!--header-align="center"-->
-              <!--label="用户图标">-->
-              <!--<template slot-scope="scope">-->
-                <!--<div style="width:50px;height:50px;">-->
-                  <!--<img :src="scope.row.iconUrl" style="width:100%;">-->
-                <!--</div>-->
-              <!--</template>-->
-            <!--</el-table-column>-->
+      <div style="padding-right: 20px;">
+        <div class="table">
+          <el-table
+            height="300"
+            ref="multiple"
+            :data="commentData"
+            tooltip-effect="dark"
+            style="width: 100%"
+            stripe
+            :header-cell-style="getRowClass"
+            @selection-change="selectionChange">
+            <el-table-column
+              type="selection"
+              width="55">
+            </el-table-column>
+            <el-table-column
+              type="index"
+              width="50"
+              header-align="center"
+              align="right"
+              :index="index"
+              label="编号">
+            </el-table-column>
 
-            <!--<el-table-column-->
-              <!--v-for="(item,index) in commentList"-->
-              <!--:key="index"-->
-              <!--:prop="item.prop"-->
-              <!--:label="item.label"-->
-              <!--:width="item.width"-->
-              <!--:align="item.align"-->
-              <!--header-align="center"-->
-              <!--:show-overflow-tooltip="true"-->
-            <!--&gt;-->
-            <!--</el-table-column>-->
-          <!--</el-table>-->
-          <!--<div class="aboutNum">-->
-            <!--<div> <span>合计：{{total}}</span></div>-->
-          <!--</div>-->
-        <!--</div>-->
+            <el-table-column
+              v-for="(item,index) in commentList"
+              :key="index"
+              :prop="item.prop"
+              :label="item.label"
+              :width="item.width"
+              :align="item.align"
+              header-align="center"
+              :show-overflow-tooltip="true"
+            >
+            </el-table-column>
+          </el-table>
+        </div>
 
-        <!--&lt;!&ndash; start分页 &ndash;&gt;-->
-        <!--<div class="page" >-->
-          <!--<el-pagination-->
-            <!--@size-change="handleSizeChange"-->
-            <!--@current-change="handleCurrentChange"-->
-            <!--:current-page.sync="currentPage"-->
-            <!--:page-sizes="[30, 50, 80, 100]"-->
-            <!--:page-size="pageSize"-->
-            <!--layout="total, sizes, prev, pager, next, jumper"-->
-            <!--:total="total"-->
-            <!--background>-->
-          <!--</el-pagination>-->
-        <!--</div>-->
-        <!--&lt;!&ndash; end分页 &ndash;&gt;-->
-      <!--</div>-->
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+  import ElRow from "element-ui/packages/row/src/row";
   export default {
-      data(){
+    components: {ElRow},
+    data(){
           return{
             allNum: {
               commentNum: 0,   //评论总数
@@ -520,6 +550,7 @@
               publishTime2:''
             },
             //增加
+            topicCircle:'',
             titleName:'发送圈子：',
             dialogVisible:false,
             circleList:[],  //圈子列表
@@ -530,6 +561,7 @@
             anglingSiteList:[],  //钓场
             topicCircleArr:[],   //发送圈子
             isShow:true,
+            imageUrl:'',   //图片路径
             form:{
               title:'',  //标题、圈子
               isTop:'',  //是否置顶
@@ -539,7 +571,7 @@
               commentNum:'',  //评论数
               collects:'',   //收藏数
               reward:'',   //打赏金币
-              isAttentionAuthor:'',  //是否可见
+              isVisibleCategoryId:'',  //是否可见
               topicCircleList:[],    //发送圈子
               fishMethod:'',      //钓法
               fishType:'',      //鱼类
@@ -558,15 +590,39 @@
               content:'',   //内容
               showSort:'',  //排序号
               topicContentList:[],  //内容
-              author:''
+              author:'',
+              icon:'',
+              videoUrl:'',
             },
+            topicContentArr:[
+                {
+                  contentType:1,
+                  content:'',
+                  sort:0
+                },
+              {
+                contentType:1,
+                content:'',
+                sort:0
+              },
+              {
+                contentType:2,
+                content:'',
+                sort:0
+              },
+            ],
+            addIsShow:true,
+            videoFlag:false,
+            videoUploadPercent:null,
+            videoPath:'',
+            circleId:'',
             rules:{
-//              cityName: [
-//                { required: true, message: '请输入圈子名称', trigger: 'blur' },
-//              ],
-//              topicType:[
-//                { required: true, message: '请选择类型', trigger: 'change' },
-//              ]
+              cityName: [
+                { required: true, message: '请输入圈子名称', trigger: 'blur' },
+              ],
+              topicType:[
+                { required: true, message: '请选择类型', trigger: 'change' },
+              ]
             },
             multipleSelection: [],   //存放勾选的数据
             currentPage: 1, //当前第几页
@@ -591,19 +647,18 @@
               {prop: 'remark', label: '备注', width: '', align: ''},
             ],
             commentList: [   //表格的头部配置
-              {prop: 'status', label: '编号', width: '100', align: ''},
               {prop: 'status', label: '状态', width: '100', align: ''},
-              {prop: 'type', label: '楼层', width: '100', align: ''},
+              {prop: 'sort', label: '楼层', width: '100', align: ''},
               {prop: 'type', label: '评论类型', width: '100', align: ''},
-              {prop: 'type', label: '回复数', width: '100', align: ''},
-              {prop: 'level', label: '点赞数', width: '100', align: 'right'},
+              {prop: 'replies', label: '回复数', width: '100', align: ''},
+              {prop: 'likedNum', label: '点赞数', width: '100', align: 'right'},
               {prop: 'name', label: '不赞数', width: '120', align: ''},
-              {prop: 'score', label: '评论内容', width: '100', align: ''},
-              {prop: 'coin', label: '评论人', width: '150', align: ''},
-              {prop: 'creator', label: '评论时间', width: '100', align: ''},
-              {prop: 'creatTime', label: '发帖地址', width: '', align: 'right'},
+              {prop: 'content', label: '评论内容', width: '100', align: ''},
+              {prop: 'userId', label: '评论人', width: '150', align: ''},
+              {prop: 'cdate', label: '评论时间', width: '100', align: ''},
+              {prop: 'location', label: '发帖地址', width: '', align: 'right'},
               {prop: 'modifier', label: '手机号', width: '100', align: ''},
-              {prop: 'modifyTime', label: '用户类型', width: '', align: 'right'},
+              {prop: 'modifyTime', label: '用户类别', width: '', align: 'right'},
             ],
           }
       },
@@ -621,28 +676,28 @@
         this.topicCircleArr = [];
         this.getCircleList(this.topicType);
       },
+
       //获取所有发送圈子  /basicTopic/queryById
       getCircleList(){
         if(this.form.topicType == 2 || this.form.topicType == 3){
-            this.titleName = '钓场:';
+            this.titleName = '钓场：';
             this.isShow = false;
-          this.$get('/fishplace/getSendFishPlaceList',{}).then(res=>{
-            if(res.code == 0){
-              this.anglingSiteList = res.data;
-              console.log(this.anglingSiteList)
-            }
-          })
-          }else{
-            this.titleName = '发送圈子：';
-            this.isShow = true;
-            this.$get('/circle/querySendCircle',{}).then(res=>{
+            this.$get('/fishplace/getSendFishPlaceList',{}).then(res=>{
               if(res.code == 0){
-                this.circleList = res.data;
+                this.anglingSiteList = res.data;
               }
             })
+          }else{
+              this.titleName = '发送圈子：';
+              this.isShow = true;
+              this.$get('/circle/querySendCircle',{}).then(res=>{
+                if(res.code == 0){
+                  this.circleList = res.data;
+                }
+              })
           }
-
       },
+
       //获取所有省份 /province/queryAll
       getProvinceList(){
           this.$get('/province/queryAll',{}).then(res=>{
@@ -651,6 +706,7 @@
               }
           })
       },
+
       //获取所有市  /city/queryAll  cityList
       getCityList(){
           this.$get('city/queryByProvinceId',{
@@ -675,6 +731,7 @@
           this.form.countryId = '';
         })
       },
+
       //获取乡镇
       getCountryList(){
         //根据县级id获取乡镇列表
@@ -685,6 +742,7 @@
           this.form.countryId = '';
         })
       },
+
       //设置表格索引序号
       index(index){
         return (this.currentPage - 1)*this.pageSize + index + 1;
@@ -716,6 +774,10 @@
                  this.allNum.commentNum += val.commentNum;
                  this.allNum.collects += val.collects;
                  this.allNum.clickNum += val.clickNum;
+               })
+
+               this.$nextTick(function(){
+                 this.checked();//每次更新了数据，触发这个函数即可。
                })
              }
               this.total = res.data.total;
@@ -754,6 +816,7 @@
         if(this.currentPage == 1){
           this.rowIndex = 1;
         }
+        this.commentReplyClick();
       },
 
       //每页显示多少条数据
@@ -796,9 +859,61 @@
 
       //新增
       add(){
+        this.imageUrl = '';
+        this.videoPath = '';
         this.dialogVisible = true;
         this.form = {};
       },
+
+      /**start上传图片 */
+      handleAvatarSuccess(res, file) {
+        this.imageUrl = URL.createObjectURL(file.raw);
+        this.form.icon = file.response.data;
+      },
+      beforeAvatarUpload(file) {
+        const isJPG = file.type === 'image/jpeg';
+        const isPNG = file.type === 'image/png';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG && !isPNG) {
+          this.$message.error('请选择我们支持的格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传图片大小不能超过 2MB!');
+        }
+        return (isJPG || isPNG) && isLt2M;
+      },
+
+      /**start上传视频*/
+        //验证方法：验证视频格式和视频大小
+        beforeUploadVideo(file) {
+            console.log(file)
+          const isLt10M = file.size / 1024 / 1024  < 10;
+          if (['video/mp4', 'video/ogg', 'video/flv','video/avi','video/wmv','video/rmvb'].indexOf(file.type) == -1) {
+            this.$message.error('请上传正确的视频格式');
+            return false;
+          }
+          if (!isLt10M) {
+            this.$message.error('上传视频大小不能超过10MB哦!');
+            return false;
+          }
+        },
+        // 上传进度显示：
+          uploadVideoProcess(event, file, fileList){
+            this.videoFlag = true;
+            this.videoUploadPercent = Number(file.percentage.toFixed(0));
+            console.log(event,file,fileList)
+          },
+        //上传成功
+        handleVideoSuccess(res, file){
+              console.log(res,file)
+          this.videoUploadPercent = 100;
+//          this.videoFlag = false;
+          this.videoPath = URL.createObjectURL(file.raw);
+          this.form.videoUrl = res.data;
+        },
+
+
       //标准时间格式转换
       dataTransform(date){
         if(date){
@@ -817,10 +932,32 @@
           return null;
         }
       },
-      //点击确定   /basicTopic/addBasicTopic
-      comfirm(form){
-        this.form.topicCircleList = [];
 
+      //添加内容
+      addloanTrial(){
+        this.addIsShow = false;
+      },
+
+      //点击确定   /basicTopic/addBasicTopic   /basicTopic/updateBasicTopic
+      comfirm(form){
+
+        if(!this.form.icon){
+          this.$message({
+            message: '请上传图标！',
+            type: 'warning'
+          });
+          return;
+        }
+
+        if(!this.form.videoUrl){
+          this.$message({
+            message: '请上传视频！',
+            type: 'warning'
+          });
+          return;
+        }
+
+        this.form.topicCircleList = [];
         if(this.form.topicType == 2 || this.form.topicType == 3){
               this.topicCircleArr.forEach((val)=>{
                 let obj = {};
@@ -829,31 +966,45 @@
                 this.form.topicCircleList.push(obj)
               })
         } else{
-              this.topicCircleArr.forEach((val)=>{
-                let obj = {};
-                obj.cType = 0;
-                obj.placeId = val;
-                this.form.topicCircleList.push(obj)
-              })
+            this.form.topicCircleList={
+                cType:0,
+                placeId:this.topicCircle
+            }
         }
 
+//        this.form.topicContentList = []
+//        this.form.topicContentList = [
+//          {
+//            contentType:1,
+//            content:this.form.content,
+//            sort:0
+//          },
+//          {
+//            contentType:2,
+//            content:this.form.icon,
+//            sort:1
+//          },
+//          {
+//            contentType:3,
+//            content:this.form.videoUrl,
+//            sort:2
+//          }
+//        ]
 
-        this.form.topicContentList = []
-        this.form.topicContentList = [{
-          contentType:1,
-          content:this.form.content,
-          sort:0
-        }]
-        console.log(this.form)
         this.$refs[form].validate((valid)=>{
+          let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopic'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+          this.form.status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
+          this.form.isTop = (this.form.status == '是' ||this.form.status == '1') ? 1 : 0;
+          this.form.isBest = (this.form.status == '是' ||this.form.status == '1') ? 1 : 0;
+
             if(valid){
-                this.$post('/basicTopic/addBasicTopic',{
+                this.$post(url,{
                   title: this.form.title,  //标题、圈子
                   isTop:this.form.isTop,  //是否置顶
                   isBest:this.form.isBest,  //精华
                   status:this.form.status,  //状态
                   topicType:this.form.topicType,  //类型
-                  isAttentionAuthor:this.form.isAttentionAuthor,  //是否可见
+                  isVisibleCategoryId:this.form.isVisibleCategoryId,  //是否可见
                   fishMethod:this.form.fishMethod,      //钓法
                   fishType:this.form.fishType,      //鱼类
                   provinceId:this.form.provinceId,    //省
@@ -889,13 +1040,74 @@
         this.$refs[form].resetFields();
         this.dialogVisible = false;
       },
+
       //删除
       deleted(){
+        if(this.multipleSelection.length != 1){
+          this.$message({
+            message: '请选择一条需要删除的数据！',
+            type: 'warning'
+          });
+          return;
+        }
+        let id = this.multipleSelection[0].cId;   //保存选中的数据的cId
 
+        this.$confirm('此操作将永久删除该帖子, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$get('/basicTopic/falseDeleteBasicTopic',{
+            topicId: id
+          }).then(res=>{
+            if(res.code == 0){
+              this.tableData.forEach((val,index)=>{
+                if(val.cId == id){
+                  this.tableData.splice(index,1)
+                  this.total -=1;
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功!'
+                  });
+                }
+              })
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
       },
       //修改
       edit(){
+        if(this.multipleSelection.length != 1){
+          this.$message({
+            message: '请选择一条需要删除的数据！',
+            type: 'warning'
+          });
+          return;
+        }
+        this.dialogVisible = true;
+        this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
 
+        console.log(this.multipleSelection)
+
+        if(this.circleId ){
+          this.form = this.multipleSelection[0];
+
+          if(this.form.topicType == 2 || this.form.topicType == 3){
+            this.titleName = '钓场：';
+              this.topicCircle = this.form.circleList[0].cId
+          }else{
+            this.topicCircleArr = [];
+            this.titleName = '发送圈子：';
+            this.form.circleList.forEach((val)=>{
+              this.topicCircleArr.push(val.cId);
+            })
+          }
+        }
       },
       //导出
       exportd(){
@@ -915,21 +1127,118 @@
          })
          .catch(_ => { });*/
       },
+
+      //评论
+//      commentClick(){
+//        this.commentList = [   //表格的头部配置
+//          {prop: 'status', label: '编号', width: '100', align: 'right'},
+//          {prop: 'status', label: '状态', width: '100', align: ''},
+//          {prop: 'type', label: '楼层', width: '100', align: ''},
+//          {prop: 'type', label: '评论类型', width: '100', align: ''},
+//          {prop: 'type', label: '回复数', width: '100', align: 'right'},
+//          {prop: 'level', label: '点赞数', width: '100', align: 'right'},
+//          {prop: 'name', label: '不赞数', width: '120', align: 'right'},
+//          {prop: 'score', label: '评论内容', width: '100', align: ''},
+//          {prop: 'coin', label: '评论人', width: '150', align: ''},
+//          {prop: 'creator', label: '评论时间', width: '100', align: 'right'},
+//          {prop: 'creatTime', label: '发帖地址', width: '', align: ''},
+//          {prop: 'modifier', label: '手机号', width: '100', align: 'right'},
+//          {prop: 'modifyTime', label: '用户类别', width: '120', align: ''},
+//          {prop: '', label: '', width: '', align: ''}
+//        ]
+//      },
+      //评论回复
+      commentReplyClick(){
+
+        this.commentList = [   //表格的头部配置
+          {prop: 'status', label: '状态', width: '100', align: ''},
+          {prop: 'sort', label: '楼层', width: '100', align: 'right'},
+          {prop: 'type', label: '评论类型', width: '100', align: ''},
+          {prop: 'replies', label: '回复数', width: '100', align: 'right'},
+          {prop: 'likedNum', label: '点赞数', width: '100', align: 'right'},
+          {prop: 'name', label: '不赞数', width: '120', align: 'right'},
+          {prop: 'content', label: '评论内容', width: '100', align: ''},
+          {prop: 'userId', label: '评论人', width: '150', align: ''},
+          {prop: 'cdate', label: '评论时间', width: '100', align: 'right'},
+          {prop: 'location', label: '发帖地址', width: '', align: ''},
+          {prop: 'modifier', label: '手机号', width: '100', align: 'right'},
+          {prop: 'modifyTime', label: '用户类别', width: '', align: ''},
+        ]
+
+//        let id = this.multipleSelection[0].cId
+        let id = ''
+        this.multipleSelection.forEach((val)=>{
+             id = val.cId;
+        })
+        this.$post('/comments/getCommentsList',{
+            pid:id,
+          type:1
+        }).then(res=>{
+            console.log(res)
+          res.data.list.forEach((val)=>{
+            val.status = val.status==1? '正常':'已关闭';
+              console.log(val.type)
+            switch(val.type){
+              case 1:
+                val.type = '帖子评论';
+                break;
+              case 2:
+                  val.type = '店铺评论';
+                  break;
+              case 11:
+                  val.type = '帖子评论的回复';
+                  break;
+              case 21:
+                  val.type = '店铺评论的回复';
+                  break;
+            }
+          })
+          this.commentData = res.data.list;
+        })
+
+      },
+      //点赞明细
+      pointOfDetailClick(){
+        this.commentList = [   //表格的头部配置
+          {prop: 'status', label: '编号', width: '100', align: 'right'},
+          {prop: 'status', label: '点赞人', width: '100', align: ''},
+          {prop: 'type', label: '点赞时间', width: '100', align: ''},
+          {prop: 'type', label: '发贴区域', width: '100', align: 'right'},
+          {prop: 'type', label: '手机号', width: '100', align: 'right'},
+          {prop: 'type', label: '用户类别', width: '100', align: ''},
+        ]
+      },
+      //打赏明细
+      praiseTheDetailClick(){
+        this.commentList = [   //表格的头部配置
+          {prop: 'status', label: '编号', width: '100', align: 'right'},
+          {prop: 'status', label: '打赏人', width: '100', align: ''},
+          {prop: 'status', label: '打赏金额', width: '100', align: ''},
+          {prop: 'type', label: '打赏时间', width: '100', align: ''},
+          {prop: 'type', label: '发贴区域', width: '100', align: 'right'},
+          {prop: 'type', label: '手机号', width: '100', align: 'right'},
+          {prop: 'type', label: '用户类别', width: '100', align: ''},
+        ]
+      },
+
+      selectionChange(){
+
+      },
     },
     mounted(){
       //获取所有帖子列表 /basicTopic/queryCommon
-      this.getPostList()
+      this.getPostList();
+      //表格第一行默认选中
+      this.checked();
 
 //      if(this.$store.state.token){
 //        this.myHeaders.token = this.$store.state.token
 //      }
-      //表格第一行默认选中
-      this.checked();
-//      //获取所有发送圈子列表
+
+    //获取所有发送圈子列表
       this.getCircleList();
       //获取所有省份
       this.getProvinceList();
-
     },
 
 
@@ -962,10 +1271,10 @@
     position: relative;
     overflow: hidden;
   }
-  #post .rating .avatar-uploader .el-upload:hover {
+  #post .avatar-uploader .el-upload:hover {
     border-color: #409EFF;
   }
-  #post .rating .avatar-uploader-icon {
+  #post .avatar-uploader-icon {
     font-size: 28px;
     color: #8c939d;
     width: 140px;
@@ -973,16 +1282,36 @@
     line-height: 80px;
     text-align: center;
   }
-  #post .rating .avatar {
+  #post  .avatar {
     width: 140px;
     height: 80px;
     display: block;
   }
-  #post  .rating .el-upload__tip{
-    text-align: right;
+  #post .el-upload__tip{
+    /*text-align: right;*/
+    margin-left:80px;
   }
   #post .el-table th, .el-table tr{
     /*background: #EFEFEF;*/
+  }
+
+  #post.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  #post.avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  #post .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 150px;
+    height: 150px;
+    line-height: 150px;
+    text-align: center;
   }
 </style>
 <style scoped>
@@ -1008,7 +1337,7 @@
   text-align: right;
   margin: 20px 0 0px;
 }
-.rating span.uploadTitle{
+  #post span.uploadTitle{
   float: left;
   line-height: 100px;
   padding-right: 15px;
@@ -1030,5 +1359,10 @@
     text-align: right;
     padding: 0 10px;
     box-sizing: border-box;
+  }
+  .addNodelist{
+    float: right;
+    margin-right:40px;
+    margin-bottom:10px;
   }
 </style>
