@@ -314,6 +314,9 @@ export default {
                     if(this.tableData[i].cId == this.multipleSelection[0].cId){
                         this.$refs.multipleTable.toggleRowSelection(this.tableData[i],false);
 
+
+                        console.log(this.tableData[i+1])
+
                         //判读审核、取消审核按钮哪一个可以点
                         if(this.tableData[i+1].status == '正常'){
                                 this.disabled = false;

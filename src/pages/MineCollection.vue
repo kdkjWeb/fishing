@@ -153,7 +153,41 @@ export default {
         },
         //导出
         exportd(){
+        
+            /*let path = this.$store.state.baseUrl;
+            let href = path + 'favorite/downloadFavoriteList'
+            let json = {};
 
+
+            Object.keys(this.formInline).forEach((key,index)=>{
+                if(this.formInline[key] != '' && key != 'date'){
+                    json[key] = this.formInline[key]
+                }else if(this.formInline.date.length > 0 && key == 'date'){
+                    json.cdate =  `${this.dataTransform(this.formInline.date[0])} 00:00:00`;
+                    json.enddate =  `${this.dataTransform(this.formInline.date[1])} 23:59:59`;
+                }
+            })
+
+
+
+
+
+            if(Object.keys(json).length == 0){
+                 href = href + '?' + 'pageSizes' + '=' +0 + '&pageNum' + '=' +1
+            }else{
+                href = href + '?';
+                Object.keys(json).forEach((key,index) => {
+                if(json[key] != ''){
+                    href = href+'&'+key+'='+json[key];
+                }
+            });
+            }
+
+           location.href = href;   */   
+
+
+
+           this.$export('favorite/downloadFavoriteList',this.formInline)
         },
         //多选框选中之后存放的数据
         handleSelectionChange(val){

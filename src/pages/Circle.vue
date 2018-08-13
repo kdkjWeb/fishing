@@ -98,8 +98,7 @@
         title="圈子-圈子详情"
         :visible.sync="dialogVisible"
         top="8vh"
-        width="870px"
-        :before-close="closeDialog">
+        width="870px">
         <div class="dialog_content">
             <el-form label-position="right" ref="form" :rules="rules"  label-width="100px" :model="form" size="mini">
 
@@ -819,9 +818,6 @@ export default {
       },
      /**end上传图片 */
 
-     closeDialog(){
-
-     }
     },
 
 

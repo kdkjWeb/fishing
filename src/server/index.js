@@ -178,5 +178,39 @@ export default{
               reject(err)
           })
       })
+  },
+
+
+
+  //导出
+  exported: (url,obj,time1 = 'cdate',time2 = 'enddate',date = 'date')=>{
+    let path = 'http://192.168.20.3:8080/';
+    let href = path + url;
+    let json = {};
+
+//因为时间是装在一个数组中的，需要重新组装成json
+ Object.keys(obj).forEach((key,index)=>{
+        if(obj[key] != '' && key != date){
+            json[key] = obj[key]
+        }else if(obj.date.length > 0 && key == date){
+            json.time1 =  `${this.dataTransform(obj.date[0])} 00:00:00`;
+            json.time2 =  `${this.dataTransform(obj.date[1])} 23:59:59`;
+        }
+    })
+
+
+//判断用户是否输入查询条件导出，如果没有就导出全部，反之则遍历拼接成新的字符串作为导出地址
+    if(Object.keys(json).length == 0){
+         href = href + '?' + 'pageSizes' + '=' +0 + '&pageNum' + '=' +1
+    }else{
+        href = href + '?';
+        Object.keys(json).forEach((key,index) => {
+        if(json[key] != ''){
+            href = href+'&'+key+'='+json[key];
+        }
+    });
+    }
+
+   location.href = href; 
   }
 }
