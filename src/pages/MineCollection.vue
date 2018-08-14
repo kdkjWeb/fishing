@@ -154,7 +154,7 @@ export default {
         //导出
         exportd(){
         
-            /*let path = this.$store.state.baseUrl;
+            let path = this.$store.state.baseUrl;
             let href = path + 'favorite/downloadFavoriteList'
             let json = {};
 
@@ -173,9 +173,9 @@ export default {
 
 
             if(Object.keys(json).length == 0){
-                 href = href + '?' + 'pageSizes' + '=' +0 + '&pageNum' + '=' +1
+                 href = href + '?' + 'pageSize' + '=' +0 + '&pageNum' + '=' +1
             }else{
-                href = href + '?';
+                href = href + '?'+ 'pageSize' + '=' +0;
                 Object.keys(json).forEach((key,index) => {
                 if(json[key] != ''){
                     href = href+'&'+key+'='+json[key];
@@ -183,11 +183,7 @@ export default {
             });
             }
 
-           location.href = href;   */   
-
-
-
-           this.$export('favorite/downloadFavoriteList',this.formInline)
+            location.href = href; 
         },
         //多选框选中之后存放的数据
         handleSelectionChange(val){
