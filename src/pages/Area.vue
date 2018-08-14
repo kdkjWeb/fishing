@@ -89,7 +89,7 @@ export default {
             
             defaultProps: {
             children: 'childList',
-            label: 'codeName'
+            label: 'regionName'
             }
         }
     },
@@ -157,7 +157,7 @@ console.log("删除 ", this.checkId);
 
       //获取区域列表
      getProvince(){
-         this.$get('province/queryTrees',{}).then(res=>{
+         this.$get('region/queryTrees',{}).then(res=>{
              this.provinceList = res.data;
              console.log(this.provinceList)
              this.$nextTick(()=>{
