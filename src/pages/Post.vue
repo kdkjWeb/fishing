@@ -118,7 +118,7 @@
               <el-col :span="24">
                 <el-row>
                   <el-col :span="24">
-                    <el-form-item label="圈子：" prop="cityName">
+                    <el-form-item label="圈子：" prop="title">
                       <el-input v-model="form.title"></el-input>
                     </el-form-item>
                   </el-col>
@@ -288,7 +288,7 @@
                       <!--<el-input v-model="form.fishOnTime" disabled></el-input>-->
                       <el-form-item label="上鱼时间：">
                         <el-date-picker
-                          v-model="form.fishOnTime"
+                          v-model="form.publishTime"
                           type="datetime"
                           placeholder="选择日期时间"
                           default-time="12:00:00">
@@ -371,7 +371,7 @@
             <el-row>
               <el-col :span="8">
                 <el-form-item label="创建人：" prop="location">
-                  <el-input v-model="form.authorStr" disabled></el-input>
+                  <el-input v-model="form.authorId" disabled></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
@@ -393,20 +393,21 @@
               </el-col>
             </el-row>
 
-            <el-row>
-              <el-button type="primary" size="mini"  class="addNodelist" @click="addloanTrial()" v-if="addIsShow">+ 添加</el-button>
-              <el-button-group v-else="addIsShow"  class="addNodelist">
-                <el-button type="primary" size="mini" >文字</el-button>
-                <el-button type="primary" size="mini" >图片</el-button>
-              </el-button-group>
+            <el-row v-if="contentShow">
 
               <div v-for="item,index in topicContentArr">
                 <el-col :span="24" v-if="item.contentType==1" >
                   <el-form-item label="内容：">
-                    <el-input type="textarea" v-model="form.content"></el-input>
+                    <el-input type="textarea" :value="item.content"></el-input>
+                    <!--<textarea style="width:100%;padding:10px 10px;box-sizing: border-box;font-family: arial,'\5FAE\8F6F\96C5\9ED1',sans-serif;color: #606266;">{{item.content}}</textarea>-->
                   </el-form-item>
                 </el-col>
+                <el-col :span="24" v-if="item.contentType==2" >
+                  <div style="margin:10px auto;width:50%;">
+                    <img :src="item.contentUrl" />
+                  </div>
 
+                </el-col>
                 <!--<el-col :span="24" :offset="1"  v-if="item.contentType==2">-->
                   <!--<span class="uploadTitle">上传图标：</span>-->
                   <!--<el-upload-->
@@ -424,33 +425,6 @@
                 <!--</el-col>-->
               </div>
 
-            </el-row>
-
-            <el-row>
-
-
-              <!--<el-col :span="7.5" :offset="1" style="float:right">-->
-                <!--<span class="uploadTitle">上传视频：</span>-->
-                <!--<el-upload-->
-                  <!--class="avatar-uploader"-->
-                  <!--accept="image/jpeg,image/png"-->
-                  <!--:action="`${this.$store.state.baseUrl}common/uploadOssPic`"-->
-                  <!--:show-file-list="false"-->
-                  <!--:on-success="handleVideoSuccess"-->
-                  <!--name="picture"-->
-                  <!--:before-upload="beforeUploadVideo"-->
-                  <!--:on-progress="uploadVideoProcess"-->
-                  <!--&gt;-->
-                  <!--<el-progress v-if="videoFlag == true" type="circle" :percentage="videoUploadPercent" style="margin-top:30px;"></el-progress>-->
-                  <!--<video v-if="videoPath" :src="videoPath"  class="avatar"></video>-->
-                  <!--<i v-else class="el-icon-plus avatar-uploader-icon"></i>-->
-                  <!--<div slot="tip" class="el-upload__tip">请确保视频格式正确，且不超过10M</div>-->
-                <!--</el-upload>-->
-              <!--</el-col>-->
-
-              <!--<el-col>-->
-                <!--<my-video :sources="video.sources" :options="video.options"></my-video>-->
-              <!--</el-col>-->
             </el-row>
 
 
@@ -476,9 +450,9 @@
             <el-button size="mini" @click="praiseTheDetailClick">打赏明细</el-button>
           </el-col>
 
-          <el-col :span="10" class="right">
-            <el-button type="primary" size="mini" @click="search">审核</el-button>
-            <el-button size="mini" @click="add">取消审核</el-button>
+          <el-col :span="10" class="right" v-if="commentShow">
+            <el-button type="primary" size="mini" @click="offComments" :disabled="disabled">审核</el-button>
+            <el-button size="mini" @click="offComments"  :disabled="!disabled">取消审核</el-button>
             <el-button size="mini" @click="deleted">删除</el-button>
           </el-col>
         </el-row>
@@ -595,29 +569,20 @@
               videoUrl:'',
             },
             topicContentArr:[
-                {
-                  contentType:1,
-                  content:'',
-                  sort:0
-                },
               {
                 contentType:1,
-                content:'',
+                content:'.....',
                 sort:0
-              },
-              {
-                contentType:2,
-                content:'',
-                sort:0
-              },
+              }
             ],
+            contentShow:false,
             addIsShow:true,
             videoFlag:false,
             videoUploadPercent:null,
             videoPath:'',
             circleId:'',
             rules:{
-              cityName: [
+              title: [
                 { required: true, message: '请输入圈子名称', trigger: 'blur' },
               ],
               topicType:[
@@ -625,11 +590,14 @@
               ]
             },
             multipleSelection: [],   //存放勾选的数据
+            multipleComment:[],
             currentPage: 1, //当前第几页
             pageSize: 30,   //每页显示多少条
             total: null,   //总共多少条数据
             tableData:[],  //帖子列表
             commentData:[],  //评论列表
+            commentShow:true,
+            disabled: false,
             tableList: [   //表格的头部配置
               {prop: 'title', label: '标题', width: '200', align: ''},
               {prop: 'status', label: '状态', width: '100', align: ''},
@@ -729,6 +697,7 @@
           this.areaList = res.data;
           this.form.areaId = '';
           this.form.countryId = '';
+
         })
       },
 
@@ -750,7 +719,7 @@
 
       //获取所有帖子列表 /basicTopic/queryCommon
       getPostList(pageSize,pageNum){
-        this.$post('/basicTopic/queryCommon',{
+        this.$post('/basicTopic/queryCommenToWeb',{
           pageSize: pageSize? pageSize : 30,
           pageNum: pageNum ? pageNum : 1,
           status: this.formInline.status? this.formInline.status:null,
@@ -788,6 +757,7 @@
       //多选框选中之后存放的数据
       handleSelectionChange(val){
         this.multipleSelection = val;
+
         // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
         if(this.multipleSelection.length == 2){
           for(var i= 0; i<this.tableData.length; i++){
@@ -801,6 +771,7 @@
         if(this.multipleSelection.length == 1){
           for(var i= 0; i<this.tableData.length; i++){
             if(this.tableData[i].cId == this.multipleSelection[0].cId){
+              this.commentReplyClick();
               this.rowIndex = (this.currentPage - 1)*this.pageSize + i + 1;
               break;
             }
@@ -816,7 +787,14 @@
         if(this.currentPage == 1){
           this.rowIndex = 1;
         }
-        this.commentReplyClick();
+
+        for(var i= 0; i<this.tableData.length; i++){
+          if(this.tableData[i].cId == this.multipleSelection[0].cId){
+            this.commentReplyClick( );
+            break;
+          }
+        }
+
       },
 
       //每页显示多少条数据
@@ -863,6 +841,7 @@
         this.videoPath = '';
         this.dialogVisible = true;
         this.form = {};
+        this.contentShow = false;
       },
 
       /**start上传图片 */
@@ -941,61 +920,28 @@
       //点击确定   /basicTopic/addBasicTopic   /basicTopic/updateBasicTopic
       comfirm(form){
 
-        if(!this.form.icon){
-          this.$message({
-            message: '请上传图标！',
-            type: 'warning'
-          });
-          return;
-        }
-
-        if(!this.form.videoUrl){
-          this.$message({
-            message: '请上传视频！',
-            type: 'warning'
-          });
-          return;
-        }
-
         this.form.topicCircleList = [];
         if(this.form.topicType == 2 || this.form.topicType == 3){
-              this.topicCircleArr.forEach((val)=>{
-                let obj = {};
-                obj.cType = 1;
-                obj.placeId = val;
-                this.form.topicCircleList.push(obj)
-              })
-        } else{
-            this.form.topicCircleList={
-                cType:0,
-                placeId:this.topicCircle
-            }
-        }
 
-//        this.form.topicContentList = []
-//        this.form.topicContentList = [
-//          {
-//            contentType:1,
-//            content:this.form.content,
-//            sort:0
-//          },
-//          {
-//            contentType:2,
-//            content:this.form.icon,
-//            sort:1
-//          },
-//          {
-//            contentType:3,
-//            content:this.form.videoUrl,
-//            sort:2
-//          }
-//        ]
+            this.form.topicCircleList=[{
+              cType:0,
+              placeId:this.topicCircle
+            }]
+        } else{
+          this.topicCircleArr.forEach((val)=>{
+            let obj = {};
+            obj.cType = 1;
+            obj.placeId = val;
+            this.form.topicCircleList.push(obj)
+          })
+        }
 
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopic'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           this.form.status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
           this.form.isTop = (this.form.status == '是' ||this.form.status == '1') ? 1 : 0;
           this.form.isBest = (this.form.status == '是' ||this.form.status == '1') ? 1 : 0;
+          this.form.isGoBoat = (this.form.isGoBoat == '是' ||this.form.isGoBoat == '1') ? 1 : 0;
 
             if(valid){
                 this.$post(url,{
@@ -1020,7 +966,7 @@
                   remark:this.form.remark,       //备注
                   fishOnTime:this.form.fishOnTime? this.dataTransform(this.form.fishOnTime):null,  //上鱼时间
                   topicCircleList:this.form.topicCircleList,  //发送圈子
-                  topicContentList:this.form.topicContentList  //内容
+                  topicContentList:this.topicContentArr  //内容
                 }).then(res=>{
                   this.dialogVisible = false;
                     if(res.code == 0){
@@ -1082,6 +1028,9 @@
       },
       //修改
       edit(){
+
+          this.contentShow = true;
+          this.topicContentArr = [];
         if(this.multipleSelection.length != 1){
           this.$message({
             message: '请选择一条需要删除的数据！',
@@ -1092,22 +1041,43 @@
         this.dialogVisible = true;
         this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
 
-        console.log(this.multipleSelection)
 
-        if(this.circleId ){
-          this.form = this.multipleSelection[0];
+        this.$get('/basicTopic/queryById',{
+          topicId: this.circleId
+        }).then(res=>{
+          this.form = res.data;
+          this.getCityList();
+          this.form.isGoBoat = this.form.isGoBoat==1? '是':'否';
+          this.form.status = this.form.status==1? '是':'否';
+          this.form.isTop = this.form.isTop==1? '是':'否';
+          this.form.isBest = this.form.isBest==1? '是':'否';
+
+          this.form.modifierId = this.form.modifier.nickname;
+          this.form.authorId  = this.form.author.nickname;
+          this.topicContentArr = this.form.topicContentList;
+          console.log(this.topicContentArr)
 
           if(this.form.topicType == 2 || this.form.topicType == 3){
             this.titleName = '钓场：';
-              this.topicCircle = this.form.circleList[0].cId
+            this.topicCircle = this.form.circleList[0].cId
+            this.isShow = false;
+            this.getCircleList();
           }else{
             this.topicCircleArr = [];
             this.titleName = '发送圈子：';
-            this.form.circleList.forEach((val)=>{
-              this.topicCircleArr.push(val.cId);
-            })
+            this.isShow = true;
+            this.getCircleList()
+
+            if(this.form.circleList){
+              this.form.circleList.forEach((val)=>{
+                this.topicCircleArr.push(val.cId);
+              })
+            }
           }
-        }
+
+
+          console.log(this.form)
+        })
       },
       //导出
       exportd(){
@@ -1128,56 +1098,32 @@
          .catch(_ => { });*/
       },
 
-      //评论
-//      commentClick(){
-//        this.commentList = [   //表格的头部配置
-//          {prop: 'status', label: '编号', width: '100', align: 'right'},
-//          {prop: 'status', label: '状态', width: '100', align: ''},
-//          {prop: 'type', label: '楼层', width: '100', align: ''},
-//          {prop: 'type', label: '评论类型', width: '100', align: ''},
-//          {prop: 'type', label: '回复数', width: '100', align: 'right'},
-//          {prop: 'level', label: '点赞数', width: '100', align: 'right'},
-//          {prop: 'name', label: '不赞数', width: '120', align: 'right'},
-//          {prop: 'score', label: '评论内容', width: '100', align: ''},
-//          {prop: 'coin', label: '评论人', width: '150', align: ''},
-//          {prop: 'creator', label: '评论时间', width: '100', align: 'right'},
-//          {prop: 'creatTime', label: '发帖地址', width: '', align: ''},
-//          {prop: 'modifier', label: '手机号', width: '100', align: 'right'},
-//          {prop: 'modifyTime', label: '用户类别', width: '120', align: ''},
-//          {prop: '', label: '', width: '', align: ''}
-//        ]
-//      },
       //评论回复
       commentReplyClick(){
-
+          this.commentShow = true;
         this.commentList = [   //表格的头部配置
           {prop: 'status', label: '状态', width: '100', align: ''},
-          {prop: 'sort', label: '楼层', width: '100', align: 'right'},
+          {prop: 'sortStr', label: '楼层', width: '100', align: ''},
           {prop: 'type', label: '评论类型', width: '100', align: ''},
-          {prop: 'replies', label: '回复数', width: '100', align: 'right'},
+          {prop: 'recommendNum', label: '回复数', width: '100', align: 'right'},
           {prop: 'likedNum', label: '点赞数', width: '100', align: 'right'},
           {prop: 'name', label: '不赞数', width: '120', align: 'right'},
           {prop: 'content', label: '评论内容', width: '100', align: ''},
           {prop: 'userId', label: '评论人', width: '150', align: ''},
-          {prop: 'cdate', label: '评论时间', width: '100', align: 'right'},
+          {prop: 'cdate', label: '评论时间', width: '180', align: 'right'},
           {prop: 'location', label: '发帖地址', width: '', align: ''},
-          {prop: 'modifier', label: '手机号', width: '100', align: 'right'},
-          {prop: 'modifyTime', label: '用户类别', width: '', align: ''},
+          {prop: 'commentUser.phone', label: '手机号', width: '120', align: 'right'},
+          {prop: 'commentUser.role', label: '用户类别', width: '', align: ''},
         ]
-
-//        let id = this.multipleSelection[0].cId
-        let id = ''
-        this.multipleSelection.forEach((val)=>{
-             id = val.cId;
-        })
-        this.$post('/comments/getCommentsList',{
-            pid:id,
-          type:1
+        this.$post('/comments/getCommentList',{
+            pid:this.multipleSelection[0].cId,
+            type:1
         }).then(res=>{
-            console.log(res)
           res.data.list.forEach((val)=>{
-            val.status = val.status==1? '正常':'已关闭';
-              console.log(val.type)
+            //判读审核、取消审核按钮哪一个可以点
+            val.status = val.status==1? '正常':'禁用';
+            val.userId = val.commentUser.nickname;
+
             switch(val.type){
               case 1:
                 val.type = '帖子评论';
@@ -1191,39 +1137,229 @@
               case 21:
                   val.type = '店铺评论的回复';
                   break;
-            }
+            };
+
+            switch(val.commentUser.role){
+              case 0:
+                val.commentUser.role = '超级管理员';
+                break;
+              case 1:
+                val.commentUser.role = '管理员';
+                break;
+              case 2:
+                val.commentUser.role = '钓友';
+                break;
+              case 3:
+                val.commentUser.role = '农家乐';
+                break;
+              default:
+                val.commentUser.role = '渔具店';
+                break;
+            };
           })
           this.commentData = res.data.list;
+
+          this.$nextTick(function(){
+            this.check();//每次更新了数据，触发这个函数即可。
+            //判读审核、取消审核按钮哪一个可以点
+
+            if(this.commentData.length){
+              if(this.commentData[0].status == '正常'){
+                this.disabled = false;
+              }else if(this.commentData[0].status == '禁用'){
+                this.disabled = true;
+              }
+            }
+          })
+
         })
 
       },
+
       //点赞明细
       pointOfDetailClick(){
+          this.commentShow = false;
         this.commentList = [   //表格的头部配置
-          {prop: 'status', label: '编号', width: '100', align: 'right'},
-          {prop: 'status', label: '点赞人', width: '100', align: ''},
-          {prop: 'type', label: '点赞时间', width: '100', align: ''},
-          {prop: 'type', label: '发贴区域', width: '100', align: 'right'},
-          {prop: 'type', label: '手机号', width: '100', align: 'right'},
-          {prop: 'type', label: '用户类别', width: '100', align: ''},
+          {prop: 'userId', label: '点赞人', width: '100', align: ''},
+          {prop: 'cdate', label: '点赞时间', width: '180', align: 'right'},
+          {prop: 'phone', label: '手机号', width: '120', align: 'right'},
+          {prop: 'role', label: '用户类别', width: '100', align: ''},
+          {prop: '', label: '', width: '', align: ''}
         ]
+
+        this.$post('liked/getAllLList',{
+            commentId: this.multipleSelection[0].cId,
+              type:3
+        }).then(res=>{
+            if(res.code == 0){
+              res.data.list.forEach((val)=>{
+                switch(val.role){
+                  case 0:
+                    val.role = '超级管理员';
+                    break;
+                  case 1:
+                    val.role = '管理员';
+                    break;
+                  case 2:
+                    val.role = '钓友';
+                    break;
+                  case 3:
+                    val.role = '农家乐';
+                    break;
+                  default:
+                    val.role = '渔具店';
+                    break;
+                };
+              })
+              this.commentData = res.data.list;
+            }
+        })
       },
+
       //打赏明细
       praiseTheDetailClick(){
+          this.commentShow = false;
         this.commentList = [   //表格的头部配置
-          {prop: 'status', label: '编号', width: '100', align: 'right'},
-          {prop: 'status', label: '打赏人', width: '100', align: ''},
-          {prop: 'status', label: '打赏金额', width: '100', align: ''},
-          {prop: 'type', label: '打赏时间', width: '100', align: ''},
-          {prop: 'type', label: '发贴区域', width: '100', align: 'right'},
-          {prop: 'type', label: '手机号', width: '100', align: 'right'},
+          {prop: 'payer', label: '打赏人', width: '100', align: ''},
+          {prop: 'num', label: '打赏金额', width: '100', align: 'right'},
+          {prop: 'cdate', label: '打赏时间', width: '180', align: 'right'},
+          {prop: 'phone', label: '手机号', width: '120', align: 'right'},
           {prop: 'type', label: '用户类别', width: '100', align: ''},
-        ]
+          {prop: '', label: '', width: '', align: ''}
+        ];
+
+        this.$post('scorecoin/getAllCoinList',{
+            cId:this.multipleSelection[0].cId,
+            type:'打赏'
+        }).then(res=>{
+            res.data.list.forEach((val)=> {
+              switch (val.role) {
+                case 0:
+                  val.role = '超级管理员';
+                  break;
+                case 1:
+                  val.role = '管理员';
+                  break;
+                case 2:
+                  val.role = '钓友';
+                  break;
+                case 3:
+                  val.role = '农家乐';
+                  break;
+                default:
+                  val.role = '渔具店';
+                  break;
+              }
+
+            })
+            this.commentData = res.data.list;
+
+        })
       },
 
-      selectionChange(){
+      //多选框选中之后存放的数据
+      selectionChange(val){
+        this.multipleComment = val;
+        // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
+        if(this.multipleComment.length == 2){
+          for(var i= 0; i<this.commentData.length; i++){
+            if(this.commentData[i].cId == this.multipleComment[0].cId){
+              this.$refs.multiple.toggleRowSelection(this.commentData[i],false);
 
+              //判读审核、取消审核按钮哪一个可以点
+              if(this.commentData[i+1].status == '正常'){
+                this.disabled = false;
+              }else if(this.commentData[i+1].status == '禁用'){
+                this.disabled = true;
+              }
+              break;
+            }
+          }
+        }
+        //虽然是多选框，但是产品设计每次只能选着一个
+        if(this.multipleComment.length == 1){
+          for(var i= 0; i<this.commentData.length; i++){
+            if(this.commentData[i].cId == this.multipleComment[0].cId){
+              break;
+            }
+          }
+        }
       },
+
+      //默认选择一行
+      check(){
+        this.$refs.multiple.toggleRowSelection(this.commentData[0],true);
+      },
+
+      //审核、取消审核
+      offComments(){
+        let id = this.multipleComment[0].cId;   //保存选中的数据的cId
+
+        this.$confirm('此操作将更改评论审核状态, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          console.log(1)
+          this.$get('comments/offComments',{
+            id: id
+          }).then(res=>{
+            if(res.code == 0){
+              //获取所有评论列表
+              this.commentReplyClick();
+
+              this.$message({
+                type: 'success',
+                message: '审核状态更改成功！'
+              });
+
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
+
+      //删除
+      deleted(){
+        let id = this.multipleComment[0].cId;   //保存选中的数据的cId
+
+        this.$confirm('此操作将永久删除该评论, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$get('comments/delComments',{
+            id: id
+          }).then(res=>{
+            if(res.code == 0){
+              this.commentData.forEach((val,index)=>{
+                if(val.cId == id){
+                  this.commentData.splice(index,1)
+                  this.total -=1;
+                  this.$message({
+                    type: 'success',
+                    message: '删除成功!'
+                  });
+                  //表格第一行默认选中
+                  this.$nextTick(()=>{
+                    this.check();
+                  })
+                }
+              })
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+      },
+
     },
     mounted(){
       //获取所有帖子列表 /basicTopic/queryCommon
@@ -1239,6 +1375,8 @@
       this.getCircleList();
       //获取所有省份
       this.getProvinceList();
+
+      this.check();
     },
 
 
