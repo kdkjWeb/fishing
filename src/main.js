@@ -21,7 +21,8 @@ Vue.config.productionTip = false
 import Server from './server/index.js'
 Vue.prototype.$get = Server.get;
 Vue.prototype.$post = Server.post;
-Vue.prototype.$export = Server.exported;
+// Vue.prototype.$export = Server.exported;
+
 
 import store from './store/store'
 

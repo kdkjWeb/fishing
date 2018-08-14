@@ -104,7 +104,6 @@ export default {
                 pageNum: pageNum ? pageNum : 1,
                 userId: this.formInline.userId ? this.formInline.userId : null,
             }).then(res=>{
-                console.log(res)
                 if(res.code == 0){
                   
                         this.tableData = res.data.list;
@@ -122,7 +121,21 @@ export default {
         },
         //导出
         exportd(){
+            let path = this.$store.state.baseUrl;
+            let href = path + 'scorecoin/downloadCoinAndScore'
+            let json = {};
 
+            if(this.formInline.userId){
+                href = href + '?' + 'userId' + '=' + this.formInline.userId + 'pageSize' + '=' + 0;
+            }else{
+                href = href + '?' + 'pageSize' + '=' +0 + '&pageNum' + '=' +1
+            }
+
+
+
+            
+
+           location.href = href;
         },
         //多选框选中之后存放的数据
         handleSelectionChange(val){

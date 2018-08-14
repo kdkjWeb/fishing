@@ -183,8 +183,8 @@ export default{
 
 
   //导出
-  exported: (url,obj,time1 = 'cdate',time2 = 'enddate',date = 'date')=>{
-    let path = 'http://192.168.20.158:8080/';
+  /*exported: (url,obj,time1 = 'cdate',time2 = 'enddate',date = 'date')=>{
+    let path = 'http://192.168.20.3:8080/';
     let href = path + url;
     let json = {};
 
@@ -193,8 +193,8 @@ export default{
         if(obj[key] != '' && key != date){
             json[key] = obj[key]
         }else if(obj.date.length > 0 && key == date){
-            json.time1 =  `${this.dataTransform(obj.date[0])} 00:00:00`;
-            json.time2 =  `${this.dataTransform(obj.date[1])} 23:59:59`;
+            json.time1 =  `${dataTransform(obj.date[0])} 00:00:00`;
+            json.time2 =  `${dataTransform(obj.date[1])} 23:59:59`;
         }
     })
 
@@ -212,5 +212,9 @@ export default{
     }
 
    location.href = href; 
-  }
+  },*/
+
+
+ 
+
 }

@@ -126,7 +126,20 @@ export default {
         },
         //导出
         exportd(){
+             let path = this.$store.state.baseUrl;
+            let href = path + 'scoreRule/downloadLevelList'
+            let json = {};
 
+
+
+             if(this.formInline.name){
+                href = href + '?' + 'name' + '=' + this.formInline.name + 'pageSize' + '=' + 0;
+            }else{
+                href = href + '?' + 'pageSize' + '=' +0 + '&pageNum' + '=' +1
+            }
+
+
+           location.href = href;
         },
         //多选框选中之后存放的数据
         handleSelectionChange(val){
