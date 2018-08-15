@@ -43,7 +43,7 @@
 
                 <el-col :span="10" class="right">
                     <el-button type="primary" size="mini" @click="search">查询</el-button>
-                    <el-button size="mini" @click="add">新增</el-button>
+                    <el-button size="mini" @click="add" :disabled="disablesAdd">新增</el-button>
                     <el-button size="mini" @click="deleted">删除</el-button>
                     <el-button size="mini" @click="edit">修改</el-button>
                     <el-button size="mini" @click="exportd">导出</el-button>
@@ -320,30 +320,30 @@
                     </el-row>
                       <el-row>
                       <el-col :span="6">
-                           <el-form-item label="省：">
-                            <el-select v-model="form.province" placeholder="请选择省份" @change="chooseProvince">
-                            <el-option :label="item.codeName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>
+                           <el-form-item label="省：" prop="provinceId">
+                            <el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince(form.provinceId)">
+                            <el-option :label="item.regionName" :value="item.regionId" v-for="item in provinceList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
-                          <el-form-item label="市：">
-                            <el-select v-model="form.city" placeholder="请选择市"  @change="chooseArea">
-                            <el-option :label="item.codeName" :value="item.cId" v-for="item in cityList" :key="item.cId"></el-option>
-                            </el-select>
-                        </el-form-item>
+                          <el-form-item label="市：" prop="cityId">
+                                <el-select v-model="form.cityId" placeholder="请选择市"  @change="chooseArea(form.cityId)">
+                                <el-option :label="item.regionName" :value="item.regionId" v-for="item in cityList" :key="item.cId"></el-option>
+                                </el-select>
+                            </el-form-item>
                       </el-col>
                       <el-col :span="6">
-                          <el-form-item label="县：">
-                            <el-select v-model="form.area" placeholder="圈子分类" @change="chooseCountry">
-                            <el-option :label="item.codeName" :value="item.cId" v-for="item in areaList" :key="item.cId"></el-option>
+                          <el-form-item label="县：" prop="areaId">
+                            <el-select v-model="form.areaId" placeholder="请选择区县" @change="chooseCountry(form.areaId)">
+                            <el-option :label="item.regionName" :value="item.cId" v-for="item in areaList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
                           <el-form-item label="乡：">
-                            <el-select v-model="form.country" placeholder="圈子分类">
-                                <el-option :label="item.codeName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>
+                            <el-select v-model="form.countryId" placeholder="请选择乡镇">
+                                <el-option :label="item.regionName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
@@ -465,6 +465,7 @@
 export default {
     data(){
         return{
+            disablesAdd: false,
             height: null,
             disabled: false,   //是否禁止填写
             disabled1: false,   //是否禁止填写
@@ -931,36 +932,45 @@ export default {
  
      //获取省份列表
      getProvince(){
-         this.$get('province/queryAll',{}).then(res=>{
-             this.provinceList = res.data
-         })
+         this.$get('/region/queryTrees',{}).then(res=>{
+              if(res.code == 0){
+                this.provinceList = res.data;
+              }
+          })
      },
      //获取市列表
-     chooseProvince(){
+     chooseProvince(id){
         //根据省份id获取城市
-         this.$get('city/queryByProvinceId',{
-             provinceId: this.form.provinceName
-         }).then(res=>{
-             this.cityList = res.data
-         })
+          this.provinceList.forEach((val)=>{
+            if(id == val.regionId){
+                this.cityList = val.childList;
+                console.log(this.cityList)
+                 this.form.cityId = '';
+                this.form.areaId = '';
+                this.form.countryId = '';
+            }
+        })
      },
      //获取县级列表
-     chooseArea(){
+     chooseArea(id){
          //根据城市id获取县级
-         this.$get('area/queryByCityId',{
-             cityId: this.form.cityName
-         }).then(res=>{
-             this.areaList = res.data;
-         })
+           this.cityList.forEach((val)=>{
+              if(id == val.regionId){
+                this.areaList = val.childList;
+                this.form.areaId = '';
+               this.form.countryId = '';
+              }
+          })
      },
      //获取乡镇
-     chooseCountry(){
+     chooseCountry(id){
          //根据县级id获取乡镇列表
-         this.$get('country/queryByCityId',{
-             areaId: this.form.areaName
-         }).then(res=>{
-             this.countryList = res.data;
-         })
+        this.areaList.forEach((val)=>{
+              if(id == val.cId){
+                this.countryList = val.childList;
+             this.form.countryId = '';
+              }
+          })
      },
      //获取有什么钓法
      getFishMethodList(){
@@ -1047,6 +1057,12 @@ export default {
 
         if(this.$store.state.token){
             this.myHeaders.token = this.$store.state.token
+        }
+
+
+        //判断是不是最高管理员登录，是就可以新增，反之不行
+        if(JSON.parse(localStorage.getItem('userInfo')).nickname != 'admin'){
+            this.disablesAdd = true;
         }
     },
     created(){

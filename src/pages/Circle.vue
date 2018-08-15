@@ -133,7 +133,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
-                            <el-form-item label="圈子分类：" prop="codeName" ref="codeName">
+                            <el-form-item label="圈子分类：" prop="circleCategoryId" ref="codeName">
                                 <el-select v-model="form.circleCategoryId" placeholder="圈子分类">
                                 <el-option :label="item.codeName" :value="item.cId" v-for="item in codeNameList" :key="item.cId"></el-option>
                                 </el-select>
@@ -185,8 +185,8 @@
                             </el-col>
                             <el-col :span="12">
                                 <el-form-item label="省：" prop="provinceId">
-                                    <el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince">
-                                    <el-option :label="item.codeName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>
+                                    <el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince(form.provinceId)">
+                                    <el-option :label="item.regionName" :value="item.regionId" v-for="item in provinceList" :key="item.cId"></el-option>
                                     </el-select>
                                 </el-form-item>
                             </el-col>
@@ -194,8 +194,8 @@
                       </el-col>
                       <el-col :span="8">
                             <el-form-item label="市：" prop="cityId">
-                                <el-select v-model="form.cityId" placeholder="请选择市"  @change="chooseArea">
-                                <el-option :label="item.codeName" :value="item.cId" v-for="item in cityList" :key="item.cId"></el-option>
+                                <el-select v-model="form.cityId" placeholder="请选择市"  @change="chooseArea(form.cityId)">
+                                <el-option :label="item.regionName" :value="item.regionId" v-for="item in cityList" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -210,8 +210,8 @@
                             </el-col>
                             <el-col :span="12">
                                 <el-form-item label="县：" prop="areaId">
-                                    <el-select v-model="form.areaId" placeholder="县" @change="chooseCountry">
-                                    <el-option :label="item.codeName" :value="item.cId" v-for="item in areaList" :key="item.cId"></el-option>
+                                    <el-select v-model="form.areaId" placeholder="请选择区县" @change="chooseCountry(form.areaId)">
+                                    <el-option :label="item.regionName" :value="item.cId" v-for="item in areaList" :key="item.cId"></el-option>
                                     </el-select>
                                 </el-form-item>
                             </el-col>
@@ -220,7 +220,7 @@
                       <el-col :span="8">
                             <el-form-item label="乡：" prop="countryId">
                                 <el-select v-model="form.countryId" placeholder="乡">
-                                 <el-option :label="item.codeName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>
+                                 <el-option :label="item.regionName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -404,10 +404,10 @@ export default {
                       { required: true, message: '请输入圈子名称', trigger: 'blur' },
                       { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
                 ],
-                  circleCategoryId: [
-                    { required: true, message: '请选择圈子分类', trigger: 'change' }
+                circleCategoryId: [
+                    { required: true, message: '请选圈子分类', trigger: 'change' }
                 ],
-                    kind: [
+                kind: [
                     { required: true, message: '请选择类型', trigger: 'change' }
                 ],
             }
@@ -562,7 +562,32 @@ export default {
         },
         //导出
         exportd(){
+              let path = this.$store.state.baseUrl;
+            let href = path + 'circle/downloadCircle'
+            let json = {};
 
+
+            Object.keys(this.formInline).forEach((key,index)=>{
+                if(this.formInline[key] != '' && key != 'date'){
+                    json[key] = this.formInline[key]
+                }else if(this.formInline.date.length > 0 && key == 'date'){
+                    json.createTime =  `${this.dataTransform(this.formInline.date[0])} 00:00:00`;
+                    json.createTime2 =  `${this.dataTransform(this.formInline.date[1])} 23:59:59`;
+                }
+            })
+
+            if(Object.keys(json).length == 0){
+                 href = href + '?' + 'pageSize' + '=' +0 + '&pageNum' + '=' +1
+            }else{
+                href = href + '?'+ 'pageSize' + '=' +0;
+                Object.keys(json).forEach((key,index) => {
+                if(json[key] != ''){
+                    href = href+'&'+key+'='+json[key];
+                }
+            });
+            }
+
+            location.href = href; 
         },
         //多选框选中之后存放的数据
         handleSelectionChange(val){
@@ -722,42 +747,46 @@ export default {
      },
      //获取省份列表
      getProvince(){
-         this.$get('province/queryAll',{}).then(res=>{
-             this.provinceList = res.data
-         })
+         this.$get('/region/queryTrees',{}).then(res=>{
+              if(res.code == 0){
+                  console.log(res.data)
+                this.provinceList = res.data;
+              }
+          })
      },
      //获取市列表
-     chooseProvince(){
+     chooseProvince(id){
         //根据省份id获取城市
-         this.$get('city/queryByProvinceId',{
-             provinceId: this.form.provinceId
-         }).then(res=>{
-             this.cityList = res.data
-             this.form.cityId = '';
-             this.form.areaId = '';
-             this.form.countryId = '';
-         })
+          this.provinceList.forEach((val)=>{
+            if(id == val.regionId){
+                this.cityList = val.childList;
+                console.log(this.cityList)
+                 this.form.cityId = '';
+                this.form.areaId = '';
+                this.form.countryId = '';
+            }
+        })
      },
      //获取县级列表
-     chooseArea(){
+     chooseArea(id){
          //根据城市id获取县级
-         this.$get('area/queryByCityId',{
-             cityId: this.form.cityId
-         }).then(res=>{
-             this.areaList = res.data;
-             this.form.areaId = '';
-             this.form.countryId = '';
-         })
+           this.cityList.forEach((val)=>{
+              if(id == val.regionId){
+                this.areaList = val.childList;
+                this.form.areaId = '';
+               this.form.countryId = '';
+              }
+          })
      },
      //获取乡镇
-     chooseCountry(){
+     chooseCountry(id){
          //根据县级id获取乡镇列表
-         this.$get('country/queryByCityId',{
-             areaId: this.form.areaId
-         }).then(res=>{
-             this.countryList = res.data;
+        this.areaList.forEach((val)=>{
+              if(id == val.cId){
+                this.countryList = val.childList;
              this.form.countryId = '';
-         })
+              }
+          })
      },
     //获取管理人列表
     getMangerList(){
