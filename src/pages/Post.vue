@@ -373,7 +373,7 @@
             <el-row>
               <el-col :span="8">
                 <el-form-item label="创建人：" prop="location">
-                  <el-input v-model="form.authorId" disabled></el-input>
+                  <el-input v-model="form.authorName" disabled></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
@@ -385,7 +385,7 @@
             <el-row>
               <el-col :span="8">
                 <el-form-item label="修改人：" >
-                  <el-input v-model="form.modifierId" disabled></el-input>
+                  <el-input v-model="form.authorName" disabled></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
@@ -630,8 +630,9 @@
               {prop: 'collects', label: '收藏', width: '80', align: 'right'},
               {prop: 'clickNum', label: '点赞', width: '80', align: 'right'},
               {prop: 'isVisibleCategoryId', label: '打赏', width: '80', align: 'right'},
-              {prop: 'author.nickname', label: '作者', width: '100', align: ''},
+              {prop: 'authorName', label: '作者', width: '100', align: ''},
               {prop: 'publishTime', label: '发布时间', width: '150', align: 'right'},
+              {prop: 'modifierName', label: '修改人', width: '150', align: ''},
               {prop: 'modifyTime', label: '修改时间', width: '150', align: 'right'},
               {prop: 'remark', label: '备注', width: '', align: ''},
             ],
@@ -1066,8 +1067,8 @@
           this.form.isTop = this.form.isTop==1? '是':'否';
           this.form.isBest = this.form.isBest==1? '是':'否';
 
-          this.form.modifierId = this.form.modifier.nickname;
-          this.form.authorId  = this.form.author.nickname;
+//          this.form.modifierId = this.form.modifier.nickname;
+//          this.form.authorId  = this.form.author.nickname;
           console.log(this.form.authorId)
           this.topicContentArr = this.form.topicContentList;
 
