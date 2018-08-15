@@ -38,7 +38,7 @@
 
           <el-col :span="10" class="right">
             <el-button type="primary" size="mini" @click="search">查询</el-button>
-            <el-button size="mini" @click="add">新增</el-button>
+            <!-- <el-button size="mini" @click="add">新增</el-button> -->
             <el-button size="mini" @click="deleted">删除</el-button>
             <el-button size="mini" @click="edit">修改</el-button>
             <el-button size="mini" @click="exportd">导出</el-button>
@@ -412,7 +412,6 @@
           {prop: 'isVisibleCategoryId', label: '打赏', width: '80', align: 'right'},
           {prop: 'publisherName', label: '作者', width: '', align: ''},
           {prop: 'publishTime', label: '发布时间', width: '160', align: 'right'},
-//          {prop: 'publishObj.nickname', label: '发布人', width: '', align: 'right'},
           {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right'},
           {prop: 'remark', label: '备注', width: '', align: ''},
         ],
@@ -422,7 +421,6 @@
           {prop: 'type', label: '评论类型', width: '100', align: ''},
           {prop: 'replies', label: '回复数', width: '100', align: ''},
           {prop: 'likedNum', label: '点赞数', width: '100', align: 'right'},
-//          {prop: 'name', label: '不赞数', width: '120', align: ''},
           {prop: 'content', label: '评论内容', width: '100', align: ''},
           {prop: 'userId', label: '评论人(昵称)', width: '150', align: ''},
           {prop: 'cdate', label: '评论时间', width: '100', align: ''},
@@ -538,30 +536,7 @@
         this.getRatingList(this.pageSize,val)
       },
 
-      //标准时间格式转换
-      dataTransform(date){
 
-        if(!this.circleId){
-          if(date){
-            var y = date.getFullYear();
-            var m = date.getMonth() + 1;
-            m = m < 10 ? ('0' + m) : m;
-            var d = date.getDate();
-            d = d < 10 ? ('0' + d) : d;
-
-            var h = date.getHours();
-            var minute = date.getMinutes();
-            minute = minute < 10 ? ('0' + minute) : minute;
-            var second = date.getSeconds();
-            second = second < 10 ? ('0' + second) : second;
-            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
-//          return y + '-' + m + '-' + d;
-          }else{
-            return null;
-          }
-        }
-
-      },
 
       //查询
       search(){
@@ -569,12 +544,14 @@
       },
 
       //新增
-      add(){
+     /* add(){
         this.imageUrl = '';
         this.videoPath = '';
         this.dialogVisible = true;
         this.form = {};
-      },
+      },*/
+
+
       //标准时间格式转换
       dataTransform(date){
           if(date){
@@ -730,8 +707,8 @@
                 if(this.formInline[key] != '' && key != 'date'){
                     json[key] = this.formInline[key]
                 }else if(this.formInline.date.length > 0 && key == 'date'){
-                    json.createTime =  `${this.dataTransform(this.formInline.date[0])} 00:00:00`;
-                    json.createTime2 =  `${this.dataTransform(this.formInline.date[1])} 23:59:59`;
+                    json.publishTime =  `${this.dataTransform(this.formInline.date[0])} 00:00:00`;
+                    json.publishTime2 =  `${this.dataTransform(this.formInline.date[1])} 23:59:59`;
                 }
             })
 
@@ -746,6 +723,7 @@
             });
             }
 
+            // console.log(href)
             location.href = href; 
       },
 

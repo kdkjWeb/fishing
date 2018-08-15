@@ -110,8 +110,7 @@
         title="帖子"
         :visible.sync="dialogVisible"
         top="8vh"
-        width="925px"
-        :before-close="closeDialog">
+        width="925px">
         <div class="dialog_content">
           <el-form label-position="right" ref="form" :rules="rules"  label-width="110px" :model="form" size="mini">
             <el-row>
@@ -373,7 +372,7 @@
             <el-row>
               <el-col :span="8">
                 <el-form-item label="创建人：" prop="location">
-                  <el-input v-model="form.authorId" disabled></el-input>
+                  <el-input v-model="form.authorName" disabled></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
@@ -385,7 +384,7 @@
             <el-row>
               <el-col :span="8">
                 <el-form-item label="修改人：" >
-                  <el-input v-model="form.modifierId" disabled></el-input>
+                  <el-input v-model="form.authorName" disabled></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
@@ -629,10 +628,10 @@
               {prop: 'commentNum', label: '评论', width: '80', align: 'right'},
               {prop: 'collects', label: '收藏', width: '80', align: 'right'},
               {prop: 'clickNum', label: '点赞', width: '80', align: 'right'},
-              {prop: 'isVisibleCategoryId', label: '打赏', width: '80', align: 'right'},
-              {prop: 'author.nickname', label: '作者', width: '100', align: ''},
-              {prop: 'publishTime', label: '发布时间', width: '160', align: 'right'},
-              {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right'},
+              {prop: 'authorName', label: '作者', width: '100', align: ''},
+              {prop: 'publishTime', label: '发布时间', width: '150', align: 'right'},
+              {prop: 'modifierName', label: '修改人', width: '150', align: ''},
+              {prop: 'modifyTime', label: '修改时间', width: '150', align: 'right'},
               {prop: 'remark', label: '备注', width: '', align: ''},
             ],
             commentList: [   //表格的头部配置
@@ -641,7 +640,6 @@
               {prop: 'type', label: '评论类型', width: '100', align: ''},
               {prop: 'replies', label: '回复数', width: '100', align: ''},
               {prop: 'likedNum', label: '点赞数', width: '100', align: 'right'},
-//              {prop: 'name', label: '不赞数', width: '120', align: ''},
               {prop: 'content', label: '评论内容', width: '100', align: ''},
               {prop: 'userId', label: '评论人(昵称)', width: '150', align: ''},
               {prop: 'cdate', label: '评论时间', width: '100', align: ''},
@@ -746,7 +744,6 @@
              if(res.data.list) {
                res.data.list.forEach((val)=>{
                  val.status  = val.status ? '正常' : '已关闭';
-//                 val.authorStr = val.author.nickname;
                  val.isTop = val.isTop? '是':'否';
                  val.isBest = val.isBest? '是':'否';
 
@@ -1038,10 +1035,6 @@
           this.form.status = this.form.status==1? '是':'否';
           this.form.isTop = this.form.isTop==1? '是':'否';
           this.form.isBest = this.form.isBest==1? '是':'否';
-
-          this.form.modifierId = this.form.modifier.nickname;
-          this.form.authorId  = this.form.author.nickname;
-          console.log(this.form.authorId)
           this.topicContentArr = this.form.topicContentList;
 
           console.log(this.form.topicType )
@@ -1071,7 +1064,7 @@
       //导出
       exportd(){
             let path = this.$store.state.baseUrl;
-            let href = path + 'circle/downloadCircle'
+            let href = path + 'basicTopic/downloadTopicCircle'
             let json = {};
 
 
@@ -1079,8 +1072,8 @@
                 if(this.formInline[key] != '' && key != 'date'){
                     json[key] = this.formInline[key]
                 }else if(this.formInline.date.length > 0 && key == 'date'){
-                    json.createTime =  `${this.dataTransform(this.formInline.date[0])} 00:00:00`;
-                    json.createTime2 =  `${this.dataTransform(this.formInline.date[1])} 23:59:59`;
+                    json.publishTime =  `${this.dataTransform(this.formInline.date[0])} 00:00:00`;
+                    json.publishTime2 =  `${this.dataTransform(this.formInline.date[1])} 23:59:59`;
                 }
             })
 
@@ -1094,22 +1087,8 @@
                 }
             });
             }
-
-            location.href = href; 
-      },
-
-      //关闭dialog弹出框
-      closeDialog(done){
-        this.dialogVisible = false;
-        this.disabled = false;
-        //   this.$refs[formName].resetFields();
-        //   this.imageUrl = '';
-        /*this.$confirm('确认关闭？')
-         　　.then(_ => {
-         　　done();
-         location.reload();
-         })
-         .catch(_ => { });*/
+           // console.log(href)
+          location.href = href; 
       },
 
       //评论回复
