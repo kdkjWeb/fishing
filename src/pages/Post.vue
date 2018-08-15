@@ -471,7 +471,7 @@
           <el-col :span="10" class="right" v-if="commentShow">
             <el-button type="primary" size="mini" @click="offComments" :disabled="disabled">审核</el-button>
             <el-button size="mini" @click="offComments"  :disabled="!disabled">取消审核</el-button>
-            <el-button size="mini" @click="deleted">删除</el-button>
+            <el-button size="mini" @click="delCimmebts">删除</el-button>
           </el-col>
         </el-row>
       </div>
@@ -746,7 +746,7 @@
              if(res.data.list) {
                res.data.list.forEach((val)=>{
                  val.status  = val.status ? '正常' : '已关闭';
-                 val.authorStr = val.author.nickname;
+//                 val.authorStr = val.author.nickname;
                  val.isTop = val.isTop? '是':'否';
                  val.isBest = val.isBest? '是':'否';
 
@@ -906,21 +906,25 @@
 
       //标准时间格式转换
       dataTransform(date){
-        if(date){
-          var y = date.getFullYear();
-          var m = date.getMonth() + 1;
-          m = m < 10 ? ('0' + m) : m;
-          var d = date.getDate();
-          d = d < 10 ? ('0' + d) : d;
-          // var h = date.getHours();
-          // var minute = date.getMinutes();
-          // minute = minute < 10 ? ('0' + minute) : minute;
-          // var second = date.getSeconds();
-          // second = second < 10 ? ('0' + second) : second;
-          // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
-        }else{
-          return null;
-        }
+
+            if(!this.circleId){
+              if(date){
+                var y = date.getFullYear();
+                var m = date.getMonth() + 1;
+                m = m < 10 ? ('0' + m) : m;
+                var d = date.getDate();
+                d = d < 10 ? ('0' + d) : d;
+                // var h = date.getHours();
+                // var minute = date.getMinutes();
+                // minute = minute < 10 ? ('0' + minute) : minute;
+                // var second = date.getSeconds();
+                // second = second < 10 ? ('0' + second) : second;
+                // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+              }else{
+                return null;
+              }
+            }
+
       },
 
       //添加内容
@@ -1243,7 +1247,7 @@
         ];
 
         this.$post('scorecoin/getAllCoinList',{
-            cId:this.multipleSelection[0].cId,
+          getter:this.multipleSelection[0].cId,
             type:'打赏'
         }).then(res=>{
             res.data.list.forEach((val)=> {
@@ -1337,7 +1341,7 @@
       },
 
       //删除
-      deleted(){
+      delCimmebts(){
         let id = this.multipleComment[0].cId;   //保存选中的数据的cId
 
         this.$confirm('此操作将永久删除该评论, 是否继续?', '提示', {
