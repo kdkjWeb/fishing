@@ -348,8 +348,6 @@
           remark:'',
           publisherName:'',
           date:'',
-          publishTime:'',
-          publishTime2:''
         },
         //增加
         topicCircle:'',
