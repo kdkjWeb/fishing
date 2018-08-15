@@ -292,7 +292,7 @@
           <el-col :span="10" class="right" v-if="commentShow">
             <el-button type="primary" size="mini" @click="offComments" :disabled="disabled">审核</el-button>
             <el-button size="mini" @click="offComments"  :disabled="!disabled">取消审核</el-button>
-            <el-button size="mini" @click="deleted">删除</el-button>
+            <el-button size="mini" @click="delComment">删除</el-button>
           </el-col>
         </el-row>
       </div>
@@ -382,6 +382,7 @@
           commentNum:'',  //评论数
           reward:'',   //打赏金额
           videoCategoryId:'',  //视频分类
+          remark:'',  //备注
         },
         topicContentArr:[
           {
@@ -413,9 +414,9 @@
         tableList: [   //表格的头部配置
           {prop: 'title', label: '标题', width: '200', align: ''},
           {prop: 'status', label: '状态', width: '', align: ''},
-          {prop: 'isTop', label: '置顶', width: '', align: ''},
-          {prop: 'isBest', label: '精华', width: '', align: ''},
-          {prop: 'topicType', label: '类型', width: '', align: ''},
+          {prop: 'isTop', label: '置顶', width: '50', align: ''},
+          {prop: 'isBest', label: '精华', width: '50', align: ''},
+          {prop: 'topicType', label: '类型', width: '50', align: ''},
           {prop: 'sort', label: '排序号', width: '80', align: 'right'},
           {prop: 'viewNum', label: '浏览', width: '80', align: 'right'},
           {prop: 'commentNum', label: '评论', width: '80', align: 'right'},
@@ -553,23 +554,27 @@
 
 //      //标准时间格式转换
       dataTransform(date){
-        if(date){
-          var y = date.getFullYear();
-          var m = date.getMonth() + 1;
-          m = m < 10 ? ('0' + m) : m;
-          var d = date.getDate();
-          d = d < 10 ? ('0' + d) : d;
 
-          var h = date.getHours();
-          var minute = date.getMinutes();
-          minute = minute < 10 ? ('0' + minute) : minute;
-          var second = date.getSeconds();
-          second = second < 10 ? ('0' + second) : second;
-          return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+        if(!this.circleId){
+          if(date){
+            var y = date.getFullYear();
+            var m = date.getMonth() + 1;
+            m = m < 10 ? ('0' + m) : m;
+            var d = date.getDate();
+            d = d < 10 ? ('0' + d) : d;
+
+            var h = date.getHours();
+            var minute = date.getMinutes();
+            minute = minute < 10 ? ('0' + minute) : minute;
+            var second = date.getSeconds();
+            second = second < 10 ? ('0' + second) : second;
+            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
 //          return y + '-' + m + '-' + d;
-        }else{
-          return null;
+          }else{
+            return null;
+          }
         }
+
       },
 
       //查询
@@ -638,6 +643,7 @@
               commentNum:this.form.commentNum,  //评论数
               reward:this.form.reward,   //打赏金额
               videoCategoryId:this.form.videoCategoryId,   //打赏金额
+              remark:this.form.remark,   //打赏金额
             }).then(res=>{
               this.dialogVisible = false;
               if(res.code == 0){
@@ -667,14 +673,14 @@
           });
           return;
         }
-        let id = this.multipleSelection[0].cId;   //保存选中的数据的cId
 
+        let id = this.multipleSelection[0].cId;   //保存选中的数据的cId
         this.$confirm('此操作将永久删除该帖子, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$get('/basicTopic/falseDeleteBasicTopic',{
+          this.$get('/videoTopic/falseDeleteBasicTopic',{
             topicId: id
           }).then(res=>{
             if(res.code == 0){
@@ -766,8 +772,9 @@
         ]
         this.$post('/comments/getCommentList',{
           pid:this.multipleSelection[0].cId,
-          type:1
+          type:4
         }).then(res=>{
+            console.log(res)
           res.data.list.forEach((val)=>{
             //判读审核、取消审核按钮哪一个可以点
             val.status = val.status==1? '正常':'禁用';
@@ -838,7 +845,7 @@
 
         this.$post('liked/getAllLList',{
           commentId: this.multipleSelection[0].cId,
-          type:3
+          type:4
         }).then(res=>{
           if(res.code == 0){
             res.data.list.forEach((val)=>{
@@ -861,6 +868,10 @@
               };
             })
             this.commentData = res.data.list;
+
+            this.$nextTick(function(){
+              this.check();//每次更新了数据，触发这个函数即可。
+            })
           }
         })
       },
@@ -878,7 +889,7 @@
         ];
 
         this.$post('scorecoin/getAllCoinList',{
-          cId:this.multipleSelection[0].cId,
+          getter:this.multipleSelection[0].cId,
           type:'打赏'
         }).then(res=>{
           res.data.list.forEach((val)=> {
@@ -899,9 +910,11 @@
                 val.role = '渔具店';
                 break;
             }
-
           })
           this.commentData = res.data.list;
+          this.$nextTick(function(){
+            this.check();//每次更新了数据，触发这个函数即可。
+          })
 
         })
       },
@@ -972,7 +985,7 @@
       },
 
       //删除
-      deleted(){
+      delComment(){
         let id = this.multipleComment[0].cId;   //保存选中的数据的cId
 
         this.$confirm('此操作将永久删除该评论, 是否继续?', '提示', {
@@ -1150,7 +1163,7 @@
     padding-right: 15px;
   }
   .aboutNum{
-    width: 1095px;
+    width: 1000px;
     height: 30px;
     line-height: 30px;
     margin-top: 10px;
