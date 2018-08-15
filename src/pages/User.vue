@@ -589,8 +589,8 @@ export default {
                 phone: this.formInline.phone ? this.formInline.phone : null,
                 role: this.formInline.role ? this.formInline.role : null,
                 status: this.formInline.status ? this.formInline.status : null,
-                cDate: this.formInline.date ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
-                creaenddateteTime2: this.formInline.date ?  `${this.dataTransform(this.formInline.date[0])} 23:59:59`: null,
+                cDate: this.formInline.cDate ? `${this.dataTransform(this.formInline.cDate[0])} 00:00:00` : null,
+                enddate: this.formInline.cDate ?  `${this.dataTransform(this.formInline.cDate[0])} 23:59:59`: null,
 
             }).then(res=>{
                 console.log(res)
@@ -743,7 +743,31 @@ export default {
         },
         //导出
         exportd(){
+            let path = this.$store.state.baseUrl;
+            let href = path + 'user/downloadUserList'
+            let json = {};
 
+            Object.keys(this.formInline).forEach((key,index)=>{
+                if(this.formInline[key] != '' && key != 'cDate'){
+                    json[key] = this.formInline[key]
+                }else if(this.formInline.cDate.length > 0 && key == 'cDate'){
+                    json.cDate =  `${this.dataTransform(this.formInline.cDate[0])} 00:00:00`;
+                    json.enddate =  `${this.dataTransform(this.formInline.cDate[1])} 23:59:59`;
+                }
+            })
+
+            if(Object.keys(json).length == 0){
+                 href = href + '?' + 'pageSize' + '=' +0 + '&pageNum' + '=' +1;
+            }else{
+                href = href + '?'+ 'pageSize' + '=' + 0;
+                Object.keys(json).forEach((key,index) => {
+                if(json[key] != ''){
+                    href = href+'&'+key+'='+json[key];
+                }
+            });
+            }
+
+           location.href = href;
         },
         //多选框选中之后存放的数据
         handleSelectionChange(val){
