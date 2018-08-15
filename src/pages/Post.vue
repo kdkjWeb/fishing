@@ -630,7 +630,7 @@
               {prop: 'collects', label: '收藏', width: '80', align: 'right'},
               {prop: 'clickNum', label: '点赞', width: '80', align: 'right'},
               {prop: 'isVisibleCategoryId', label: '打赏', width: '80', align: 'right'},
-              {prop: 'authorStr', label: '作者', width: '100', align: ''},
+              {prop: 'author.nickname', label: '作者', width: '100', align: ''},
               {prop: 'publishTime', label: '发布时间', width: '150', align: 'right'},
               {prop: 'modifyTime', label: '修改时间', width: '150', align: 'right'},
               {prop: 'remark', label: '备注', width: '', align: ''},
@@ -877,7 +877,6 @@
       /**start上传视频*/
         //验证方法：验证视频格式和视频大小
         beforeUploadVideo(file) {
-            console.log(file)
           const isLt10M = file.size / 1024 / 1024  < 10;
           if (['video/mp4', 'video/ogg', 'video/flv','video/avi','video/wmv','video/rmvb'].indexOf(file.type) == -1) {
             this.$message.error('请上传正确的视频格式');
@@ -892,11 +891,9 @@
           uploadVideoProcess(event, file, fileList){
             this.videoFlag = true;
             this.videoUploadPercent = Number(file.percentage.toFixed(0));
-            console.log(event,file,fileList)
           },
         //上传成功
         handleVideoSuccess(res, file){
-              console.log(res,file)
           this.videoUploadPercent = 100;
 //          this.videoFlag = false;
           this.videoPath = URL.createObjectURL(file.raw);
@@ -1071,6 +1068,7 @@
 
           this.form.modifierId = this.form.modifier.nickname;
           this.form.authorId  = this.form.author.nickname;
+          console.log(this.form.authorId)
           this.topicContentArr = this.form.topicContentList;
 
           console.log(this.form.topicType )
