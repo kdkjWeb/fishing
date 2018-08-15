@@ -498,7 +498,28 @@ export default {
         },
         //导出
         exportd(){
+            let path = this.$store.state.baseUrl;
+            let href = path + 'levelRule/downloadByType'
+            let json = {};
 
+            Object.keys(this.formInline).forEach((key,index)=>{
+                if(this.formInline[key] != '' && key != 'date'){
+                    json[key] = this.formInline[key]
+                }
+            })
+
+            if(Object.keys(json).length == 0){
+                 href = href + '?' + 'pageSize' + '=' +0 + '&pageNum' + '=' +1;
+            }else{
+                href = href + '?'+ 'pageSize' + '=' + 0;
+                Object.keys(json).forEach((key,index) => {
+                if(json[key] != ''){
+                    href = href+'&'+key+'='+json[key];
+                }
+            });
+            }
+            console.log(href)
+           location.href = href;
         },
 
         //多选框选中之后存放的数据

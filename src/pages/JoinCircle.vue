@@ -141,7 +141,32 @@ export default {
         },
         //导出
         exportd(){
+            let path = this.$store.state.baseUrl;
+            let href = path + 'myCircle/downloadTopicCircle'
+            let json = {};
 
+
+            Object.keys(this.formInline).forEach((key,index)=>{
+                if(this.formInline[key] != '' && key != 'date'){
+                    json[key] = this.formInline[key]
+                }else if(this.formInline.date.length > 0 && key == 'date'){
+                    json.joinTime =  `${this.dataTransform(this.formInline.date[0])} 00:00:00`;
+                    json.joinTime2 =  `${this.dataTransform(this.formInline.date[1])} 23:59:59`;
+                }
+            })
+
+            if(Object.keys(json).length == 0){
+                 href = href + '?' + 'pageSize' + '=' +0 + '&pageNum' + '=' +1
+            }else{
+                href = href + '?'+ 'pageSize' + '=' +0;
+                Object.keys(json).forEach((key,index) => {
+                if(json[key] != ''){
+                    href = href+'&'+key+'='+json[key];
+                }
+            });
+            }
+
+           location.href = href;
         },
         //多选框选中之后存放的数据
         handleSelectionChange(val){

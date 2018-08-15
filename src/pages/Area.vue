@@ -4,10 +4,10 @@
         <div class="topSearch">
             <el-row>
                 <el-col :span="24">
-                    <el-button type="primary" size="mini" @click="increase(1)">新增同级</el-button>
-                    <el-button size="mini" @click="increase(2)">新增下级</el-button>
-                    <el-button size="mini" @click="increase(3)">修改</el-button>
-                    <el-button size="mini" @click="del">删除</el-button>
+                    <el-button :type="btnIndex == 0 ? 'primary' : ''"  size="mini" @click="increase(0)">新增同级</el-button>
+                    <el-button :type="btnIndex == 1 ? 'primary' : ''" size="mini" @click="increase(1)">新增下级</el-button>
+                    <el-button :type="btnIndex == 2 ? 'primary' : ''" size="mini" @click="increase(2)">修改</el-button>
+                    <el-button :type="btnIndex == 3 ? 'primary' : ''" size="mini" @click="del" :disabled="disabled">删除</el-button>
                 </el-col>
             </el-row>
         </div>
@@ -17,13 +17,13 @@
             <div class="left_wrap">
                 <!-- <el-tree :data="provinceList" :props="defaultProps" @node-click="handleNodeClick"></el-tree> -->
                  <el-tree
+                    ref="tree"
                     :data="provinceList"
                     node-key="cId"
                     accordion
                     highlight-current
                     :props="defaultProps"
                     @node-click="handleNodeClick"
-                    @current-change="handleCurrentClick"
                     :default-expanded-keys="checkArr"
                     >
                     <span slot-scope="{ node, data }">
@@ -63,7 +63,7 @@
                 </el-form-item>
                 </el-form>
                 <div class="btn">
-                     <el-button size="mini" type="primary">保存</el-button>
+                     <el-button size="mini" type="primary" @click="save">保存</el-button>
                 </div>
             </div>
         </div>
@@ -74,7 +74,8 @@
 export default {
     data(){
         return{
-            checkId: '',
+            btnIndex: 0,
+            disabled: false,
             checkArr: [],
             checkData: {},
             height: null,
@@ -95,37 +96,48 @@ export default {
     },
      methods: {
       handleNodeClick(data) {
-
-
-          this.checkData = data;
-        // console.log(data);
-        // this.form.des = data.codeName;
-        // this.form.creatTime = data.creatTime;
-        // this.form.creator = data.creator;
-        // this.form.modifyTime = data.modifyTime;
-        // this.form.modifier = data.modifier;
+          //保存当前点击选中的这条数据
+        this.checkData = data;
+        //如果输入框有值需要清空
+        if(this.form.des){
+            this.form.des = '';
+            this.form.creatTime = '';
+            this.form.creator = '';
+            this.form.modifyTime = '';
+            this.form.modifier = '';
+        }
+        //如果他下面有子集，禁止点击删除按钮
+        if(this.checkData.childList.length>0){
+                this.disabled = true;
+            }else{
+                this.disabled = false;
+            }
       },
 
-      handleCurrentClick(data2, node) {//点击节点，获取当前节点信息
-      console.log(data2)
-        this.checkId = data2.cId;
-        
-        console.log("this.checkId= ", this.checkId);
-        },
-
-
+    
+        //点击删除按钮
         del() {
-        this.$confirm('此操作将删除该文件, 是否继续?', '提示', {
+        //按钮选中状态
+        this.btnIndex = 3;
+
+        this.$confirm('此操作将删除该区域, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-console.log("删除 ", this.checkId);
+            this.$get('region/deleteRegion',{
+                regionId: this.checkData.cId
+            }).then(res=>{
+                if(res.code == 0){
+                    this.getProvince();
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                }
+            })
 
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
+          
         }).catch(() => {
           this.$message({
             type: 'info',
@@ -135,7 +147,10 @@ console.log("删除 ", this.checkId);
       },
 
 
+        //点击新增同级、新增下级、修改按钮
       increase(level) {
+        //按钮选中状态
+        this.btnIndex = level;
         if(Object.keys(this.checkData).length <= 0){
             this.$message({
             type: 'warning',
@@ -143,15 +158,75 @@ console.log("删除 ", this.checkId);
           });
           return;
         }
-        if (level === 1) {
-             console.log("增加同级 ");
+          if(level === 0) {
+              //新增同级清空输入框
+            this.form = {}
+          } else if(level === 1) {
+              //新增下级清空输入框
+              this.form = {}
           } else if(level === 2) {
-             console.log("增加下级 ",);
-
-          } else if(level === 3) {
-             console.log("修改 ", );
+               //点击修改数据回显
+                this.form.des = this.checkData.regionName;
+                this.form.creatTime = this.checkData.creatTime;
+                this.form.creator = this.checkData.creator;
+                this.form.modifyTime = this.checkData.modifyTime;
+                this.form.modifier = this.checkData.modifier;
 
           }
+       },
+
+       //保存按钮
+       save(){
+           if(!this.form.des){
+               this.$message({
+                message: '请填写描述',
+                type: 'warning'
+                });
+                return;
+           }
+           if(this.btnIndex == 0){
+               //新增同级
+                this.$post('region/addRegion',{
+                    parentId: this.checkData.parentId ? this.checkData.parentId : null,
+                    regionName: this.form.des 
+                }).then(res=>{
+                    this.getProvince();
+                    if(res.code == 0){
+                        this.$message({
+                            type: 'success',
+                            message: '添加区域成功!'
+                        });
+                    }
+                })
+           }else if(this.btnIndex == 1){
+               //新增下级
+                this.$post('region/addRegion',{
+                    parentId: this.checkData.cId,
+                    regionName: this.form.des 
+                }).then(res=>{
+                  this.getProvince();
+                    if(res.code == 0){
+                        this.$message({
+                            type: 'success',
+                            message: '添加区域成功!'
+                        });
+                    }
+                })
+           }else if(this.btnIndex == 2){
+               //修改
+               this.$post('region/updateRegion',{
+                   cId: this.checkData.cId,
+                   regionName: this.form.des 
+               }).then(res=>{
+                   if(res.code == 0){
+                       this.getProvince();
+                       this.$message({
+                            type: 'success',
+                            message: '修改区域成功!'
+                        });
+                   }
+               })
+           }
        },
 
 
@@ -163,6 +238,13 @@ console.log("删除 ", this.checkId);
              this.$nextTick(()=>{
                  this.checkArr.push(this.provinceList[0].cId);
                  this.checkData = this.provinceList[0];
+                 this.$refs.tree.setCurrentKey(this.checkArr[0]); // treeBox 元素的ref   value 绑定的node-key
+
+                 if(this.checkData.childList.length>0){
+                     this.disabled = true;
+                 }else{
+                     this.disabled = false;
+                 }
              })
          })
      },
@@ -224,6 +306,7 @@ console.log("删除 ", this.checkId);
    padding-left: 50px;
    box-sizing: border-box;
    overflow: auto;
+   padding-right: 100px;
 }
 .btn{
     text-align: center;
