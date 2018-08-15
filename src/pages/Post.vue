@@ -880,17 +880,21 @@
 
       //标准时间格式转换
       dataTransform(date){
+        console.log(date)
 
-           if(date){
+        if(!this.circleId){
+          if(date){
             var y = date.getFullYear();
             var m = date.getMonth() + 1;
             m = m < 10 ? ('0' + m) : m;
             var d = date.getDate();
             d = d < 10 ? ('0' + d) : d;
             return y + '-' + m + '-' + d;
-        }else{
+          }else{
             return null;
+          }
         }
+
 
       },
 
@@ -904,7 +908,6 @@
 
         this.form.topicCircleList = [];
         if(this.form.topicType == 2 || this.form.topicType == 3){
-
             this.form.topicCircleList=[{
               cType:0,
               placeId:this.topicCircle
@@ -918,6 +921,7 @@
           })
         }
 
+        
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopic'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           this.form.status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
@@ -968,6 +972,7 @@
       cancel(form){
         this.$refs[form].resetFields();
         this.dialogVisible = false;
+        this.circleId = '';
       },
 
       //删除
@@ -1088,7 +1093,7 @@
             });
             }
            // console.log(href)
-          location.href = href; 
+          location.href = href;
       },
 
       //评论回复
