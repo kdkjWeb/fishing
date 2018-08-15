@@ -641,9 +641,9 @@
               {prop: 'type', label: '评论类型', width: '100', align: ''},
               {prop: 'replies', label: '回复数', width: '100', align: ''},
               {prop: 'likedNum', label: '点赞数', width: '100', align: 'right'},
-              {prop: 'name', label: '不赞数', width: '120', align: ''},
+//              {prop: 'name', label: '不赞数', width: '120', align: ''},
               {prop: 'content', label: '评论内容', width: '100', align: ''},
-              {prop: 'userId', label: '评论人', width: '150', align: ''},
+              {prop: 'userId', label: '评论人(昵称)', width: '150', align: ''},
               {prop: 'cdate', label: '评论时间', width: '100', align: ''},
               {prop: 'location', label: '发帖地址', width: '', align: 'right'},
               {prop: 'modifier', label: '手机号', width: '100', align: ''},
@@ -663,6 +663,7 @@
 
       getType(){
         this.topicCircleArr = [];
+        this.topicCircle = '';
         this.getCircleList(this.topicType);
       },
 
@@ -733,7 +734,7 @@
           pageSize: pageSize? pageSize : 30,
           pageNum: pageNum ? pageNum : 1,
           status: this.formInline.status? this.formInline.status:null,
-          cityName:this.formInline.cityName? this.formInline.cityName:null,
+          title:this.formInline.cityName? this.formInline.cityName:null,
           remark:this.formInline.remark? this.formInline.remark:null,
           authorName:this.formInline.authorId? this.formInline.authorId:null,
           publishTime: this.formInline.date?  this.dataTransform(this.formInline.date[0]):null,
@@ -938,7 +939,7 @@
               placeId:this.topicCircle
             }]
         } else{
-          this.topicCircleArr.forEach((val)=>{ 
+          this.topicCircleArr.forEach((val)=>{
             let obj = {};
             obj.cType = 1;
             obj.placeId = val;
@@ -1120,7 +1121,7 @@
           {prop: 'type', label: '评论类型', width: '100', align: ''},
           {prop: 'recommendNum', label: '回复数', width: '100', align: 'right'},
           {prop: 'likedNum', label: '点赞数', width: '100', align: 'right'},
-          {prop: 'name', label: '不赞数', width: '120', align: 'right'},
+//          {prop: 'name', label: '不赞数', width: '120', align: 'right'},
           {prop: 'content', label: '评论内容', width: '100', align: ''},
           {prop: 'userId', label: '评论人', width: '150', align: ''},
           {prop: 'cdate', label: '评论时间', width: '180', align: 'right'},
