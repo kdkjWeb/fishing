@@ -243,11 +243,11 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="省：">
-                      <el-select v-model="form.provinceId" placeholder="省" @change="getCityList">
+                      <el-select v-model="form.provinceId" placeholder="省" @change="getCityList(form.provinceId)">
                         <el-option
                           v-for="item,index in provinceList"
-                          :label="item.codeName"
-                          :value="item.cId"
+                          :label="item.regionName"
+                          :value="item.regionId"
                           :key="index"></el-option>
                       </el-select>
                     </el-form-item>
@@ -267,11 +267,12 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="市：">
-                      <el-select v-model="form.cityId" placeholder="市" @change="getaAreaList">
+
+                      <el-select v-model="form.cityId" placeholder="市" @change="getaAreaList(form.cityId)">
                         <el-option
                           v-for="item,index in cityList"
-                          :label="item.codeName"
-                          :value="item.cId"
+                          :label="item.regionName"
+                          :value="item.regionId"
                           :key="index"></el-option>
                       </el-select>
                     </el-form-item>
@@ -288,7 +289,7 @@
                       <!--<el-input v-model="form.fishOnTime" disabled></el-input>-->
                       <el-form-item label="上鱼时间：">
                         <el-date-picker
-                          v-model="form.publishTime"
+                          v-model="form.fishOnTime"
                           type="datetime"
                           placeholder="选择日期时间"
                           default-time="12:00:00">
@@ -297,7 +298,8 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="县：">
-                      <el-select v-model="form.areaId" placeholder="县" @change="getCountryList">
+
+                      <el-select v-model="form.areaId" placeholder="县" @change="getCountryList(form.areaId)">
                         <el-option
                           v-for="item,index in areaList"
                           :label="item.codeName"
@@ -397,16 +399,32 @@
 
               <div v-for="item,index in topicContentArr">
                 <el-col :span="24" v-if="item.contentType==1" >
-                  <el-form-item label="内容：">
-                    <el-input type="textarea" :value="item.content"></el-input>
-                    <!--<textarea style="width:100%;padding:10px 10px;box-sizing: border-box;font-family: arial,'\5FAE\8F6F\96C5\9ED1',sans-serif;color: #606266;">{{item.content}}</textarea>-->
-                  </el-form-item>
+                  <el-row>
+                      <el-col :span="23">
+                        <el-form-item label="内容：">
+                          <el-input type="textarea" :value="item.content"></el-input>
+
+                          <!--<textarea style="width:100%;padding:10px 10px;box-sizing: border-box;font-family: arial,'\5FAE\8F6F\96C5\9ED1',sans-serif;color: #606266;">{{item.content}}</textarea>-->
+                        </el-form-item>
+                      </el-col>
+                      <el-col :span="1" style="text-align: right;font-size: 18px;">
+                        <i class="el-icon-delete" @click="deleteImage(index)" style="cursor:pointer"></i>
+                      </el-col>
+                  </el-row>
+
                 </el-col>
                 <el-col :span="24" v-if="item.contentType==2" >
-                  <div style="margin:10px auto;width:50%;">
-                    <img :src="item.contentUrl" />
-                  </div>
+                  <el-row>
+                      <el-col :span="23">
+                        <div style="margin:10px auto;width:50%;">
+                          <img :src="item.contentUrl" />
+                        </div>
+                      </el-col>
 
+                      <el-col :span="1" style="text-align: right;font-size: 18px;">
+                        <i class="el-icon-delete" @click="deleteImage(index)" style="cursor:pointer"></i>
+                      </el-col>
+                  </el-row>
                 </el-col>
                 <!--<el-col :span="24" :offset="1"  v-if="item.contentType==2">-->
                   <!--<span class="uploadTitle">上传图标：</span>-->
@@ -503,8 +521,11 @@
 
 <script>
   import ElRow from "element-ui/packages/row/src/row";
+  import ElCol from "element-ui/packages/col/src/col";
   export default {
-    components: {ElRow},
+    components: {
+      ElCol,
+      ElRow},
     data(){
           return{
             allNum: {
@@ -668,47 +689,36 @@
 
       //获取所有省份 /province/queryAll
       getProvinceList(){
-          this.$get('/province/queryAll',{}).then(res=>{
+          this.$get('/region/queryTrees',{}).then(res=>{
               if(res.code == 0){
                 this.provinceList = res.data;
               }
           })
       },
-
-      //获取所有市  /city/queryAll  cityList
-      getCityList(){
-          this.$get('city/queryByProvinceId',{
-            provinceId: this.form.provinceId
-          }).then(res=>{
-              if(res.code == 0){
-                  this.cityList = res.data
-                this.form.cityId = '';
-                this.form.areaId = '';
-                this.form.countryId = '';
-              }
-          })
-     },
-
-      //获取县级列表
-      getaAreaList(){
-        this.$get('area/queryByCityId',{
-          cityId: this.form.cityId
-        }).then(res=>{
-          this.areaList = res.data;
-          this.form.areaId = '';
-          this.form.countryId = '';
-
+      //获取所有市
+      getCityList(id){
+        this.provinceList.forEach((val)=>{
+            if(id == val.regionId){
+                this.cityList = val.childList;
+            }
         })
       },
 
-      //获取乡镇
-      getCountryList(){
-        //根据县级id获取乡镇列表
-        this.$get('country/queryByCityId',{
-          areaId: this.form.areaId
-        }).then(res=>{
-          this.countryList = res.data;
-          this.form.countryId = '';
+      //获取所有县  areaList
+      getaAreaList(id){
+          this.cityList.forEach((val)=>{
+              if(id == val.regionId){
+                this.areaList = val.childList;
+              }
+          })
+      },
+
+      //获取所有乡
+      getCountryList(id){
+        this.areaList.forEach((val)=>{
+            if(id == val.regionId){
+              this.countryList = val.childList;
+            }
         })
       },
 
@@ -809,7 +819,7 @@
         this.getRatingList(this.pageSize,val)
       },
 
-      //标准时间格式转换
+//      //标准时间格式转换
       dataTransform(date){
         if(date){
           var y = date.getFullYear();
@@ -928,7 +938,7 @@
               placeId:this.topicCircle
             }]
         } else{
-          this.topicCircleArr.forEach((val)=>{
+          this.topicCircleArr.forEach((val)=>{ 
             let obj = {};
             obj.cType = 1;
             obj.placeId = val;
@@ -945,6 +955,7 @@
 
             if(valid){
                 this.$post(url,{
+                  cId: this.circleId ? this.circleId : null,
                   title: this.form.title,  //标题、圈子
                   isTop:this.form.isTop,  //是否置顶
                   isBest:this.form.isBest,  //精华
@@ -1026,6 +1037,7 @@
           });
         });
       },
+
       //修改
       edit(){
 
@@ -1033,7 +1045,7 @@
           this.topicContentArr = [];
         if(this.multipleSelection.length != 1){
           this.$message({
-            message: '请选择一条需要删除的数据！',
+            message: '请选择一条需要修改的数据！',
             type: 'warning'
           });
           return;
@@ -1055,8 +1067,8 @@
           this.form.modifierId = this.form.modifier.nickname;
           this.form.authorId  = this.form.author.nickname;
           this.topicContentArr = this.form.topicContentList;
-          console.log(this.topicContentArr)
 
+          console.log(this.form.topicType )
           if(this.form.topicType == 2 || this.form.topicType == 3){
             this.titleName = '钓场：';
             this.topicCircle = this.form.circleList[0].cId
@@ -1079,6 +1091,7 @@
           console.log(this.form)
         })
       },
+
       //导出
       exportd(){
 
@@ -1294,7 +1307,6 @@
       //审核、取消审核
       offComments(){
         let id = this.multipleComment[0].cId;   //保存选中的数据的cId
-
         this.$confirm('此操作将更改评论审核状态, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -1360,6 +1372,31 @@
         });
       },
 
+      //删除内容
+      deleteImage(index){
+        this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.topicContentArr.forEach((val,num)=>{
+            if(index == num){
+              console.log(val,index)
+              this.topicContentArr.splice(index,1);
+            }
+          })
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
+
+      }
     },
     mounted(){
       //获取所有帖子列表 /basicTopic/queryCommon
