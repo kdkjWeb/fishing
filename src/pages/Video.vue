@@ -466,7 +466,7 @@
           pageSize: pageSize? pageSize : 30,
           pageNum: pageNum ? pageNum : 1,
           status: this.formInline.status? this.formInline.status:null,
-          title:this.formInline.cityName? this.formInline.cityName:null,
+          title:this.formInline.title? this.formInline.title:null,
           remark:this.formInline.remark? this.formInline.remark:null,
           publisherName:this.formInline.publisherName? this.formInline.publisherName:null,
           publishTime: this.formInline.date?  this.dataTransform(this.formInline.date[0]):null,
@@ -705,7 +705,7 @@
       },
 
 //      //修改
-//      edit(){
+      edit(){
 //
 //        this.contentShow = true;
 //        if(this.multipleSelection.length != 1){
@@ -730,7 +730,7 @@
 //          this.form.isBest = this.form.isBest==1? '是':'否';
 //          console.log(this.form)
 //        })
-//      },
+      },
 
       //导出
       exportd(){
