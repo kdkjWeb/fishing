@@ -21,7 +21,7 @@
                   <el-option label="已关闭" value="0"></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="创建时间：">
+              <el-form-item label="发布时间：">
                 <el-date-picker
                   v-model="formInline.date"
                   type="daterange"
@@ -631,8 +631,8 @@
               {prop: 'clickNum', label: '点赞', width: '80', align: 'right'},
               {prop: 'isVisibleCategoryId', label: '打赏', width: '80', align: 'right'},
               {prop: 'author.nickname', label: '作者', width: '100', align: ''},
-              {prop: 'publishTime', label: '发布时间', width: '150', align: 'right'},
-              {prop: 'modifyTime', label: '修改时间', width: '150', align: 'right'},
+              {prop: 'publishTime', label: '发布时间', width: '160', align: 'right'},
+              {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right'},
               {prop: 'remark', label: '备注', width: '', align: ''},
             ],
             commentList: [   //表格的头部配置
@@ -737,8 +737,8 @@
           title:this.formInline.cityName? this.formInline.cityName:null,
           remark:this.formInline.remark? this.formInline.remark:null,
           authorName:this.formInline.authorId? this.formInline.authorId:null,
-          publishTime: this.formInline.date?  this.dataTransform(this.formInline.date[0]):null,
-          publishTime2: this.formInline.date?  this.dataTransform(this.formInline.date[1]):null,
+          publishTime: this.formInline.date?  `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
+          publishTime2: this.formInline.date?  `${this.dataTransform(this.formInline.date[1])} 23:59:59` : null,
         }).then(res=>{
             if(res.code == 0){
               this.tableData = res.data.list
@@ -820,26 +820,6 @@
         this.getRatingList(this.pageSize,val)
       },
 
-//      //标准时间格式转换
-      dataTransform(date){
-        if(date){
-          var y = date.getFullYear();
-          var m = date.getMonth() + 1;
-          m = m < 10 ? ('0' + m) : m;
-          var d = date.getDate();
-          d = d < 10 ? ('0' + d) : d;
-
-           var h = date.getHours();
-           var minute = date.getMinutes();
-           minute = minute < 10 ? ('0' + minute) : minute;
-           var second = date.getSeconds();
-           second = second < 10 ? ('0' + second) : second;
-           return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
-//          return y + '-' + m + '-' + d;
-        }else{
-          return null;
-        }
-      },
 
       //查询
       search(){
@@ -904,23 +884,16 @@
       //标准时间格式转换
       dataTransform(date){
 
-            if(!this.circleId){
-              if(date){
-                var y = date.getFullYear();
-                var m = date.getMonth() + 1;
-                m = m < 10 ? ('0' + m) : m;
-                var d = date.getDate();
-                d = d < 10 ? ('0' + d) : d;
-                // var h = date.getHours();
-                // var minute = date.getMinutes();
-                // minute = minute < 10 ? ('0' + minute) : minute;
-                // var second = date.getSeconds();
-                // second = second < 10 ? ('0' + second) : second;
-                // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
-              }else{
-                return null;
-              }
-            }
+           if(date){
+            var y = date.getFullYear();
+            var m = date.getMonth() + 1;
+            m = m < 10 ? ('0' + m) : m;
+            var d = date.getDate();
+            d = d < 10 ? ('0' + d) : d;
+            return y + '-' + m + '-' + d;
+        }else{
+            return null;
+        }
 
       },
 
@@ -1097,7 +1070,32 @@
 
       //导出
       exportd(){
+            let path = this.$store.state.baseUrl;
+            let href = path + 'circle/downloadCircle'
+            let json = {};
 
+
+            Object.keys(this.formInline).forEach((key,index)=>{
+                if(this.formInline[key] != '' && key != 'date'){
+                    json[key] = this.formInline[key]
+                }else if(this.formInline.date.length > 0 && key == 'date'){
+                    json.createTime =  `${this.dataTransform(this.formInline.date[0])} 00:00:00`;
+                    json.createTime2 =  `${this.dataTransform(this.formInline.date[1])} 23:59:59`;
+                }
+            })
+
+            if(Object.keys(json).length == 0){
+                 href = href + '?' + 'pageSize' + '=' +0 + '&pageNum' + '=' +1
+            }else{
+                href = href + '?'+ 'pageSize' + '=' +0;
+                Object.keys(json).forEach((key,index) => {
+                if(json[key] != ''){
+                    href = href+'&'+key+'='+json[key];
+                }
+            });
+            }
+
+            location.href = href; 
       },
 
       //关闭dialog弹出框

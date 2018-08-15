@@ -163,19 +163,19 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="帖子类型：" prop="topicType"  >
-                      <el-input v-model="form.topicType" ></el-input>
+                      <el-input v-model="form.topicType" disabled></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col :span="8">
                     <el-form-item label="浏览数：">
-                      <el-input v-model="form.viewNum" ></el-input>
+                      <el-input v-model="form.viewNum" disabled></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="评论数：">
-                      <el-input v-model="form.commentNum" ></el-input>
+                      <el-input v-model="form.commentNum" disabled></el-input>
                     </el-form-item>
                   </el-col>
 
@@ -195,32 +195,17 @@
                 <el-row>
                   <el-col :span="8">
                     <el-form-item label="收藏数：">
-                      <el-input v-model="form.collects" ></el-input>
+                      <el-input v-model="form.collects" disabled></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="点赞数：">
-                      <el-input v-model="form.clickNum" ></el-input>
+                      <el-input v-model="form.clickNum" disabled></el-input>
                     </el-form-item>
                   </el-col>
-                  <!--<el-col :span="8">-->
-                    <!--<el-form-item label="视频分类：">-->
-                      <!--<el-select v-model="form.isVisibleCategoryId" placeholder="可见类型">-->
-                        <!--<el-option label="打赏" value="2"></el-option>-->
-                        <!--<el-option label="自己" value="1"></el-option>-->
-                        <!--<el-option label="全网" value="0"></el-option>-->
-                      <!--</el-select>-->
-                    <!--</el-form-item>-->
-                  <!--</el-col>-->
-                  <!--<el-col :span="8">-->
-                    <!--<el-form-item label="关联类型：">-->
-                      <!--<el-input v-model="form.fishMethod" ></el-input>-->
-                    <!--</el-form-item>-->
-                  <!--</el-col>-->
-
                   <el-col :span="8">
                     <el-form-item label="打赏金额：" >
-                      <el-input v-model="form.reward" ></el-input>
+                      <el-input v-model="form.reward" disabled></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -230,11 +215,11 @@
             </el-row>
 
             <el-row>
-              <el-col :span="24">
+              <!-- <el-col :span="24">
                 <el-form-item label="详细地址：">
                   <el-input v-model="form.location"></el-input>
                 </el-form-item>
-              </el-col>
+              </el-col> -->
               <el-col :span="24">
                 <el-form-item label="备注：">
                   <el-input type="textarea" v-model="form.remark"></el-input>
@@ -244,12 +229,12 @@
 
             <el-row>
               <el-col :span="8">
-                <el-form-item label="创建人：" prop="location">
-                  <el-input v-model="form.authorId" disabled></el-input>
+                <el-form-item label="创建人：">
+                  <el-input v-model="form.publisherName" disabled></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="建立时间：" prop="remark">
+                <el-form-item label="建立时间：">
                   <el-input v-model="form.publishTime" disabled></el-input>
                 </el-form-item>
               </el-col>
@@ -257,7 +242,7 @@
             <el-row>
               <el-col :span="8">
                 <el-form-item label="修改人：" >
-                  <el-input v-model="form.modifierId" disabled></el-input>
+                  <el-input v-model="form.modifierName" disabled></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
@@ -354,6 +339,7 @@
           collects: 0,    //收藏总数
           clickNum: 0   //点赞总数
         },
+        rowIndex: '',
 
         //查询
         formInline:{
@@ -383,6 +369,8 @@
           reward:'',   //打赏金额
           videoCategoryId:'',  //视频分类
           remark:'',  //备注
+          modifierName: '',   //修改人
+          publisherName: '',   //创建人
         },
         topicContentArr:[
           {
@@ -391,7 +379,6 @@
             sort:0
           }
         ],
-        contentShow:false,
         addIsShow:true,
         videoFlag:false,
         videoUploadPercent:null,
@@ -424,9 +411,9 @@
           {prop: 'clickNum', label: '点赞', width: '80', align: 'right'},
           {prop: 'isVisibleCategoryId', label: '打赏', width: '80', align: 'right'},
           {prop: 'publisherName', label: '作者', width: '', align: ''},
-          {prop: 'publishTime', label: '发布时间', width: '150', align: 'right'},
+          {prop: 'publishTime', label: '发布时间', width: '160', align: 'right'},
 //          {prop: 'publishObj.nickname', label: '发布人', width: '', align: 'right'},
-          {prop: 'modifyTime', label: '修改时间', width: '150', align: 'right'},
+          {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right'},
           {prop: 'remark', label: '备注', width: '', align: ''},
         ],
         commentList: [   //表格的头部配置
@@ -469,8 +456,8 @@
           title:this.formInline.title? this.formInline.title:null,
           remark:this.formInline.remark? this.formInline.remark:null,
           publisherName:this.formInline.publisherName? this.formInline.publisherName:null,
-          publishTime: this.formInline.date?  this.dataTransform(this.formInline.date[0]):null,
-          publishTime2: this.formInline.date?  this.dataTransform(this.formInline.date[1]):null,
+          publishTime: this.formInline.date?  `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
+          publishTime2: this.formInline.date?  `${this.dataTransform(this.formInline.date[1])} 23:59:59` : null,
         }).then(res=>{
           if(res.code == 0){
             this.tableData = res.data.list
@@ -478,7 +465,6 @@
             if(res.data.list) {
               res.data.list.forEach((val)=>{
                 val.status  = val.status ? '正常' : '已关闭';
-//                val.authorStr = val.author.nickname;
                 val.isTop = val.isTop? '是':'否';
                 val.isBest = val.isBest? '是':'否';
 
@@ -552,7 +538,7 @@
         this.getRatingList(this.pageSize,val)
       },
 
-//      //标准时间格式转换
+      //标准时间格式转换
       dataTransform(date){
 
         if(!this.circleId){
@@ -588,24 +574,18 @@
         this.videoPath = '';
         this.dialogVisible = true;
         this.form = {};
-        this.contentShow = false;
       },
       //标准时间格式转换
       dataTransform(date){
-        if(date){
-          var y = date.getFullYear();
-          var m = date.getMonth() + 1;
-          m = m < 10 ? ('0' + m) : m;
-          var d = date.getDate();
-          d = d < 10 ? ('0' + d) : d;
-          // var h = date.getHours();
-          // var minute = date.getMinutes();
-          // minute = minute < 10 ? ('0' + minute) : minute;
-          // var second = date.getSeconds();
-          // second = second < 10 ? ('0' + second) : second;
-          // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+          if(date){
+            var y = date.getFullYear();
+            var m = date.getMonth() + 1;
+            m = m < 10 ? ('0' + m) : m;
+            var d = date.getDate();
+            d = d < 10 ? ('0' + d) : d;
+            return y + '-' + m + '-' + d;
         }else{
-          return null;
+            return null;
         }
       },
 
@@ -694,6 +674,10 @@
                   });
                 }
               })
+              //表格第一行默认选中
+              this.$nextTick(()=>{
+                    this.checked();
+              })
             }
           })
         }).catch(() => {
@@ -706,35 +690,63 @@
 
 //      //修改
       edit(){
-//
-//        this.contentShow = true;
-//        if(this.multipleSelection.length != 1){
-//          this.$message({
-//            message: '请选择一条需要修改的数据！',
-//            type: 'warning'
-//          });
-//          return;
-//        }
-//        this.dialogVisible = true;
-//        this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-//
-//
-//        this.$get('/basicTopic/queryById',{
-//          topicId: this.circleId
-//        }).then(res=>{
-//          this.form = res.data;
-//          this.getCityList();
-//          this.form.isGoBoat = this.form.isGoBoat==1? '是':'否';
-//          this.form.status = this.form.status==1? '是':'否';
-//          this.form.isTop = this.form.isTop==1? '是':'否';
-//          this.form.isBest = this.form.isBest==1? '是':'否';
-//          console.log(this.form)
-//        })
+
+        console.log(this.rowIndex)
+       if(this.multipleSelection.length != 1){
+         this.$message({
+           message: '请选择一条需要修改的数据！',
+           type: 'warning'
+         });
+         return;
+       }
+       this.dialogVisible = true;
+       this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
+
+      console.log(this.circleId)
+
+       this.$get('videoTopic/queryById',{
+         topicId: this.circleId
+       }).then(res=>{
+         console.log(res)
+         if(res.code == 0){
+           this.form = res.data;
+           this.form.title = res.data.title;
+           this.form.number = this.rowIndex;
+           this.form.isTop = res.data.isTop == 0 ? '否' : '是';
+           this.form.isBest = res.data.isBest == 0 ? '否' : '是';
+           this.form.status = res.data.status == 0 ? '已关闭' : '正常';
+         }
+       })
       },
 
       //导出
       exportd(){
+            let path = this.$store.state.baseUrl;
+            let href = path + 'videoTopic/downloadVideoTopic'
+            let json = {};
 
+
+            Object.keys(this.formInline).forEach((key,index)=>{
+                if(this.formInline[key] != '' && key != 'date'){
+                    json[key] = this.formInline[key]
+                }else if(this.formInline.date.length > 0 && key == 'date'){
+                    json.createTime =  `${this.dataTransform(this.formInline.date[0])} 00:00:00`;
+                    json.createTime2 =  `${this.dataTransform(this.formInline.date[1])} 23:59:59`;
+                }
+            })
+
+            if(Object.keys(json).length == 0){
+                 href = href + '?' + 'pageSize' + '=' +0 + '&pageNum' + '=' +1
+            }else{
+                href = href + '?'+ 'pageSize' + '=' +0;
+                Object.keys(json).forEach((key,index) => {
+                if(json[key] != ''){
+                    href = href+'&'+key+'='+json[key];
+                }
+            });
+            }
+
+            location.href = href; 
       },
 
       //关闭dialog弹出框
