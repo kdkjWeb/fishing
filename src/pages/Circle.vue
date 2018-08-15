@@ -391,10 +391,10 @@ export default {
                 {prop: 'viewCount', label: '阅读', width: '60', align: 'right'},
                 {prop: 'memberCount', label: '成员', width: '60', align: 'right'},
                 {prop: 'location', label: '详细地址', width: '180', align: ''},
-                {prop: 'manager', label: '管理人', width: '100', align: ''},
-                {prop: 'creator', label: '创建人', width: '100', align: ''},
+                {prop: 'managerName', label: '管理人', width: '100', align: ''},
+                {prop: 'creatorName', label: '创建人', width: '100', align: ''},
                 {prop: 'createTime', label: '创建时间', width: '155', align: 'right'},
-                {prop: 'modifier', label: '修改人', width: '100', align: ''},
+                {prop: 'modifierName', label: '修改人', width: '100', align: ''},
                 {prop: 'modifyTime', label: '修改时间', width: '155', align: 'right'},
                 {prop: 'remark', label: '备注', width: '', align: ''}
             ],
@@ -430,14 +430,8 @@ export default {
                         this.total = 0;
                         this.allNum.commentCount = this.allNum.viewCount = this.allNum.memberCount = 0;   //dom每次更新数据都清零
                     }else{   //返回数据之后进行数据处理
-                        let arr = res.data.list;
-                        arr.forEach((e,index) => {
-                           arr[index].manager = e.manager ? e.manager.nickname : '';
-                           arr[index].creator = e.creator ? e.creator.nickname : '';
-                           arr[index].modifier = e.modifier ? e.modifier.nickname : '';
-                           arr[index].status = e.status ? '正常' : '已关闭';
-                        });
-                         this.tableData = JSON.parse(JSON.stringify(arr))
+            
+                         this.tableData = res.data.list;
                          this.$nextTick(function(){
                             this.checked();//每次更新了数据，触发这个函数即可。
 
@@ -554,9 +548,9 @@ export default {
                 this.form.status = this.form.status + "";
                 this.form.number = this.rowIndex;
                 this.imageUrl = this.form.iconUrl;
-                this.form.creator = this.form.creator.nickname;
-                this.form.manager = this.form.manager.nickname;
-                this.form.modifier = this.form.modifier.nickname;
+                this.form.creator = this.form.creatorName;
+                this.form.manager = this.form.managerName;
+                this.form.modifier = this.form.modifierName;
               })
             }
         },
