@@ -110,8 +110,7 @@
         title="帖子"
         :visible.sync="dialogVisible"
         top="8vh"
-        width="925px"
-        :before-close="closeDialog">
+        width="925px">
         <div class="dialog_content">
           <el-form label-position="right" ref="form" :rules="rules"  label-width="110px" :model="form" size="mini">
             <el-row>
@@ -227,7 +226,7 @@
               </el-col>
             </el-row>
 
-            <el-row>
+            <!-- <el-row>
               <el-col :span="8">
                 <el-form-item label="创建人：">
                   <el-input v-model="form.publisherName" disabled></el-input>
@@ -249,6 +248,48 @@
                 <el-form-item label="建立时间：">
                   <el-input v-model="form.modifyTime" disabled></el-input>
                 </el-form-item>
+              </el-col>
+            </el-row> -->
+
+            <el-row>
+              <el-col :span="16">
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="创建人：">
+                      <el-input v-model="form.publisherName" disabled></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="建立时间：">
+                      <el-input v-model="form.publishTime" disabled></el-input>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="修改人：" >
+                      <el-input v-model="form.modifierName" disabled></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="建立时间：">
+                      <el-input v-model="form.modifyTime" disabled></el-input>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </el-col>
+              <!-- <el-col :span="8">
+                <div class="video">
+                  <video :src="video.contentUrl" :poster="video.thumbUrl?video.thumbUrl:'../../static/images/header.jpg'" width="120" height="96" controls></video>
+                </div>
+              </el-col> -->
+            </el-row>
+
+            <el-row>
+              <el-col :span="16">
+                <div class="video">
+                  <video :src="video.contentUrl" :poster="video.thumbUrl?video.thumbUrl:'../../static/images/header.jpg'" width="300" height="240" controls></video>
+                </div>
               </el-col>
             </el-row>
 
@@ -334,6 +375,7 @@
       ElRow},
     data(){
       return{
+        video: '',
         allNum: {
           commentNum: 0,   //评论总数
           collects: 0,    //收藏总数
@@ -665,8 +707,6 @@
 
 //      //修改
       edit(){
-
-        console.log(this.rowIndex)
        if(this.multipleSelection.length != 1){
          this.$message({
            message: '请选择一条需要修改的数据！',
@@ -676,9 +716,6 @@
        }
        this.dialogVisible = true;
        this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-
-      console.log(this.circleId)
-
        this.$get('videoTopic/queryById',{
          topicId: this.circleId
        }).then(res=>{
@@ -690,6 +727,7 @@
            this.form.isTop = res.data.isTop == 0 ? '否' : '是';
            this.form.isBest = res.data.isBest == 0 ? '否' : '是';
            this.form.status = res.data.status == 0 ? '已关闭' : '正常';
+           this.video = this.form.topicContentList[0];
          }
        })
       },
@@ -725,19 +763,7 @@
             location.href = href; 
       },
 
-      //关闭dialog弹出框
-      closeDialog(done){
-        this.dialogVisible = false;
-        this.disabled = false;
-        //   this.$refs[formName].resetFields();
-        //   this.imageUrl = '';
-        /*this.$confirm('确认关闭？')
-         　　.then(_ => {
-         　　done();
-         location.reload();
-         })
-         .catch(_ => { });*/
-      },
+
 
       //评论回复
       commentReplyClick(){
@@ -1166,5 +1192,11 @@
     padding: 0 10px;
     box-sizing: border-box;
   }
-
+  
+  
+.video{
+    width: 300px;
+    height: 240px;
+    margin: 0 auto;
+  }
 </style>
