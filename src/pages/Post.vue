@@ -540,8 +540,6 @@
               remark:'',
               authorId:'',
               date:'',
-              publishTime:'',
-              publishTime2:''
             },
             //增加
             topicCircle:'',
@@ -629,9 +627,9 @@
               {prop: 'collects', label: '收藏', width: '80', align: 'right'},
               {prop: 'clickNum', label: '点赞', width: '80', align: 'right'},
               {prop: 'authorName', label: '作者', width: '100', align: ''},
-              {prop: 'publishTime', label: '发布时间', width: '150', align: 'right'},
+              {prop: 'publishTime', label: '发布时间', width: '160', align: 'right'},
               {prop: 'modifierName', label: '修改人', width: '150', align: ''},
-              {prop: 'modifyTime', label: '修改时间', width: '150', align: 'right'},
+              {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right'},
               {prop: 'remark', label: '备注', width: '', align: ''},
             ],
             commentList: [   //表格的头部配置
@@ -1064,9 +1062,8 @@
       //导出
       exportd(){
             let path = this.$store.state.baseUrl;
-            let href = path + 'basicTopic/downloadTopicCircle'
+            let href = path + 'basicTopic/downloadBasicTopic'
             let json = {};
-
 
             Object.keys(this.formInline).forEach((key,index)=>{
                 if(this.formInline[key] != '' && key != 'date'){
@@ -1087,8 +1084,8 @@
                 }
             });
             }
-           // console.log(href)
-          location.href = href; 
+           console.log(href)
+         location.href = href; 
       },
 
       //评论回复
