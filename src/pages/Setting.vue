@@ -443,8 +443,8 @@ export default {
 
         //导出
         exportd(){
-           /* let path = this.$store.state.baseUrl;
-            let href = path + 'myCircle/downloadTopicCircle'
+           let path = this.$store.state.baseUrl;
+            let href = path + 'sysCategory/downloadSysCategory'
             let json = {};
 
 
@@ -465,7 +465,7 @@ export default {
             });
             }
 
-           location.href = href;*/
+           location.href = href;
         },
 
         //多选框选中之后存放的数据

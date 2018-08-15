@@ -268,30 +268,30 @@
 
                     <el-row>
                       <el-col :span="6">
-                           <el-form-item label="省：">
-                            <el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince">
-                            <el-option :label="item.codeName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>
+                        <el-form-item label="省：" prop="provinceId">
+                            <el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince(form.provinceId)">
+                            <el-option :label="item.regionName" :value="item.regionId" v-for="item in provinceList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
-                          <el-form-item label="市：">
-                            <el-select v-model="form.cityId" placeholder="请选择市"  @change="chooseArea">
-                            <el-option :label="item.codeName" :value="item.cId" v-for="item in cityList" :key="item.cId"></el-option>
-                            </el-select>
-                        </el-form-item>
+                        <el-form-item label="市：" prop="cityId">
+                                <el-select v-model="form.cityId" placeholder="请选择市"  @change="chooseArea(form.cityId)">
+                                <el-option :label="item.regionName" :value="item.regionId" v-for="item in cityList" :key="item.cId"></el-option>
+                                </el-select>
+                            </el-form-item>
                       </el-col>
                       <el-col :span="6">
-                          <el-form-item label="县：">
-                            <el-select v-model="form.areaId" placeholder="请选择区县" @change="chooseCountry">
-                            <el-option :label="item.codeName" :value="item.cId" v-for="item in areaList" :key="item.cId"></el-option>
+                        <el-form-item label="县：" prop="areaId">
+                            <el-select v-model="form.areaId" placeholder="请选择区县" @change="chooseCountry(form.areaId)">
+                            <el-option :label="item.regionName" :value="item.cId" v-for="item in areaList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
                           <el-form-item label="乡：">
                             <el-select v-model="form.countryId" placeholder="请选择乡镇">
-                                <el-option :label="item.codeName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>
+                                <el-option :label="item.regionName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
@@ -867,38 +867,49 @@ export default {
             this.baitList = res.data;
          })
      },
+
+
      //获取省份列表
      getProvince(){
-         this.$get('province/queryAll',{}).then(res=>{
-             this.provinceList = res.data;
-         })
+         this.$get('/region/queryTrees',{}).then(res=>{
+              if(res.code == 0){
+                this.provinceList = res.data;
+              }
+          })
      },
      //获取市列表
-     chooseProvince(){
+     chooseProvince(id){
         //根据省份id获取城市
-         this.$get('city/queryByProvinceId',{
-             provinceId: this.form.provinceId
-         }).then(res=>{
-             this.cityList = res.data
-         })
+          this.provinceList.forEach((val)=>{
+            if(id == val.regionId){
+                this.cityList = val.childList;
+                console.log(this.cityList)
+                 this.form.cityId = '';
+                this.form.areaId = '';
+                this.form.countryId = '';
+            }
+        })
      },
      //获取县级列表
-     chooseArea(){
+     chooseArea(id){
          //根据城市id获取县级
-         this.$get('area/queryByCityId',{
-             cityId: this.form.cityId
-         }).then(res=>{
-             this.areaList = res.data;
-         })
+           this.cityList.forEach((val)=>{
+              if(id == val.regionId){
+                this.areaList = val.childList;
+                this.form.areaId = '';
+               this.form.countryId = '';
+              }
+          })
      },
      //获取乡镇
-     chooseCountry(){
+     chooseCountry(id){
          //根据县级id获取乡镇列表
-         this.$get('country/queryByCityId',{
-             areaId: this.form.areaId
-         }).then(res=>{
-             this.countryList = res.data;
-         })
+        this.areaList.forEach((val)=>{
+              if(id == val.cId){
+                this.countryList = val.childList;
+             this.form.countryId = '';
+              }
+          })
      },
      //获取管理人列表
     getMangerList(){
