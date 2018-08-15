@@ -7,7 +7,7 @@
           <el-col :span="14">
             <el-form :inline="true" :model="formInline" class="demo-form-inline" size="mini">
               <el-form-item label="标题：" >
-                <el-input clearable placeholder="标题" v-model="formInline.cityName"></el-input>
+                <el-input clearable placeholder="标题" v-model="formInline.title"></el-input>
               </el-form-item>
               <el-form-item label="作者：">
                 <el-input clearable  placeholder="作者" v-model="formInline.publisherName"></el-input>
@@ -358,7 +358,7 @@
         //查询
         formInline:{
           status: '',
-          cityName:'',
+          title:'',
           remark:'',
           publisherName:'',
           date:'',
@@ -704,35 +704,33 @@
         });
       },
 
-      //修改
-      edit(){
-
-        this.contentShow = true;
-        this.topicContentArr = [];
-        if(this.multipleSelection.length != 1){
-          this.$message({
-            message: '请选择一条需要修改的数据！',
-            type: 'warning'
-          });
-          return;
-        }
-        this.dialogVisible = true;
-        this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-
-
-        this.$get('/basicTopic/queryById',{
-          topicId: this.circleId
-        }).then(res=>{
-          this.form = res.data;
-          this.getCityList();
-          this.form.isGoBoat = this.form.isGoBoat==1? '是':'否';
-          this.form.status = this.form.status==1? '是':'否';
-          this.form.isTop = this.form.isTop==1? '是':'否';
-          this.form.isBest = this.form.isBest==1? '是':'否';
-
-          console.log(this.form)
-        })
-      },
+//      //修改
+//      edit(){
+//
+//        this.contentShow = true;
+//        if(this.multipleSelection.length != 1){
+//          this.$message({
+//            message: '请选择一条需要修改的数据！',
+//            type: 'warning'
+//          });
+//          return;
+//        }
+//        this.dialogVisible = true;
+//        this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
+//
+//
+//        this.$get('/basicTopic/queryById',{
+//          topicId: this.circleId
+//        }).then(res=>{
+//          this.form = res.data;
+//          this.getCityList();
+//          this.form.isGoBoat = this.form.isGoBoat==1? '是':'否';
+//          this.form.status = this.form.status==1? '是':'否';
+//          this.form.isTop = this.form.isTop==1? '是':'否';
+//          this.form.isBest = this.form.isBest==1? '是':'否';
+//          console.log(this.form)
+//        })
+//      },
 
       //导出
       exportd(){
