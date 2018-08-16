@@ -401,7 +401,7 @@
                   <el-row>
                       <el-col :span="23">
                         <el-form-item label="内容：">
-                          <el-input type="textarea" :value="item.content" @change="contentChange(index)"></el-input>
+                          <el-input type="textarea" v-model="topicContentArr[index].content" :value="item.content" ></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="1" style="text-align: right;font-size: 18px;">
@@ -1379,14 +1379,6 @@
 
       },
 
-      //当内容改变时触发
-      contentChange(index){
-        this.topicContentArr.forEach((val,num)=>{
-            if(index == num){
-//                this.topicContentArr.replace()
-            }
-        })
-      }
     },
     mounted(){
       //获取所有帖子列表 /basicTopic/queryCommon
