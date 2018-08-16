@@ -401,9 +401,7 @@
                   <el-row>
                       <el-col :span="23">
                         <el-form-item label="内容：">
-                          <el-input type="textarea" :value="item.content"></el-input>
-
-                          <!--<textarea style="width:100%;padding:10px 10px;box-sizing: border-box;font-family: arial,'\5FAE\8F6F\96C5\9ED1',sans-serif;color: #606266;">{{item.content}}</textarea>-->
+                          <el-input type="textarea" :value="item.content" @change="contentChange(index)"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="1" style="text-align: right;font-size: 18px;">
@@ -1379,6 +1377,15 @@
           });
         });
 
+      },
+
+      //当内容改变时触发
+      contentChange(index){
+        this.topicContentArr.forEach((val,num)=>{
+            if(index == num){
+//                this.topicContentArr.replace()
+            }
+        })
       }
     },
     mounted(){
