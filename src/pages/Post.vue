@@ -657,7 +657,8 @@
 
       getType(){
         this.topicCircleArr = [];
-        this.topicCircle = '';
+//        this.topicCircle = '';
+        this.form.topicCircleList = [];
         this.getCircleList(this.topicType);
       },
 
