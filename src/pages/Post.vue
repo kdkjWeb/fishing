@@ -853,6 +853,7 @@
       //查询
       search(){
         this.getPostList();
+//        this.currentPage = 1;
       },
 
       //新增

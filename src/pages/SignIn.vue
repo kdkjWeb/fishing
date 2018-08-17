@@ -144,6 +144,7 @@ export default {
         },
         //查询
         search(){
+            this.currentPage = 1;
             this.getAllSignList();
         },
         //导出

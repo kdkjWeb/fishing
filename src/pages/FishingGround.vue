@@ -489,7 +489,7 @@ export default {
         //获取钓场列表
         getGroundList(pageSize,pageNum){
             this.$post('fishplace/managerGetList',{
-                pageSize: pageSize ? pageSize : 10,
+                pageSize: pageSize ? pageSize : 30,
                 pageNum: pageNum ? pageNum : 1,
                 name: this.formInline.name ? this.formInline.name : null,
                 location: this.formInline.location ? this.formInline.location : null,
@@ -497,8 +497,6 @@ export default {
                 enddate: this.formInline.cdate ? `${this.dataTransform(this.formInline.cdate[1])} 23:59:59`: null,
             }).then(res=>{
                 if(res.code == 0){
-                    console.log(res)
-
                     if(res.data.list.length <=0){
                         this.tableData = res.data.list;
                         this.total = 0;
@@ -532,6 +530,7 @@ export default {
         },
         //查询
         search(){
+            this.currentPage = 1;
             this.getGroundList();
         },
         //新增
