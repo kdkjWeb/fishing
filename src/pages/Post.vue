@@ -256,12 +256,26 @@
                 <el-row>
                   <el-col :span="8">
                     <el-form-item label="钓法：">
-                      <el-input v-model="form.fishMethod" ></el-input>
+
+                      <el-select v-model="form.fishMethod" filterable>
+                        <el-option
+                          v-for="item,index in categoryList"
+                          :label="item.codeName"
+                          :value="item.cId"
+                          :key="index"></el-option>
+                      </el-select>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="鱼类：">
-                      <el-input v-model="form.fishType" ></el-input>
+                      <!--<el-input v-model="form.fishType" ></el-input>-->
+                      <el-select v-model="form.fishType" filterable>
+                        <el-option
+                          v-for="item,index in fishArr"
+                          :label="item.codeName"
+                          :value="item.cId"
+                          :key="index"></el-option>
+                      </el-select>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
@@ -281,7 +295,13 @@
                 <el-row>
                   <el-col :span="8">
                     <el-form-item label="饵料类型：">
-                      <el-input v-model="form.baitType" ></el-input>
+                      <el-select v-model="form.baitType" filterable>
+                        <el-option
+                          v-for="item,index in typeArr"
+                          :label="item.codeName"
+                          :value="item.cId"
+                          :key="index"></el-option>
+                      </el-select>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
@@ -635,6 +655,9 @@
             commentShow:true,
             disabled: false,
             userList:[],
+            categoryList:[],
+            fishArr:[],
+            typeArr:[],
             imagesArr:[
 
             ],
@@ -683,12 +706,36 @@
       getUser(){
         this.$get('/user/getUserNameList',{}).then(res=>{
             if(res.code == 0){
-                console.log(res)
               this.userList = res.data
             }
         })
       },
 
+      //获取钓法  /sysCategory/queryByCategory
+      getCategory(){
+          this.$post('/sysCategory/queryByCategory',{
+            category:33
+          }).then(res=>{
+              this.categoryList = res.data;
+          })
+      },
+      //获取鱼类  /sysCategory/queryByCategory
+      getFishList(){
+        this.$post('/sysCategory/queryByCategory',{
+          category:35
+        }).then(res=>{
+          this.fishArr = res.data;
+        })
+      },
+
+      //获取饵料类型  /sysCategory/queryByCategory
+      getTypeList(){
+        this.$post('/sysCategory/queryByCategory',{
+          category:34
+        }).then(res=>{
+          this.typeArr = res.data;
+        })
+      },
       getType(){
         this.topicCircleArr = [];
 //        this.topicCircle = '';
@@ -1452,6 +1499,12 @@
 
       //获取用户  /user/getMoreUserInfo
         this.getUser()
+      //获取钓法  /sysCategory/queryByCategory
+      this.getCategory();
+      //获取鱼类  /sysCategory/queryByCategory
+      this.getFishList();
+      //获取饵料类型  /sysCategory/queryByCategory
+      this.getTypeList()
     },
 
 
