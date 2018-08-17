@@ -175,30 +175,30 @@
                 </el-row>
                 <el-row>
                   <el-col :span="8">
-                    <el-form-item label="浏览数：">
-                      <el-input v-model="form.viewNum" ></el-input>
+                    <el-form-item label="浏览数：" >
+                      <el-input v-model="form.viewNum" disabled ></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="评论数：">
-                      <el-input v-model="form.commentNum" ></el-input>
+                    <el-form-item label="评论数：" >
+                      <el-input v-model="form.commentNum"  disabled></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="打赏金额：" >
-                      <el-input v-model="form.reward" ></el-input>
+                      <el-input v-model="form.reward" disabled ></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col :span="8">
-                    <el-form-item label="收藏数：">
-                      <el-input v-model="form.collects" ></el-input>
+                    <el-form-item label="收藏数：" >
+                      <el-input v-model="form.collects" disabled></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="点赞数：">
-                      <el-input v-model="form.clickNum" ></el-input>
+                    <el-form-item label="点赞数："  >
+                      <el-input v-model="form.clickNum" disabled ></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
@@ -216,7 +216,7 @@
                   <el-col :span="8">
                     <el-form-item :label="titleName">
 
-                      <el-select v-model="topicCircleArr" multiple v-if="isShow">
+                      <el-select v-model="topicCircleArr" multiple v-if="isShow" filterable>
                         <el-option
                           v-for="item,index in circleList"
                           :label="item.circleName"
@@ -225,7 +225,7 @@
                         </el-option>
                       </el-select>
 
-                      <el-select v-model="topicCircle"  v-else="isShow">
+                      <el-select v-model="topicCircle"  v-else="isShow" filterable>
                         <el-option
                           v-for="data,index in anglingSiteList"
                           :label="data.name"
@@ -242,7 +242,7 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="省：">
-                      <el-select v-model="form.provinceId" placeholder="省" @change="getCityList(form.provinceId)">
+                      <el-select v-model="form.provinceId" placeholder="省" @change="getCityList(form.provinceId)" filterable>
                         <el-option
                           v-for="item,index in provinceList"
                           :label="item.regionName"
@@ -267,7 +267,7 @@
                   <el-col :span="8">
                     <el-form-item label="市：">
 
-                      <el-select v-model="form.cityId" placeholder="市" @change="getaAreaList(form.cityId)">
+                      <el-select v-model="form.cityId" placeholder="市" @change="getaAreaList(form.cityId)" filterable>
                         <el-option
                           v-for="item,index in cityList"
                           :label="item.regionName"
@@ -298,7 +298,7 @@
                   <el-col :span="8">
                     <el-form-item label="县：">
 
-                      <el-select v-model="form.areaId" placeholder="县" @change="getCountryList(form.areaId)">
+                      <el-select v-model="form.areaId" placeholder="县" @change="getCountryList(form.areaId)" filterable>
                         <el-option
                           v-for="item,index in areaList"
                           :label="item.codeName"
@@ -325,7 +325,7 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="乡：">
-                      <el-select v-model="form.countryId" placeholder="乡">
+                      <el-select v-model="form.countryId" placeholder="乡" filterable>
                         <el-option
                           v-for="item,index in countryList"
                           :label="item.codeName"
@@ -371,8 +371,16 @@
 
             <el-row>
               <el-col :span="8">
-                <el-form-item label="创建人：" prop="location">
-                  <el-input v-model="form.authorName" disabled></el-input>
+                <el-form-item label="创建人：" >
+                  <!--<el-input v-model="form.authorName" disabled></el-input>  userList-->
+                  <el-select v-model="form.authorId"  filterable>
+                    <el-option
+                      v-for="item,index in userList"
+                      :label="item.nickname"
+                      :value="item.cId"
+                      :key="index"></el-option>
+                  </el-select>
+
                 </el-form-item>
               </el-col>
               <el-col :span="8">
@@ -384,7 +392,7 @@
             <el-row>
               <el-col :span="8">
                 <el-form-item label="修改人：" >
-                  <el-input v-model="form.authorName" disabled></el-input>
+                  <el-input v-model="form.modifierName" disabled></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="8">
@@ -394,7 +402,14 @@
               </el-col>
             </el-row>
 
-            <el-row v-if="contentShow">
+            <el-row>
+              <div style="text-align: right;margin-bottom: 20px;">
+                <el-button type="primary" size="mini" class="add" @click="add">+ 添加</el-button>
+                <el-button-group>
+                  <el-button type="primary" size="mini">文字</el-button>
+                  <el-button type="primary" size="mini">图片</el-button>
+                </el-button-group>
+              </div>
 
               <div v-for="item,index in topicContentArr">
                 <el-col :span="24" v-if="item.contentType==1" >
@@ -413,32 +428,34 @@
                 <el-col :span="24" v-if="item.contentType==2" >
                   <el-row>
                       <el-col :span="23">
-                        <div style="margin:10px auto;width:50%;">
-                          <img :src="item.contentUrl" />
+                        <div style="margin:10px auto;">
+                          <img :src="item.contentUrl" style="width: 100%"/>
                         </div>
                       </el-col>
-
                       <el-col :span="1" style="text-align: right;font-size: 18px;">
-                        <i class="el-icon-delete" @click="deleteImage(index)" style="cursor:pointer"></i>
+                          <i class="el-icon-delete" @click="deleteImage(index)" style="cursor:pointer"></i>
                       </el-col>
                   </el-row>
                 </el-col>
-                <!--<el-col :span="24" :offset="1"  v-if="item.contentType==2">-->
-                  <!--<span class="uploadTitle">上传图标：</span>-->
-                  <!--<el-upload-->
-                    <!--class="avatar-uploader"-->
-                    <!--accept="image/jpeg,image/png"-->
-                    <!--:action="`${this.$store.state.baseUrl}common/uploadOssPic`"-->
-                    <!--:show-file-list="false"-->
-                    <!--:on-success="handleAvatarSuccess"-->
-                    <!--name="picture"-->
-                    <!--:before-upload="beforeAvatarUpload">-->
-                    <!--<img v-if="imageUrl" :src="imageUrl" class="avatar">-->
-                    <!--<i v-else class="el-icon-plus avatar-uploader-icon"></i>-->
-                    <!--<div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div>-->
-                  <!--</el-upload>-->
-                <!--</el-col>-->
+
+                <el-col :span="24" :offset="1"  v-if="contentShow"  >
+                  <span class="uploadTitle">上传图标：</span>
+                  <el-upload
+                    class="avatar-uploader"
+                    accept="image/jpeg,image/png"
+                    :action="$store.state.imagesUrl"
+                    :show-file-list="false"
+                    :on-success="handleAvatarSuccess"
+                    :headers="myHeaders"
+                    name="picture"
+                    :before-upload="beforeAvatarUpload">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div>
+                  </el-upload>
+                </el-col>
               </div>
+
 
             </el-row>
 
@@ -526,11 +543,13 @@
     data(){
           return{
             allNum: {
-              commentNum: 0,   //评论总数
+              commentNum: 0,   //评论总数 mmm m
               collects: 0,    //收藏总数
               clickNum: 0   //点赞总数
             },
-
+            myHeaders: {     //上传图片携带token
+              token: ''
+            },
             //查询
             formInline:{
               status: '',
@@ -553,6 +572,7 @@
             isShow:true,
             imageUrl:'',   //图片路径
             form:{
+              authorId:'',
               title:'',  //标题、圈子
               isTop:'',  //是否置顶
               isBest:'',  //精华
@@ -591,7 +611,7 @@
                 sort:0
               }
             ],
-            contentShow:false,
+            contentShow:true,
             addIsShow:true,
             videoFlag:false,
             videoUploadPercent:null,
@@ -614,6 +634,10 @@
             commentData:[],  //评论列表
             commentShow:true,
             disabled: false,
+            userList:[],
+            imagesArr:[
+
+            ],
             tableList: [   //表格的头部配置
               {prop: 'title', label: '标题', width: '200', align: ''},
               {prop: 'status', label: '状态', width: '100', align: ''},
@@ -653,6 +677,16 @@
         } else {
           return ''
         }
+      },
+
+      //获取用户  /user/getMoreUserInfo
+      getUser(){
+        this.$get('/user/getUserNameList',{}).then(res=>{
+            if(res.code == 0){
+                console.log(res)
+              this.userList = res.data
+            }
+        })
       },
 
       getType(){
@@ -806,18 +840,19 @@
       handleSizeChange(val) {
         this.pageSize = val;
         this.getPostList(val,this.currentPage);
+
       },
 
       //当前第几页
       handleCurrentChange(val) {
         this.currentPage = val;
-        this.getRatingList(this.pageSize,val)
+        this.getPostList(this.pageSize,val);
       },
 
 
       //查询
       search(){
-        this.getPostList()
+        this.getPostList();
       },
 
       //新增
@@ -826,7 +861,15 @@
         this.videoPath = '';
         this.dialogVisible = true;
         this.form = {};
-        this.contentShow = false;
+        this.contentShow = true;
+
+        this.topicContentArr=[
+          {
+            contentType:1,
+            content:'',
+            sort:0
+          }
+        ]
       },
 
       /**start上传图片 */
@@ -918,9 +961,16 @@
           })
         }
 
+        if(this.form.icon){
+           let obj = {}
+           obj.contentType = 2;
+           obj.content = this.form.icon;
+           obj.sort = 1
 
+          this.topicContentArr.push(obj)
+        }
         this.$refs[form].validate((valid)=>{
-          let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopic'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+          let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           this.form.status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
           this.form.isTop = (this.form.status == '是' ||this.form.status == '1') ? 1 : 0;
           this.form.isBest = (this.form.status == '是' ||this.form.status == '1') ? 1 : 0;
@@ -935,6 +985,7 @@
                   status:this.form.status,  //状态
                   topicType:this.form.topicType,  //类型
                   isVisibleCategoryId:this.form.isVisibleCategoryId,  //是否可见
+                  authorId:this.form.authorId,  //是否可见
                   fishMethod:this.form.fishMethod,      //钓法
                   fishType:this.form.fishType,      //鱼类
                   provinceId:this.form.provinceId,    //省
@@ -1015,7 +1066,7 @@
       //修改
       edit(){
 
-          this.contentShow = true;
+          this.contentShow = false;
           this.topicContentArr = [];
         if(this.multipleSelection.length != 1){
           this.$message({
@@ -1387,9 +1438,9 @@
       //表格第一行默认选中
       this.checked();
 
-//      if(this.$store.state.token){
-//        this.myHeaders.token = this.$store.state.token
-//      }
+      if(this.$store.state.token){
+        this.myHeaders.token = this.$store.state.token
+      }
 
     //获取所有发送圈子列表
       this.getCircleList();
@@ -1397,6 +1448,9 @@
       this.getProvinceList();
 
       this.check();
+
+      //获取用户  /user/getMoreUserInfo
+        this.getUser()
     },
 
 

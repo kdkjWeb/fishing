@@ -107,7 +107,7 @@
 
       <!-- start弹出框 -->
       <el-dialog
-        title="帖子"
+        title="视频"
         :visible.sync="dialogVisible"
         top="8vh"
         width="925px">
@@ -375,7 +375,7 @@
       ElRow},
     data(){
       return{
-        height: '', 
+        height: '',
         video: '',
         allNum: {
           commentNum: 0,   //评论总数
@@ -761,7 +761,7 @@
             }
 
             // console.log(href)
-            location.href = href; 
+            location.href = href;
       },
 
 
@@ -1204,8 +1204,8 @@
     padding: 0 10px;
     box-sizing: border-box;
   }
-  
-  
+
+
 .video{
     width: 300px;
     height: 240px;
