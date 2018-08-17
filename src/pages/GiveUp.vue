@@ -168,6 +168,7 @@ export default {
         },
         //查询
         search(){
+            this.currentPage = 1;
             this.getAllLikeList();
         },
         //导出

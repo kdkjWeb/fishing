@@ -167,6 +167,7 @@ export default {
         },
         //查询
         search(){
+            this.currentPage = 1;
             this.getAllCoinList();
         },
         //导出

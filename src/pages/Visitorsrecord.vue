@@ -137,6 +137,7 @@ export default {
         },
         //查询
         search(){
+            this.currentPage = 1;
             this.getAllVisitorList();
         },
         //导出

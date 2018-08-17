@@ -143,6 +143,7 @@ export default {
         },
         //查询
         search(){
+            this.currentPage = 1;
             this.getAllAttentionList();
         },
         //导出

@@ -451,7 +451,7 @@ export default {
         },
         //查询
         search(){
-            // console.log(this.formInline.date)
+            this.currentPage = 1;
             this.getCircleList();
         },
         //新增

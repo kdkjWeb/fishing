@@ -816,6 +816,7 @@
 
       //查询
       search(){
+        this.currentPage = 1;
         this.getPostList()
       },
 
