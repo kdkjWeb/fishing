@@ -324,9 +324,9 @@
       </div>
 
       <div style="padding-right: 20px;">
-        <div class="table">
+        <div class="table1">
           <el-table
-            height="300"
+            max-height="height"
             ref="multiple"
             :data="commentData"
             tooltip-effect="dark"
@@ -375,6 +375,7 @@
       ElRow},
     data(){
       return{
+        height: '', 
         video: '',
         allNum: {
           commentNum: 0,   //评论总数
@@ -1059,7 +1060,14 @@
 
       }
     },
+    created(){
+      this.height = window.innerHeight - 674;
+    },
     mounted(){
+      window.addEventListener('resize', ()=>{
+             this.height = window.innerHeight - 674;
+        })
+
       //获取所有帖子列表 /basicTopic/queryCommon
       this.getPostList();
       //表格第一行默认选中
@@ -1161,6 +1169,10 @@
   }
   .table{
     border: 1px solid #ddd;
+  }
+  .table1{
+        border: 1px solid #ddd;
+    background: red;
   }
   .dialog_content{
     width: 100%;
