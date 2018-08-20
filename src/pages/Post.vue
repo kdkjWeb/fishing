@@ -424,32 +424,33 @@
 
             <el-row>
               <div style="text-align: right;margin-bottom: 20px;">
-                <el-button type="primary" size="mini" class="add" @click="add">+ 添加</el-button>
-                <el-button-group>
-                  <el-button type="primary" size="mini">文字</el-button>
-                  <el-button type="primary" size="mini">图片</el-button>
+                <el-button type="primary" size="mini" class="add" @click="addContent" v-if="addIsShow">+ 添加</el-button>
+                <el-button-group v-else="addIsShow">
+                  <el-button type="primary" size="mini" @click="addwords">文字</el-button>
+                  <el-button type="primary" size="mini" @click="addImages">图片</el-button>
                 </el-button-group>
               </div>
 
               <div v-for="item,index in topicContentArr">
+
                 <el-col :span="24" v-if="item.contentType==1" >
                   <el-row>
                       <el-col :span="23">
                         <el-form-item label="内容：">
-                          <el-input type="textarea" v-model="topicContentArr[index].content" :value="item.content" ></el-input>
+                          <el-input type="textarea" v-model="topicContentArr[index].content" :value="item.content"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="1" style="text-align: right;font-size: 18px;">
                         <i class="el-icon-delete" @click="deleteImage(index)" style="cursor:pointer"></i>
                       </el-col>
                   </el-row>
-
                 </el-col>
+
                 <el-col :span="24" v-if="item.contentType==2" >
                   <el-row>
                       <el-col :span="23">
                         <div style="margin:10px auto;">
-                          <img :src="item.contentUrl" style="width: 100%"/>
+                          <img :src="item.contentUrl" />
                         </div>
                       </el-col>
                       <el-col :span="1" style="text-align: right;font-size: 18px;">
@@ -458,22 +459,24 @@
                   </el-row>
                 </el-col>
 
-                <el-col :span="24" :offset="1"  v-if="contentShow"  >
+                <el-col :span="24" :offset="1"  v-if="item.contentType==2">
                   <span class="uploadTitle">上传图标：</span>
                   <el-upload
                     class="avatar-uploader"
                     accept="image/jpeg,image/png"
                     :action="$store.state.imagesUrl"
+                    list-type="picture-card"
                     :show-file-list="false"
                     :on-success="handleAvatarSuccess"
                     :headers="myHeaders"
                     name="picture"
                     :before-upload="beforeAvatarUpload">
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <img v-if="topicContentArr[index].imageUrl" :src="topicContentArr[index].imageUrl"  class="avatar">
                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div>
+                    <div slot="tip" class="el-upload__tip">只支持jpg/png类型</div>
                   </el-upload>
                 </el-col>
+
               </div>
 
 
@@ -628,9 +631,11 @@
               {
                 contentType:1,
                 content:'.....',
-                sort:0
+                sort:0,
+                imageUrl:''
               }
             ],
+            cont:0,  //计数
             contentShow:true,
             addIsShow:true,
             videoFlag:false,
@@ -922,8 +927,10 @@
 
       /**start上传图片 */
       handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
-        this.form.icon = file.response.data;
+        if(this.topicContentArr[this.topicContentArr.length - 1].contentType == 2){
+          this.topicContentArr[this.topicContentArr.length - 1].imageUrl = URL.createObjectURL(file.raw);
+          this.topicContentArr[this.topicContentArr.length - 1].content = file.response.data;
+        }
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
@@ -986,11 +993,6 @@
 
       },
 
-      //添加内容
-      addloanTrial(){
-        this.addIsShow = false;
-      },
-
       //点击确定   /basicTopic/addBasicTopic   /basicTopic/updateBasicTopic
       comfirm(form){
 
@@ -1009,14 +1011,6 @@
           })
         }
 
-        if(this.form.icon){
-           let obj = {}
-           obj.contentType = 2;
-           obj.content = this.form.icon;
-           obj.sort = 1
-
-          this.topicContentArr.push(obj)
-        }
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           this.form.status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
@@ -1479,6 +1473,66 @@
 
       },
 
+      //点击添加 文字、图片
+      addContent(){
+        this.addIsShow = false;
+      },
+
+      //添加文字
+      addwords(){
+          this.cont++;
+
+//          this.topicContentArr.forEach((val)=>{
+//              if(this.topicContentArr[this.topicContentArr.length-1].contentType == 1 && this.topicContentArr[this.topicContentArr.length-1].content){
+//                      alert(1)
+//                    this.topicContentArr.push({
+//                      contentType:1,
+//                      content:'',
+//                      imageUrl:'',
+//                      sort:this.cont
+//                    });
+//                    return;
+//
+//                  }else{
+//                    this.$message('您添加的内容不能为空，请填写后再添加！');
+//                    this.cont--;
+//                }
+//          })
+        let flag = false;
+        for(let i=0; i<this.topicContentArr.length; i++){
+            if(this.topicContentArr[i].content){
+                flag  = true;
+            }else{
+                flag = false;
+                this.cont--;
+          }
+        }
+
+        if(flag){
+          this.topicContentArr.push({
+            contentType:1,
+            content:'',
+            imageUrl:'',
+            sort:this.cont
+          });
+        }else{
+          this.$message('您内容或图片不能为空，请填写或上传后再添加！');
+        }
+      },
+
+      //添加图片
+      addImages(){
+          this.cont++;
+
+            this.topicContentArr.push({
+              contentType:2,
+              content:'',
+              sort:this.cont
+            })
+
+
+      },
+
     },
     mounted(){
       //获取所有帖子列表 /basicTopic/queryCommon
@@ -1506,7 +1560,9 @@
       //获取饵料类型  /sysCategory/queryByCategory
       this.getTypeList()
     },
+    watch:{
 
+    }
 
   }
 </script>
