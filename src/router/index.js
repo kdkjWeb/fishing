@@ -14,12 +14,12 @@ export default new Router({
     },{
       path: '/',
       component: resolve => require(['@/components/Home.vue'],resolve),
-      redirect: '/circle',
+      redirect: '/post',
       children: [
         {
           path: '/index',
           name: 'index',
-          component: resolve => require(['@/pages/Index.vue'],resolve) 
+          component: resolve => require(['@/pages/Index.vue'],resolve)
         },{
           path: '/circle',
           name: 'circle',
