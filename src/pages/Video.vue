@@ -185,7 +185,7 @@
                         <el-option
                           v-for="item,index in videoList"
                           :label="item.codeName"
-                          :value="item.cId"
+                          :value="item.codeName"
                           :key="index"></el-option>
                       </el-select>
                     </el-form-item>
@@ -213,11 +213,11 @@
             </el-row>
 
             <el-row>
-               <el-col :span="24">
-                <el-form-item label="详细地址：">
-                  <el-input v-model="form.location"></el-input>
-                </el-form-item>
-              </el-col>
+               <!--<el-col :span="24">-->
+                <!--<el-form-item label="详细地址：">-->
+                  <!--<el-input v-model="form.location"></el-input>-->
+                <!--</el-form-item>-->
+              <!--</el-col>-->
               <el-col :span="24">
                 <el-form-item label="备注：">
                   <el-input type="textarea" v-model="form.remark"></el-input>
@@ -230,9 +230,18 @@
               <el-col :span="16">
                 <el-row>
                   <el-col :span="12">
-                    <el-form-item label="创建人：">
-                      <el-input v-model="form.publisherName" disabled></el-input>
-                    </el-form-item>
+
+
+                      <el-form-item label="创建人：" >
+                        <el-select v-model="form.publisher"  filterable>
+                          <el-option
+                            v-for="item,index in userList"
+                            :label="item.nickname"
+                            :value="item.cId"
+                            :key="index"></el-option>
+                        </el-select>
+                      </el-form-item>
+
                   </el-col>
                   <el-col :span="12">
                     <el-form-item label="建立时间：">
@@ -256,10 +265,30 @@
             </el-row>
 
             <el-row>
-              <el-col :span="16">
+              <el-col :span="16" v-if="videoShow">
                 <div class="video">
                   <video :src="video.contentUrl" :poster="video.thumbUrl?video.thumbUrl:'../../static/images/header.jpg'" width="300" height="240" controls></video>
                 </div>
+              </el-col>
+
+              <el-col :span="24" v-else="videoShow">
+                <span class="uploadTitle">上传视频：</span>
+                <el-upload
+                  class="avatar-uploader"
+                  accept="image/jpeg,image/png"
+                  :action="`${this.$store.state.baseUrl}/common/uploadOssVideo`"
+                  list-type="picture-card"
+                  :show-file-list="false"
+                  :on-success="handleVideoSuccess"
+                  :headers="myHeaders"
+                  name="video"
+                  :limit="1"
+                  :on-exceed="handleExceed"
+                  :before-upload="beforeUploadVideo"
+                  :on-progress="uploadVideoProcess">
+                  <el-progress v-if="videoFlag == true" type="circle" :percentage="videoUploadPercent" style="margin-top:10px;"></el-progress>
+                  <i  v-else="videoFlag" class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
               </el-col>
             </el-row>
 
@@ -382,6 +411,8 @@
           remark:'',  //备注
           modifierName: '',   //修改人
           publisherName: '',   //创建人
+          topicContentList:[], //视频
+          publisher:''
         },
         topicContentArr:[
           {
@@ -390,10 +421,15 @@
             sort:0
           }
         ],
+        userList:[],
+        myHeaders: {     //上传图片携带token
+          token: ''
+        },
         addIsShow:true,
         videoFlag:false,
         videoUploadPercent:null,
         videoPath:'',
+        videoShow:false,
         circleId:'',
         rules:{
           title: [
@@ -442,6 +478,10 @@
       }
     },
     methods:{
+      handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 1个文件`);
+      },
+
       //设置表头的背景颜色
       getRowClass({ row, column, rowIndex, columnIndex }) {
         if (rowIndex == 0) {
@@ -454,6 +494,14 @@
       //设置表格索引序号
       index(index){
         return (this.currentPage - 1)*this.pageSize + index + 1;
+      },
+      //获取用户  /user/getMoreUserInfo
+      getUser(){
+        this.$get('/user/getUserNameList',{}).then(res=>{
+          if(res.code == 0){
+            this.userList = res.data
+          }
+        })
       },
 
       //获取所有视频列表 /basicTopic/queryCommon
@@ -476,6 +524,24 @@
                 val.status  = val.status ? '正常' : '已关闭';
                 val.isTop = val.isTop? '是':'否';
                 val.isBest = val.isBest? '是':'否';
+                console.log(val.topicType)
+                switch (val.topicType){
+                  case '1':
+                      val.topicType = '标准';
+                      break;
+                  case '2':
+                      val.topicType = '钓位';
+                      break;
+                  case '3':
+                      val.topicType = '鱼情';
+                      break;
+                  case '4':
+                      val.topicType = '视频';
+                      break;
+                  case '5':
+                      val.topicType = '随便说说';
+                      break;
+                }
 
                 //合计
                 this.allNum.commentNum += val.commentNum;
@@ -561,6 +627,7 @@
         this.videoPath = '';
         this.dialogVisible = true;
         this.form = {};
+        this.videoShow = false;
       },
 
 
@@ -593,7 +660,7 @@
       comfirm(form){
 
         this.$refs[form].validate((valid)=>{
-          let url = this.circleId ? '/videoTopic/updateVideoTopic' : '/videoTopic/addVideoTopic'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+          let url = this.circleId ? '/videoTopic/updateVideoTopic' : 'videoTopic/addVideoTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           this.form.status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
           this.form.isTop = (this.form.status == '是' ||this.form.status == '1') ? 1 : 0;
           this.form.isBest = (this.form.status == '是' ||this.form.status == '1') ? 1 : 0;
@@ -605,17 +672,20 @@
               title:this.form.title,  //标题、圈子
               isTop:this.form.isTop,  //是否置顶
               isBest:this.form.isBest,  //精华
-              status:this.form.status,  //状态
+//              status:this.form.status,  //状态
               sort:this.form.sort,  //排序号
-              topicType:this.form.topicType,//帖子类型
+//              topicType:this.form.topicType,//帖子类型
               viewNum:this.form.viewNum,  //浏览数
-              commentNum:this.form.commentNum,  //评论数
-              reward:this.form.reward,   //打赏金额
-              videoCategoryId:this.form.videoCategoryId,   //打赏金额
+              publisher:this.form.publisher,  //浏览数
+//              commentNum:this.form.commentNum,  //评论数
+//              reward:this.form.reward,   //打赏金额
+              videoCategoryId:this.form.videoCategoryId,
               remark:this.form.remark,   //打赏金额
+              topicContentList:this.form.topicContentList
             }).then(res=>{
               this.dialogVisible = false;
               if(res.code == 0){
+                this.videoUploadPercent = 0;
                 this.$message({
                   message:res.msg,
                   type: 'success',
@@ -687,6 +757,7 @@
          return;
        }
        this.dialogVisible = true;
+       this.videoShow = true;
        this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
        this.$get('videoTopic/queryById',{
          topicId: this.circleId
@@ -1029,7 +1100,42 @@
           });
         });
 
-      }
+      },
+
+      //上传视频
+      beforeUploadVideo(file) {
+        const isLt10M = file.size / 1024 / 1024  < 10;
+        if (['video/mp4', 'video/ogg', 'video/flv','video/avi','video/wmv','video/rmvb','video/x-ms-wmv'].indexOf(file.type) == -1) {
+          this.$message.error('请上传正确的视频格式');
+          return false;
+        }
+        if (!isLt10M) {
+          this.$message.error('上传视频大小不能超过10MB哦!');
+          return false;
+        }
+      },
+      // 上传进度显示：
+      uploadVideoProcess(event, file, fileList){
+        this.videoFlag = true;
+        this.videoUploadPercent = Number(file.percentage.toFixed(0));
+      },
+      //上传成功
+      handleVideoSuccess(res, file){
+        this.videoUploadPercent = 100;
+        this.videoPath = URL.createObjectURL(file.raw);
+//        this.form.videoUrl = res.data;
+
+        this.$message({
+          message:'上传视频成功',
+          type: 'success',
+        });
+
+        this.form.topicContentList=[{
+          contentType:3,
+          content:res.data,
+          sort:1
+        }]
+      },
     },
     created(){
       this.height = window.innerHeight - 674;
@@ -1038,15 +1144,16 @@
       window.addEventListener('resize', ()=>{
              this.height = window.innerHeight - 674;
         })
-
+      if(this.$store.state.token){
+        this.myHeaders.token = this.$store.state.token
+      }
       //获取所有帖子列表 /basicTopic/queryCommon
       this.getPostList();
       //表格第一行默认选中
       this.checked();
 
-//      if(this.$store.state.token){
-//        this.myHeaders.token = this.$store.state.token
-//      }
+      //获取用户  /user/getMoreUserInfo
+      this.getUser()
 
       this.getVideoClassification();
       this.check();
@@ -1082,6 +1189,7 @@
     position: relative;
     overflow: hidden;
   }
+
   #post .avatar-uploader .el-upload:hover {
     border-color: #409EFF;
   }
@@ -1156,9 +1264,12 @@
     float: left;
     line-height: 100px;
     padding-right: 15px;
+    width:100px;
+    display: inline-block;
+    text-align: right;
   }
   .aboutNum{
-    width: 1000px;
+    width: 992px;
     height: 30px;
     line-height: 30px;
     margin-top: 10px;

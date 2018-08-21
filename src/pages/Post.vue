@@ -392,7 +392,6 @@
             <el-row>
               <el-col :span="8">
                 <el-form-item label="创建人：" >
-                  <!--<el-input v-model="form.authorName" disabled></el-input>  userList-->
                   <el-select v-model="form.authorId"  filterable>
                     <el-option
                       v-for="item,index in userList"
@@ -400,7 +399,6 @@
                       :value="item.cId"
                       :key="index"></el-option>
                   </el-select>
-
                 </el-form-item>
               </el-col>
               <el-col :span="8">
@@ -959,7 +957,7 @@
         return (isJPG || isPNG) && isLt2M;
       },
 
-      /**start上传视频*/
+/*      /!**start上传视频*!/
         //验证方法：验证视频格式和视频大小
         beforeUploadVideo(file) {
           const isLt10M = file.size / 1024 / 1024  < 10;
@@ -983,7 +981,7 @@
 //          this.videoFlag = false;
           this.videoPath = URL.createObjectURL(file.raw);
           this.form.videoUrl = res.data;
-        },
+        },*/
 
 
       //标准时间格式转换
