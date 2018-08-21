@@ -957,31 +957,7 @@
         return (isJPG || isPNG) && isLt2M;
       },
 
-/*      /!**start上传视频*!/
-        //验证方法：验证视频格式和视频大小
-        beforeUploadVideo(file) {
-          const isLt10M = file.size / 1024 / 1024  < 10;
-          if (['video/mp4', 'video/ogg', 'video/flv','video/avi','video/wmv','video/rmvb'].indexOf(file.type) == -1) {
-            this.$message.error('请上传正确的视频格式');
-            return false;
-          }
-          if (!isLt10M) {
-            this.$message.error('上传视频大小不能超过10MB哦!');
-            return false;
-          }
-        },
-        // 上传进度显示：
-          uploadVideoProcess(event, file, fileList){
-            this.videoFlag = true;
-            this.videoUploadPercent = Number(file.percentage.toFixed(0));
-          },
-        //上传成功
-        handleVideoSuccess(res, file){
-          this.videoUploadPercent = 100;
-//          this.videoFlag = false;
-          this.videoPath = URL.createObjectURL(file.raw);
-          this.form.videoUrl = res.data;
-        },*/
+
 
 
       //标准时间格式转换
@@ -1063,6 +1039,13 @@
                         message:res.msg,
                         type: 'success',
                       });
+                    }else{
+                        this.$message({
+                          message: res.msg,
+                          type: 'warning'
+                        });
+                        this.circleId = ''
+
                     }
                     this.getPostList();
                 })
