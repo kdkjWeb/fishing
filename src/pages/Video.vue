@@ -38,7 +38,7 @@
 
           <el-col :span="10" class="right">
             <el-button type="primary" size="mini" @click="search">查询</el-button>
-            <!-- <el-button size="mini" @click="add">新增</el-button> -->
+             <el-button size="mini" @click="add">新增</el-button>
             <el-button size="mini" @click="deleted">删除</el-button>
             <el-button size="mini" @click="edit">修改</el-button>
             <el-button size="mini" @click="exportd">导出</el-button>
@@ -209,16 +209,15 @@
                   </el-col>
                 </el-row>
 
-
               </el-col>
             </el-row>
 
             <el-row>
-              <!-- <el-col :span="24">
+               <el-col :span="24">
                 <el-form-item label="详细地址：">
                   <el-input v-model="form.location"></el-input>
                 </el-form-item>
-              </el-col> -->
+              </el-col>
               <el-col :span="24">
                 <el-form-item label="备注：">
                   <el-input type="textarea" v-model="form.remark"></el-input>
@@ -226,30 +225,6 @@
               </el-col>
             </el-row>
 
-            <!-- <el-row>
-              <el-col :span="8">
-                <el-form-item label="创建人：">
-                  <el-input v-model="form.publisherName" disabled></el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="建立时间：">
-                  <el-input v-model="form.publishTime" disabled></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="8">
-                <el-form-item label="修改人：" >
-                  <el-input v-model="form.modifierName" disabled></el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="建立时间：">
-                  <el-input v-model="form.modifyTime" disabled></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row> -->
 
             <el-row>
               <el-col :span="16">
@@ -278,11 +253,6 @@
                   </el-col>
                 </el-row>
               </el-col>
-              <!-- <el-col :span="8">
-                <div class="video">
-                  <video :src="video.contentUrl" :poster="video.thumbUrl?video.thumbUrl:'../../static/images/header.jpg'" width="120" height="96" controls></video>
-                </div>
-              </el-col> -->
             </el-row>
 
             <el-row>
@@ -586,12 +556,12 @@
       },
 
       //新增
-     /* add(){
+      add(){
         this.imageUrl = '';
         this.videoPath = '';
         this.dialogVisible = true;
         this.form = {};
-      },*/
+      },
 
 
       //标准时间格式转换

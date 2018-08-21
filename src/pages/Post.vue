@@ -242,11 +242,11 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="省：">
-                      <el-select v-model="form.provinceId" placeholder="省" @change="getCityList(form.provinceId)" filterable>
+                      <el-select v-model="form.provinceId" placeholder="省" @change="getCityList(form.provinceId)" >
                         <el-option
                           v-for="item,index in provinceList"
                           :label="item.regionName"
-                          :value="item.regionId"
+                          :value="item.cId"
                           :key="index"></el-option>
                       </el-select>
                     </el-form-item>
@@ -285,7 +285,7 @@
                         <el-option
                           v-for="item,index in cityList"
                           :label="item.regionName"
-                          :value="item.regionId"
+                          :value="item.cId"
                           :key="index"></el-option>
                       </el-select>
                     </el-form-item>
@@ -446,19 +446,22 @@
                   </el-row>
                 </el-col>
 
-                <el-col :span="24" v-if="item.contentType==2" >
-                  <el-row>
+                <div v-if="imagesShow">
+                  <el-col :span="24" v-if="item.contentType==2" >
+                    <el-row>
                       <el-col :span="23">
-                        <div style="margin:10px auto;">
-                          <img :src="item.contentUrl" />
+                        <div style="width: 600px;margin: 0 auto;">
+                          <img :src="item.contentUrl" style="width:100%;"/>
                         </div>
                       </el-col>
                       <el-col :span="1" style="text-align: right;font-size: 18px;">
-                          <i class="el-icon-delete" @click="deleteImage(index)" style="cursor:pointer"></i>
+                        <i class="el-icon-delete" @click="deleteImage(index)" style="cursor:pointer"></i>
                       </el-col>
-                  </el-row>
-                </el-col>
+                    </el-row>
+                  </el-col>
+                </div>
 
+              <div v-else="imagesShow">
                 <el-col :span="24" :offset="1"  v-if="item.contentType==2">
                   <span class="uploadTitle">上传图标：</span>
                   <el-upload
@@ -466,16 +469,20 @@
                     accept="image/jpeg,image/png"
                     :action="$store.state.imagesUrl"
                     list-type="picture-card"
-                    :show-file-list="false"
+                    :show-file-list="true"
                     :on-success="handleAvatarSuccess"
                     :headers="myHeaders"
                     name="picture"
+                    :limit="1"
+                    :on-exceed="handleExceed"
                     :before-upload="beforeAvatarUpload">
-                    <img v-if="topicContentArr[index].imageUrl" :src="topicContentArr[index].imageUrl"  class="avatar">
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    <!--<img v-if="topicContentArr[index].imageUrl" :src="topicContentArr[index].imageUrl"  class="avatar">-->
+                    <i  class="el-icon-plus avatar-uploader-icon"></i>
                     <div slot="tip" class="el-upload__tip">只支持jpg/png类型</div>
                   </el-upload>
                 </el-col>
+              </div>
+
 
               </div>
 
@@ -666,6 +673,7 @@
             imagesArr:[
 
             ],
+            imagesShow:false,
             tableList: [   //表格的头部配置
               {prop: 'title', label: '标题', width: '200', align: ''},
               {prop: 'status', label: '状态', width: '100', align: ''},
@@ -698,6 +706,10 @@
           }
       },
     methods:{
+
+      handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 1个文件，如果还想添加图片，请点击图片按钮添加`);
+      },
       //设置表头的背景颜色
       getRowClass({ row, column, rowIndex, columnIndex }) {
         if (rowIndex == 0) {
@@ -774,13 +786,14 @@
           this.$get('/region/queryTrees',{}).then(res=>{
               if(res.code == 0){
                 this.provinceList = res.data;
+                console.log(res.data)
               }
           })
       },
       //获取所有市
       getCityList(id){
         this.provinceList.forEach((val)=>{
-            if(id == val.regionId){
+            if(id == val.cId){
                 this.cityList = val.childList;
             }
         })
@@ -789,7 +802,7 @@
       //获取所有县  areaList
       getaAreaList(id){
           this.cityList.forEach((val)=>{
-              if(id == val.regionId){
+              if(id == val.cId){
                 this.areaList = val.childList;
               }
           })
@@ -798,7 +811,7 @@
       //获取所有乡
       getCountryList(id){
         this.areaList.forEach((val)=>{
-            if(id == val.regionId){
+            if(id == val.cId){
               this.countryList = val.childList;
             }
         })
@@ -914,7 +927,7 @@
         this.videoPath = '';
         this.dialogVisible = true;
         this.form = {};
-        this.contentShow = true;
+        this.imagesShow = false;
 
         this.topicContentArr=[
           {
@@ -1022,12 +1035,11 @@
                 this.$post(url,{
                   cId: this.circleId ? this.circleId : null,
                   title: this.form.title,  //标题、圈子
-                  isTop:this.form.isTop,  //是否置顶
-                  isBest:this.form.isBest,  //精华
+//                  isTop:this.form.isTop,  //是否置顶
+//                  isBest:this.form.isBest,  //精华
                   status:this.form.status,  //状态
                   topicType:this.form.topicType,  //类型
                   isVisibleCategoryId:this.form.isVisibleCategoryId,  //是否可见
-                  authorId:this.form.authorId,  //是否可见
                   fishMethod:this.form.fishMethod,      //钓法
                   fishType:this.form.fishType,      //鱼类
                   provinceId:this.form.provinceId,    //省
@@ -1041,6 +1053,8 @@
                   latitude:this.form.latitude,       //纬度
                   location:this.form.location,     //详细地址
                   remark:this.form.remark,       //备注
+                  authorId:this.form.authorId,       //创建人
+                  showSort:this.form.showSort,       //排序号
                   fishOnTime:this.form.fishOnTime? this.dataTransform(this.form.fishOnTime):null,  //上鱼时间
                   topicCircleList:this.form.topicCircleList,  //发送圈子
                   topicContentList:this.topicContentArr  //内容
@@ -1108,7 +1122,7 @@
       //修改
       edit(){
 
-          this.contentShow = false;
+          this.imagesShow = true;
           this.topicContentArr = [];
         if(this.multipleSelection.length != 1){
           this.$message({
@@ -1124,15 +1138,15 @@
         this.$get('/basicTopic/queryById',{
           topicId: this.circleId
         }).then(res=>{
+            console.log(res)
           this.form = res.data;
-          this.getCityList();
+          this.form.number = this.rowIndex;
           this.form.isGoBoat = this.form.isGoBoat==1? '是':'否';
           this.form.status = this.form.status==1? '是':'否';
           this.form.isTop = this.form.isTop==1? '是':'否';
           this.form.isBest = this.form.isBest==1? '是':'否';
           this.topicContentArr = this.form.topicContentList;
 
-          console.log(this.form.topicType )
           if(this.form.topicType == 2 || this.form.topicType == 3){
             this.titleName = '钓场：';
             this.topicCircle = this.form.circleList[0].cId
@@ -1150,9 +1164,9 @@
               })
             }
           }
+          this.getCityList();
 
-
-          console.log(this.form)
+//          console.log(this.form)
         })
       },
 
@@ -1524,13 +1538,25 @@
       addImages(){
           this.cont++;
 
-            this.topicContentArr.push({
-              contentType:2,
-              content:'',
-              sort:this.cont
-            })
+        let flag = false;
+        for(let i=0; i<this.topicContentArr.length; i++){
+          if(this.topicContentArr[i].content){
+            flag  = true;
+          }else{
+            flag = false;
+            this.cont--;
+          }
+        }
 
-
+        if(flag){
+          this.topicContentArr.push({
+            contentType:2,
+            content:'',
+            sort:this.cont
+          })
+        }else{
+          this.$message('您内容或图片不能为空，请填写或上传后再添加！');
+        }
       },
 
     },
@@ -1559,9 +1585,6 @@
       this.getFishList();
       //获取饵料类型  /sysCategory/queryByCategory
       this.getTypeList()
-    },
-    watch:{
-
     }
 
   }
