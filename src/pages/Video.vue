@@ -434,6 +434,9 @@
         rules:{
           title: [
             { required: true, message: '请输入圈子名称', trigger: 'blur' },
+          ],
+          videoCategoryId:[
+            {required: true, message: '请选择视频分类', trigger: 'change' },
           ]
         },
         multipleSelection: [],   //存放勾选的数据
@@ -690,8 +693,16 @@
                   message:res.msg,
                   type: 'success',
                 });
+                this.getPostList();
+              }else{
+                this.$message({
+                  message: res.msg,
+                  type: 'warning'
+                });
+                this.circleId = ''
+
               }
-              this.getPostList();
+
             })
           }
         })
