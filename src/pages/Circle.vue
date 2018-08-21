@@ -55,7 +55,7 @@
                 <el-table-column
                 type="index"
                 width="50"
-                header-align="center"
+                header-align="right"
                 align="right"
                 :index="index"
                 label="编号">
@@ -67,7 +67,7 @@
                 :label="item.label"
                 :width="item.width"
                 :align="item.align"
-                header-align="center"
+                :header-align="item.align1"
                 :show-overflow-tooltip="true"
                 >
                 </el-table-column>
@@ -186,7 +186,7 @@
                             <el-col :span="12">
                                 <el-form-item label="省：" prop="provinceId">
                                     <el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince(form.provinceId)">
-                                    <el-option :label="item.regionName" :value="item.regionId" v-for="item in provinceList" :key="item.cId"></el-option>
+                                    <el-option :label="item.regionName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>
                                     </el-select>
                                 </el-form-item>
                             </el-col>
@@ -195,7 +195,7 @@
                       <el-col :span="8">
                             <el-form-item label="市：" prop="cityId">
                                 <el-select v-model="form.cityId" placeholder="请选择市"  @change="chooseArea(form.cityId)">
-                                <el-option :label="item.regionName" :value="item.regionId" v-for="item in cityList" :key="item.cId"></el-option>
+                                <el-option :label="item.regionName" :value="item.cId" v-for="item in cityList" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -382,20 +382,20 @@ export default {
 
             },
             tableList: [   //表格的头部配置
-                {prop: 'circleName', label: '圈子', width: '100', align: ''},
-                {prop: 'status', label: '状态', width: '70', align: ''},
-                {prop: 'kind', label: '类型', width: '60', align: ''},
-                {prop: 'codeName', label: '圈子分类', width: '80', align: ''},
-                {prop: 'sort', label: '排序号', width: '70', align: 'right'},
-                {prop: 'commentCount', label: '评论', width: '60', align: 'right'},
-                {prop: 'viewCount', label: '阅读', width: '60', align: 'right'},
-                {prop: 'memberCount', label: '成员', width: '60', align: 'right'},
-                {prop: 'location', label: '详细地址', width: '180', align: ''},
-                {prop: 'managerName', label: '管理人', width: '100', align: ''},
-                {prop: 'creatorName', label: '创建人', width: '100', align: ''},
-                {prop: 'createTime', label: '创建时间', width: '155', align: 'right'},
-                {prop: 'modifierName', label: '修改人', width: '100', align: ''},
-                {prop: 'modifyTime', label: '修改时间', width: '155', align: 'right'},
+                {prop: 'circleName', label: '圈子', width: '100', align: '',align1: 'left'},
+                {prop: 'status', label: '状态', width: '70', align: '',align1: 'left'},
+                {prop: 'kind', label: '类型', width: '60', align: '',align1: 'left'},
+                {prop: 'codeName', label: '圈子分类', width: '80', align: '',align1: 'left'},
+                {prop: 'sort', label: '排序号', width: '70', align: 'right',align1: 'right'},
+                {prop: 'commentCount', label: '评论', width: '60', align: 'right',align1: 'right'},
+                {prop: 'viewCount', label: '阅读', width: '60', align: 'right',align1: 'right'},
+                {prop: 'memberCount', label: '成员', width: '60', align: 'right',align1: 'right'},
+                {prop: 'location', label: '详细地址', width: '180', align: '',align1: 'left'},
+                {prop: 'managerName', label: '管理人', width: '100', align: '',align1: 'left'},
+                {prop: 'creatorName', label: '创建人', width: '100', align: '',align1: 'left'},
+                {prop: 'createTime', label: '创建时间', width: '155', align: 'right',align1: 'left'},
+                {prop: 'modifierName', label: '修改人', width: '100', align: '',align1: 'left'},
+                {prop: 'modifyTime', label: '修改时间', width: '155', align: 'right',align1: 'right'},
                 {prop: 'remark', label: '备注', width: '', align: ''}
             ],
             tableData: [],//表格的数据
@@ -431,7 +431,13 @@ export default {
                         this.allNum.commentCount = this.allNum.viewCount = this.allNum.memberCount = 0;   //dom每次更新数据都清零
                     }else{   //返回数据之后进行数据处理
             
-                         this.tableData = res.data.list;
+                        //  this.tableData = res.data.list;
+                        let arr = res.data.list;
+                        arr.forEach((e,index)=>{
+                            arr[index].status = e.status == 0 ? '已关闭' : '正常'
+                        })
+
+                       this.tableData = JSON.parse(JSON.stringify(arr))
                          this.$nextTick(function(){
                             this.checked();//每次更新了数据，触发这个函数即可。
 
@@ -749,10 +755,10 @@ export default {
           })
      },
      //获取市列表
-     chooseProvince(id){
+    chooseProvince(id){
         //根据省份id获取城市
           this.provinceList.forEach((val)=>{
-            if(id == val.regionId){
+            if(id == val.cId){
                 this.cityList = val.childList;
                 console.log(this.cityList)
                  this.form.cityId = '';
@@ -765,7 +771,7 @@ export default {
      chooseArea(id){
          //根据城市id获取县级
            this.cityList.forEach((val)=>{
-              if(id == val.regionId){
+              if(id == val.cId){
                 this.areaList = val.childList;
                 this.form.areaId = '';
                this.form.countryId = '';
@@ -932,6 +938,13 @@ display: block;
 
 .circle .el-upload__tip{
     text-align: right;
+}
+
+.circle .el-textarea__inner{
+    font-family: "Microsoft YaHei"; 
+}
+.circle .el-dialog__body{
+    padding: 0 20px;
 }
 </style>
 
