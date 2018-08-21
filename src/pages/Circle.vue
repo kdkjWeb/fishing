@@ -393,7 +393,7 @@ export default {
                 {prop: 'location', label: '详细地址', width: '180', align: '',align1: 'left'},
                 {prop: 'managerName', label: '管理人', width: '100', align: '',align1: 'left'},
                 {prop: 'creatorName', label: '创建人', width: '100', align: '',align1: 'left'},
-                {prop: 'createTime', label: '创建时间', width: '155', align: 'right',align1: 'left'},
+                {prop: 'createTime', label: '创建时间', width: '155', align: 'right',align1: 'right'},
                 {prop: 'modifierName', label: '修改人', width: '100', align: '',align1: 'left'},
                 {prop: 'modifyTime', label: '修改时间', width: '155', align: 'right',align1: 'right'},
                 {prop: 'remark', label: '备注', width: '', align: ''}
