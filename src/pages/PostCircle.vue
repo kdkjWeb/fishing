@@ -52,7 +52,7 @@
                 :label="item.label"
                 :width="item.width"
                 :align="item.align"
-                header-align="center"
+                :header-align="item.align"
                 :show-overflow-tooltip="true"
                 >
                 </el-table-column>
@@ -88,7 +88,7 @@ export default {
                placeName: ''
             },
             tableList: [   //表格的头部配置
-                {prop: 'topicTitle', label: '帖子标题', width: '120', align: ''},
+                {prop: 'topicTitle', label: '帖子标题', width: '300', align: ''},
                 {prop: 'topicType', label: '帖子类型', width: '100', align: ''},
                 {prop: 'cType', label: '类型', width: '80', align: 'right'},
                 {prop: 'placeName', label: '圈子名字', width: '80', align: 'right'},

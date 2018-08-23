@@ -46,7 +46,7 @@
                 <el-table-column
                 type="index"
                 width="50"
-                header-align="center"
+                header-align="right"
                 align="right"
                 :index="index"
                 label="编号">
@@ -56,7 +56,7 @@
                 header-align="center"
                 label="用户图标">
                 <template slot-scope="scope">
-                  <div style="width:50px;height:50px;">
+                  <div style="width:50px;height:50px; text-align: center;">
                     <img :src="scope.row.iconUrl" style="width:100%;">
                   </div>
                 </template>
@@ -69,7 +69,7 @@
                 :label="item.label"
                 :width="item.width"
                 :align="item.align"
-                header-align="center"
+                :header-align="item.align1"
                 :show-overflow-tooltip="true"
                 >
               </el-table-column>
@@ -291,16 +291,17 @@ export default {
             }
           },
             tableList: [   //表格的头部配置
-                {prop: 'status', label: '状态', width: '100', align: ''},
-                {prop: 'type', label: '类型', width: '100', align: ''},
-                {prop: 'level', label: '等级', width: '100', align: 'right'},
-                {prop: 'name', label: '名称', width: '120', align: ''},
-                {prop: 'score', label: '升级分值', width: '100', align: 'right'},
-                {prop: 'coin', label: '娱乐币奖励', width: '150', align: 'right'},
-                {prop: 'creator', label: '创建人', width: '100', align: ''},
-                {prop: 'creatTime', label: '创建时间', width: '', align: 'right'},
-                {prop: 'modifier', label: '修改人', width: '100', align: ''},
-                {prop: 'modifyTime', label: '修改时间', width: '', align: 'right'},
+                {prop: 'status', label: '状态', width: '60', align: '',align1: 'left'},
+                {prop: 'type', label: '类型', width: '80', align: '',align1: 'left'},
+                {prop: 'level', label: '等级', width: '60', align: 'right',align1: 'right'},
+                {prop: 'name', label: '名称', width: '100', align: '',align1: 'left'},
+                {prop: 'score', label: '升级分值', width: '80', align: 'right',align1: 'right'},
+                {prop: 'coin', label: '娱乐币奖励', width: '100', align: 'right',align1: 'right'},
+                {prop: 'creator', label: '创建人', width: '100', align: '',align1: 'left'},
+                {prop: 'creatTime', label: '创建时间', width: '160', align: 'right',align1: 'right'},
+                {prop: 'modifier', label: '修改人', width: '100', align: '',align1: 'left'},
+                {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right',align1: 'right'},
+                {prop: '', label: '', width: '', align: '',align1: ''},
             ],
             tableData: []//表格的数据
         }

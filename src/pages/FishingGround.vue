@@ -67,7 +67,7 @@
                 :label="item.label"
                 :width="item.width"
                 :align="item.align"
-                header-align="center"
+                :header-align="item.align"
                 :show-overflow-tooltip="true"
                 >
                 </el-table-column>
@@ -442,7 +442,7 @@ export default {
                 baits: []   //允许饵料
             },
             tableList: [   //表格的头部配置
-                {prop: 'name', label: '钓场', width: '90', align: ''},
+                {prop: 'name', label: '钓场', width: '90', align: '',align1: 'left'},
                 {prop: 'ispass', label: '审核状态', width: '90', align: ''},
                 {prop: 'type', label: '类型', width: '80', align: ''},
                 {prop: 'type', label: '钓场分类', width: '80', align: ''},

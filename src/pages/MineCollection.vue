@@ -73,7 +73,7 @@
                 :label="item.label"
                 :width="item.width"
                 :align="item.align"
-                header-align="center"
+                :header-align="item.align"
                 :show-overflow-tooltip="true"
                 >
                 </el-table-column>
@@ -114,7 +114,7 @@ export default {
             
                 {prop: 'userId', label: '收藏者', width: '100', align: ''},
                 {prop: 'type', label: '收藏类型', width: '80', align: ''},
-                {prop: 'favoriteId', label: '被收藏标题', width: '200', align: ''},
+                {prop: 'favoriteId', label: '被收藏标题', width: '300', align: ''},
                 {prop: 'cdate', label: '收藏时间', width: '160', align: 'right'},
                 {prop: '', label: '', width: '', align: ''}
             ],

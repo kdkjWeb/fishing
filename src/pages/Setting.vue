@@ -59,7 +59,7 @@
                 :label="item.label"
                 :width="item.width"
                 :align="item.align"
-                header-align="center"
+                :header-align="item.align"
                 :show-overflow-tooltip="true"
                 >
                 </el-table-column>
@@ -229,15 +229,16 @@ export default {
               icon:''   //图标
             },
             tableList: [   //表格的头部配置
-                {prop: 'category', label: '类别parent_id', width: '200', align: ''},
-                {prop: 'codeName', label: '名称', width: '200', align: ''},
+                {prop: 'category', label: '类别parent_id', width: '120', align: ''},
+                {prop: 'codeName', label: '名称', width: '80', align: ''},
                 {prop: 'status', label: '状态', width: '80', align: ''},
                 {prop: 'sort', label: '排序', width: '80', align: 'right'},
-                {prop: 'rewards', label: '打赏渔乐', width: '', align: ''},
+                {prop: 'rewards', label: '打赏渔乐', width: '200', align: ''},
                 {prop: 'creator', label: '创建人', width: '100', align: ''},
-                {prop: 'creatTime', label: '创建时间', width: '200', align: 'right'},
+                {prop: 'creatTime', label: '创建时间', width: '160', align: 'right'},
                 {prop: 'modifier', label: '修改人', width: '100', align: ''},
-                {prop: 'modifyTime', label: '修改时间', width: '200', align: 'right'},
+                {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right'},
+                {prop: '', label: '', width: '', align: ''},
             ],
           rules:{
             codeName:[

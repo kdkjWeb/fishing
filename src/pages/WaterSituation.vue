@@ -64,7 +64,7 @@
                 :label="item.label"
                 :width="item.width"
                 :align="item.align"
-                header-align="center"
+                :header-align="item.align"
                 :show-overflow-tooltip="true"
                 >
                 </el-table-column>
@@ -104,7 +104,7 @@ export default {
                 {prop: 'stateName', label: '站名', width: '120', align: ''},
                 {prop: 'riverGroup', label: '水系', width: '100', align: ''},
                 {prop: 'river', label: '河名', width: '80', align: ''},
-                {prop: 'stateLocation', label: '站址', width: '120', align: ''},
+                {prop: 'stateLocation', label: '站址', width: '200', align: ''},
                 {prop: 'height', label: '水位', width: '80', align: 'right'},
                 {prop: 'input', label: '入库流量', width: '100', align: 'right'},
                 {prop: 'output', label: '出库流量', width: '100', align: 'right'},

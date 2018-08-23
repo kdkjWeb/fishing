@@ -129,7 +129,7 @@
                         <el-row>
                        <el-col :span="12">
                             <el-form-item label="排序号：" prop="sort">
-                                <el-input v-model="form.sort"></el-input>
+                                <el-input v-model.number="form.sort" placeholder="请输入数字"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -264,7 +264,7 @@
                       </el-col>
                       <el-col :span="8">
                             <el-form-item label="管理人：" prop="manager">
-                                <el-select v-model="form.manager" placeholder="管理人">
+                                <el-select v-model="form.manager" filterable placeholder="管理人">
                                  <el-option :label="item.nickname" :value="item.cId" v-for="item in managerList" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
@@ -410,6 +410,18 @@ export default {
                 kind: [
                     { required: true, message: '请选择类型', trigger: 'change' }
                 ],
+                intro: [
+                    { required: false, min: 0, max: 200, message: '长度在 0 到 200 个字符', trigger: 'blur' }
+                ],
+                remark: [
+                     { required: false, min: 0, max: 200, message: '长度在 0 到 200 个字符', trigger: 'blur' }
+                ],
+                sort: {
+                    type: 'number',
+                    trigger: 'blur',
+                    required: false,
+                    message: '排序号必须为数字值'
+                }
             }
         }
     },

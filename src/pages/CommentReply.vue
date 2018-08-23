@@ -82,7 +82,7 @@
                 :label="item.label"
                 :width="item.width"
                 :align="item.align"
-                header-align="center"
+                :header-align="item.align"
                 :show-overflow-tooltip="true"
                 >
                 </el-table-column>
@@ -130,7 +130,7 @@ export default {
                 date: '',    //时间
             },
             tableList: [   //表格的头部配置
-                {prop: 'provinceName', label: '帖子标题', width: '120', align: ''},
+                {prop: 'provinceName', label: '帖子标题', width: '300', align: ''},
                 {prop: 'cityName', label: '帖子状态', width: '80', align: ''},
                 {prop: 'status', label: '评论状态', width: '80', align: ''},
                 {prop: 'areaName', label: '评论类型', width: '80', align: ''},
