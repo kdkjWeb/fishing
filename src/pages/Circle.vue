@@ -220,7 +220,7 @@
                       <el-col :span="8">
                             <el-form-item label="乡：" prop="countryId">
                                 <el-select v-model="form.countryId" placeholder="乡">
-                                 <el-option :label="item.regionName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>
+                                 <el-option v-for="item in countryList" :label="item.regionName" :value="item.cId" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -416,12 +416,12 @@ export default {
                 remark: [
                      { required: false, min: 0, max: 200, message: '长度在 0 到 200 个字符', trigger: 'blur' }
                 ],
-                sort: {
+                sort: [{
                     type: 'number',
                     trigger: 'blur',
                     required: false,
                     message: '排序号必须为数字值'
-                }
+                }]
             }
         }
     },
@@ -745,7 +745,7 @@ export default {
      //获取圈子分类列表
      getCodeName(){
          this.$post('sysCategory/queryByCategory',{
-             category: 32
+             category: 30
          }).then(res=>{
              this.codeNameList = res.data;
          })

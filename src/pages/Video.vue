@@ -17,8 +17,8 @@
               </el-form-item>
               <el-form-item label="状态：">
                 <el-select  placeholder="状态" clearable v-model="formInline.status">
-                  <el-option label="正常" value="1"></el-option>
-                  <el-option label="已关闭" value="0"></el-option>
+                  <el-option label="审核" value="1"></el-option>
+                  <el-option label="未审" value="0"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="创建时间：">
@@ -150,8 +150,8 @@
                   <el-col :span="8">
                     <el-form-item label="状态：" prop="status">
                       <el-select v-model="form.status" placeholder="状态">
-                        <el-option label="正常" value="1"></el-option>
-                        <el-option label="已关闭" value="0"></el-option>
+                        <el-option label="审核" value="1"></el-option>
+                        <el-option label="未审" value="0"></el-option>
                       </el-select>
                     </el-form-item>
                   </el-col>
@@ -180,10 +180,10 @@
 
                   <el-col :span="8">
 
-                    <el-form-item label="视频分类：">
+                    <el-form-item label="视频分类：" prop="videoCategoryId"  ref="videoCategoryId">
                       <el-select v-model="form.videoCategoryId" placeholder="可见类型">
                         <el-option
-                          v-for="item,index in videoList"
+                          v-for="(item,index) in videoList"
                           :label="item.codeName"
                           :value="item.codeName"
                           :key="index"></el-option>
@@ -213,11 +213,6 @@
             </el-row>
 
             <el-row>
-               <!--<el-col :span="24">-->
-                <!--<el-form-item label="详细地址：">-->
-                  <!--<el-input v-model="form.location"></el-input>-->
-                <!--</el-form-item>-->
-              <!--</el-col>-->
               <el-col :span="24">
                 <el-form-item label="备注：">
                   <el-input type="textarea" v-model="form.remark"></el-input>
@@ -235,7 +230,7 @@
                       <el-form-item label="创建人：" >
                         <el-select v-model="form.publisher"  filterable>
                           <el-option
-                            v-for="item,index in userList"
+                            v-for="(item,index) in userList"
                             :label="item.nickname"
                             :value="item.cId"
                             :key="index"></el-option>
@@ -271,7 +266,7 @@
                 </div>
               </el-col>
 
-              <el-col :span="24" v-else="videoShow">
+              <el-col :span="24" v-else>
                 <span class="uploadTitle">上传视频：</span>
                 <el-upload
                   class="avatar-uploader"
@@ -287,7 +282,7 @@
                   :before-upload="beforeUploadVideo"
                   :on-progress="uploadVideoProcess">
                   <el-progress v-if="videoFlag == true" type="circle" :percentage="videoUploadPercent" style="margin-top:10px;"></el-progress>
-                  <i  v-else="videoFlag" class="el-icon-plus avatar-uploader-icon"></i>
+                  <i  v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
               </el-col>
             </el-row>
@@ -509,7 +504,7 @@
 
       //获取所有视频列表 /basicTopic/queryCommon
       getPostList(pageSize,pageNum){
-        this.$post('/videoTopic/queryPageByRecord',{
+        this.$post('/videoTopic/queryPageByWeb',{
           pageSize: pageSize? pageSize : 30,
           pageNum: pageNum ? pageNum : 1,
           status: this.formInline.status? this.formInline.status:null,
@@ -524,9 +519,9 @@
             this.allNum.commentNum = this.allNum.collects = this.allNum.clickNum = 0;
             if(res.data.list) {
               res.data.list.forEach((val)=>{
-                val.status  = val.status ? '正常' : '已关闭';
-                val.isTop = val.isTop? '是':'否';
-                val.isBest = val.isBest? '是':'否';
+                val.status  = val.status ? '审核' : '未审';
+                val.isTop = val.isTop? '是':'';
+                val.isBest = val.isBest? '是':'';
                 console.log(val.topicType)
                 switch (val.topicType){
                   case '1':
@@ -631,6 +626,7 @@
         this.dialogVisible = true;
         this.form = {};
         this.videoShow = false;
+        this.circleId = '';
       },
 
 
@@ -664,24 +660,16 @@
 
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/videoTopic/updateVideoTopic' : 'videoTopic/addVideoTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
-          this.form.status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
-          this.form.isTop = (this.form.status == '是' ||this.form.status == '1') ? 1 : 0;
-          this.form.isBest = (this.form.status == '是' ||this.form.status == '1') ? 1 : 0;
-          this.form.isGoBoat = (this.form.isGoBoat == '是' ||this.form.isGoBoat == '1') ? 1 : 0;
-
           if(valid){
             this.$post(url,{
               cId: this.circleId ? this.circleId : null,
               title:this.form.title,  //标题、圈子
               isTop:this.form.isTop,  //是否置顶
               isBest:this.form.isBest,  //精华
-//              status:this.form.status,  //状态
+              status:this.form.status,  //状态
               sort:this.form.sort,  //排序号
-//              topicType:this.form.topicType,//帖子类型
               viewNum:this.form.viewNum,  //浏览数
               publisher:this.form.publisher,  //浏览数
-//              commentNum:this.form.commentNum,  //评论数
-//              reward:this.form.reward,   //打赏金额
               videoCategoryId:this.form.videoCategoryId,
               remark:this.form.remark,   //打赏金额
               topicContentList:this.form.topicContentList
@@ -778,9 +766,9 @@
            this.form = res.data;
            this.form.title = res.data.title;
            this.form.number = this.rowIndex;
-           this.form.isTop = res.data.isTop == 0 ? '否' : '是';
-           this.form.isBest = res.data.isBest == 0 ? '否' : '是';
-           this.form.status = res.data.status == 0 ? '已关闭' : '正常';
+           this.form.isTop = res.data.isTop + '';
+           this.form.isBest = res.data.isBest + '';
+           this.form.status = res.data.status + '';
            this.video = this.form.topicContentList[0];
          }
        })

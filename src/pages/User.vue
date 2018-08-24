@@ -292,21 +292,21 @@
                       <el-col :span="8">
                           <el-form-item label="对象鱼：">
                                <el-select v-model="form.targetFish" multiple  placeholder="对象鱼">
-                                <el-option v-for="item in fishList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
+                                <el-option v-for="item in fishList" :label="item.codeName"  :value="item.codeName" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
                       <el-col :span="8">
                          <el-form-item label="钓法：">
                                 <el-select v-model="form.fishWay" multiple placeholder="钓法">
-                                <el-option v-for="item in fishMethodList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
+                                <el-option v-for="item in fishMethodList" :label="item.codeName"  :value="item.codeName" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
                       <el-col :span="8">
                           <el-form-item label="饵料：">
                                 <el-select v-model="form.bait" multiple placeholder="饵料">
-                                <el-option v-for="item in baitList" :label="item.codeName"  :value="item.cId" :key="item.cId"></el-option>
+                                <el-option v-for="item in baitList" :label="item.codeName"  :value="item.codeName" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -371,33 +371,6 @@
                         </el-form-item>
                       </el-col>
                     </el-row>
-                     <!-- <el-row>
-                      <el-col :span="8">
-                          <el-form-item label="创建人：">
-                            <el-input v-model="form.modifier"></el-input>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="8">
-                          <el-form-item label="最后登录：">
-                             <el-date-picker
-                                v-model="form.createTime"
-                                type="datetime"
-                                placeholder="选择日期时间"
-                                default-time="12:00:00">
-                            </el-date-picker>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="8">
-                           <el-form-item label="注册时间：">
-                            <el-date-picker
-                                v-model="form.createTime"
-                                type="datetime"
-                                placeholder="选择日期时间"
-                                default-time="12:00:00">
-                            </el-date-picker>
-                        </el-form-item>
-                      </el-col>
-                    </el-row> -->
                     <el-row>
                         <el-col :span="8">
                            <el-form-item label="注册时间：">
@@ -426,16 +399,6 @@
                             </el-date-picker>
                         </el-form-item>
                       </el-col>
-                      <!-- <el-col :span="8">
-                          <el-form-item label="最后登录：">
-                             <el-date-picker
-                                v-model="form.createTime"
-                                type="datetime"
-                                placeholder="选择日期时间"
-                                default-time="12:00:00">
-                            </el-date-picker>
-                        </el-form-item>
-                      </el-col> -->
                     </el-row>
                     <el-row>
                       <el-col :span="24">
@@ -906,13 +869,6 @@ export default {
             var m = date.getMonth() + 1;
             m = m < 10 ? ('0' + m) : m;
             var d = date.getDate();
-            // d = d < 10 ? ('0' + d) : d;
-            // var h = date.getHours();
-            // var minute = date.getMinutes();
-            // minute = minute < 10 ? ('0' + minute) : minute;
-            // var second = date.getSeconds();	
-            // second = second < 10 ? ('0' + second) : second;
-            // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
             return y + '-' + m + '-' + d;
         }else{
             return null;

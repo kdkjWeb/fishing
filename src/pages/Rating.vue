@@ -283,12 +283,12 @@ export default {
               { required: true, message: '等级不能为空，请输入', trigger: 'blur' },
               {pattern: /^([0-9][0-9]{0,1}|100)$/, message: '等级必须是数字0-100', trigger: 'blur' }
             ],
-            score: {
+            score: [{
                 type: 'number',
                 trigger: 'blur',
                 required: false,
                 message: '升级分值必须为数字值'
-            }
+            }]
           },
             tableList: [   //表格的头部配置
                 {prop: 'status', label: '状态', width: '60', align: '',align1: 'left'},

@@ -39,6 +39,10 @@ export default {
             collapse: false,   //菜单栏是否折叠
             routerItem: [
                 {
+                    icon: 'icon-shangsheng4',
+                    index: 'index',
+                    title: '运营统计'
+                },{
                     icon: 'icon-text',
                     index: 'post',
                     title: '帖子'

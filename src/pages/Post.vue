@@ -17,8 +17,8 @@
               </el-form-item>
               <el-form-item label="状态：">
                 <el-select  placeholder="状态" clearable v-model="formInline.status">
-                  <el-option label="正常" value="1"></el-option>
-                  <el-option label="已关闭" value="0"></el-option>
+                  <el-option label="审核" value="1"></el-option>
+                  <el-option label="未审" value="0"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="发布时间：">
@@ -166,7 +166,6 @@
                           <el-option label="标准" value="1"></el-option>
                           <el-option label="钓位" value="2"></el-option>
                           <el-option label="鱼情" value="3"></el-option>
-                          <el-option label="视频" value="4"></el-option>
                           <el-option label="随便说说" value="5"></el-option>
                         </el-select>
                     </el-form-item>
@@ -175,7 +174,7 @@
                 <el-row>
                   <el-col :span="8">
                     <el-form-item label="浏览数：" >
-                      <el-input v-model="form.viewNum" disabled ></el-input>
+                      <el-input v-model="form.viewNum"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
@@ -217,16 +216,16 @@
 
                       <el-select v-model="topicCircleArr" multiple v-if="isShow" filterable>
                         <el-option
-                          v-for="item,index in circleList"
+                          v-for="(item,index) in circleList"
                           :label="item.circleName"
                           :value="item.cId"
                           :key="index">
                         </el-option>
                       </el-select>
 
-                      <el-select v-model="topicCircle"  v-else="isShow" filterable>
+                      <el-select v-model="topicCircle"  v-else filterable>
                         <el-option
-                          v-for="data,index in anglingSiteList"
+                          v-for="(data,index) in anglingSiteList"
                           :label="data.name"
                           :value="data.cId"
                           :key="index">
@@ -243,7 +242,7 @@
                     <el-form-item label="省：">
                       <el-select v-model="form.provinceId" placeholder="省" @change="getCityList(form.provinceId)" >
                         <el-option
-                          v-for="item,index in provinceList"
+                          v-for="(item,index) in provinceList"
                           :label="item.regionName"
                           :value="item.cId"
                           :key="index"></el-option>
@@ -256,23 +255,22 @@
                   <el-col :span="8">
                     <el-form-item label="钓法：">
 
-                      <el-select v-model="form.fishMethod" filterable multiple>
+                      <el-select v-model="form.fishMethod" filterable multiple :disabled="isDesable">
                         <el-option
-                          v-for="item,index in categoryList"
+                          v-for="(item,index) in categoryList"
                           :label="item.codeName"
-                          :value="item.cId"
+                          :value="item.codeName"
                           :key="index"></el-option>
                       </el-select>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="鱼类：">
-                      <!--<el-input v-model="form.fishType" ></el-input>-->
-                      <el-select v-model="form.fishType" filterable multiple>
+                      <el-select v-model="form.fishType" filterable multiple :disabled="isDesable">
                         <el-option
-                          v-for="item,index in fishArr"
+                          v-for="(item,index) in fishArr"
                           :label="item.codeName"
-                          :value="item.cId"
+                          :value="item.codeName"
                           :key="index"></el-option>
                       </el-select>
                     </el-form-item>
@@ -282,7 +280,7 @@
 
                       <el-select v-model="form.cityId" placeholder="市" @change="getaAreaList(form.cityId)" filterable>
                         <el-option
-                          v-for="item,index in cityList"
+                          v-for="(item,index) in cityList"
                           :label="item.regionName"
                           :value="item.cId"
                           :key="index"></el-option>
@@ -294,17 +292,16 @@
                 <el-row>
                   <el-col :span="8">
                     <el-form-item label="饵料类型：">
-                      <el-select v-model="form.baitType" filterable multiple>
+                      <el-select v-model="form.baitType" filterable multiple :disabled="isDesable">
                         <el-option
-                          v-for="item,index in typeArr"
+                          v-for="(item,index) in typeArr"
                           :label="item.codeName"
-                          :value="item.cId"
+                          :value="item.codeName"
                           :key="index"></el-option>
                       </el-select>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                      <!--<el-input v-model="form.fishOnTime" disabled></el-input>-->
                       <el-form-item label="上鱼时间：">
                         <el-date-picker
                           v-model="form.fishOnTime"
@@ -319,7 +316,7 @@
 
                       <el-select v-model="form.areaId" placeholder="县" @change="getCountryList(form.areaId)" filterable>
                         <el-option
-                          v-for="item,index in areaList"
+                          v-for="(item,index) in areaList"
                           :label="item.regionName"
                           :value="item.cId"
                           :key="index"></el-option>
@@ -346,7 +343,7 @@
                     <el-form-item label="乡：">
                       <el-select v-model="form.countryId" placeholder="乡" filterable>
                         <el-option
-                          v-for="item,index in countryList"
+                          v-for="(item,index) in countryList"
                           :label="item.regionName"
                           :value="item.cId"
                           :key="index"></el-option>
@@ -393,7 +390,7 @@
                 <el-form-item label="创建人：" >
                   <el-select v-model="form.authorId"  filterable>
                     <el-option
-                      v-for="item,index in userList"
+                      v-for="(item,index) in userList"
                       :label="item.nickname"
                       :value="item.cId"
                       :key="index"></el-option>
@@ -422,13 +419,13 @@
             <el-row>
               <div style="text-align: right;margin-bottom: 20px;">
                 <el-button type="primary" size="mini" class="add" @click="addContent" v-if="addIsShow">+ 添加</el-button>
-                <el-button-group v-else="addIsShow">
+                <el-button-group v-else>
                   <el-button type="primary" size="mini" @click="addwords">文字</el-button>
                   <el-button type="primary" size="mini" @click="addImages">图片</el-button>
                 </el-button-group>
               </div>
 
-              <div v-for="item,index in topicContentArr">
+              <div v-for="(item,index) in topicContentArr" :key="index">
 
                 <el-col :span="24" v-if="item.contentType==1" >
                   <el-row>
@@ -458,7 +455,7 @@
                   </el-col>
                 </div>
 
-              <div v-else="imagesShow">
+              <div v-else>
                 <el-col :span="24" :offset="1"  v-if="item.contentType==2">
                   <span class="uploadTitle">上传图标：</span>
                   <el-upload
@@ -473,7 +470,6 @@
                     :limit="1"
                     :on-exceed="handleExceed"
                     :before-upload="beforeAvatarUpload">
-                    <!--<img v-if="topicContentArr[index].imageUrl" :src="topicContentArr[index].imageUrl"  class="avatar">-->
                     <i  class="el-icon-plus avatar-uploader-icon"></i>
                     <div slot="tip" class="el-upload__tip">只支持jpg/png类型</div>
                   </el-upload>
@@ -503,7 +499,6 @@
       <div class="topSearch" style="margin-bottom: 10px;">
         <el-row>
           <el-col :span="14">
-            <!--<el-button type="primary" size="mini" @click="commentClick">评论</el-button>-->
             <el-button type="primary"  size="mini" @click="commentReplyClick">评论回复</el-button>
             <el-button size="mini" @click="pointOfDetailClick">点赞明细</el-button>
             <el-button size="mini" @click="praiseTheDetailClick">打赏明细</el-button>
@@ -569,6 +564,7 @@
       ElRow},
     data(){
           return{
+            isDesable: false,
             allNum: {
               commentNum: 0,   //评论总数 mmm m
               collects: 0,    //收藏总数
@@ -653,12 +649,12 @@
               topicType:[
                 { required: true, message: '请选择类型', trigger: 'change' },
               ], 
-              showSort: {
-                    type: 'number',
-                    trigger: 'blur',
-                    required: false,
-                    message: '排序号必须为数字值'
-                }
+              showSort: [{
+                        type: 'number',
+                        trigger: 'blur',
+                        required: false,
+                        message: '排序号必须为数字值'
+                }]
             },
             multipleSelection: [],   //存放勾选的数据
             multipleComment:[],
@@ -762,6 +758,12 @@
         })
       },
       getType(){
+        if(this.form.topicType == 5){
+            this.isDesable = true;
+        }else{
+          this.isDesable = false;
+        }
+
         this.topicCircleArr = [];
         this.form.topicCircleList = [];
         this.getCircleList(this.topicType);
@@ -955,13 +957,11 @@
       //新增
       add(){
        
-         this.imageUrl = '';
+        this.imageUrl = '';
         this.videoPath = '';
         this.dialogVisible = true;
-        // this.form = {};
         this.imagesShow = false;
-
-      console.log(this.form.topicCircleList)
+        this.circleId = '';
 
         this.$nextTick(()=>{
 
@@ -1014,8 +1014,6 @@
 
       //标准时间格式转换
       dataTransform(date){
-        console.log(date)
-
         if(!this.circleId){
           if(date){
             var y = date.getFullYear();
@@ -1038,13 +1036,13 @@
         this.form.topicCircleList = [];
         if(this.form.topicType == 2 || this.form.topicType == 3){
             this.form.topicCircleList=[{
-              cType:0,
+              cType: 1,
               placeId:this.topicCircle
             }]
         } else{
           this.topicCircleArr.forEach((val)=>{
             let obj = {};
-            obj.cType = 1;
+            obj.cType = 0;
             obj.placeId = val;
             this.form.topicCircleList.push(obj)
           })
@@ -1052,10 +1050,7 @@
 
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
-          this.form.status = (this.form.status == '审核' ||this.form.status == '1') ? 1 : 0;
-          this.form.isTop = (this.form.isTop == '是' ||this.form.isTop == '1') ? 1 : 0;
-          this.form.isBest = (this.form.isBest == '是' ||this.form.isBest == '1') ? 1 : 0;
-          this.form.isGoBoat = (this.form.isGoBoat == '是' ||this.form.isGoBoat == '1') ? 1 : 0;
+      
 
             if(valid){
                 this.$post(url,{
@@ -1083,15 +1078,17 @@
                   showSort:this.form.showSort,       //排序号
                   fishOnTime:this.form.fishOnTime? this.dataTransform(this.form.fishOnTime):null,  //上鱼时间
                   topicCircleList:this.form.topicCircleList,  //发送圈子
-                  topicContentList:this.topicContentArr  //内容
+                  topicContentList:this.topicContentArr,  //内容
+                  viewNum: this.form.viewNum
                 }).then(res=>{
-                  this.dialogVisible = false;
                     if(res.code == 0){
+                      this.dialogVisible = false;
                       this.$message({
                         message:res.msg,
                         type: 'success',
                       });
                     }else{
+                      this.dialogVisible = true;
                         this.$message({
                           message: res.msg,
                           type: 'warning'
@@ -1171,19 +1168,24 @@
         this.$get('/basicTopic/queryById',{
           topicId: this.circleId
         }).then(res=>{
-            console.log(res)
           this.form = res.data;
           this.form.number = this.rowIndex;
-          this.form.isGoBoat = this.form.isGoBoat==1? '是':'否';
+          this.form.isGoBoat = this.form.isGoBoat ? this.form.isGoBoat + '' : '';
           this.form.status = this.form.status + '';
-          this.form.isTop = this.form.isTop==1? '是':'否';
-          this.form.isBest = this.form.isBest==1? '是':'否';
+          this.form.isTop = this.form.isTop + '';
+          this.form.isBest = this.form.isBest + '';
           this.topicContentArr = this.form.topicContentList;
           this.form.fishType = this.form.fishType ? this.form.fishType.split(',') : [];
           this.form.baitType = this.form.baitType ? this.form.baitType.split(',') : [];
           this.form.fishMethod = this.form.fishMethod ? this.form.fishMethod.split(',') : [];
 
-
+          if(this.form.topicType == 5){
+                this.isDesable = true;
+            }else if(this.form.topicType == 2){
+              this.isShow = false;
+            }else{
+              this.isShow = true;
+            }
 
           if(this.form.topicType == 2 || this.form.topicType == 3){
             this.titleName = '钓场：';
@@ -1203,8 +1205,6 @@
             }
           }
           this.getCityList();
-
-//          console.log(this.form)
         })
       },
 
@@ -1247,7 +1247,6 @@
           {prop: 'type', label: '评论类型', width: '100', align: ''},
           {prop: 'recommendNum', label: '回复数', width: '100', align: 'right'},
           {prop: 'likedNum', label: '点赞数', width: '100', align: 'right'},
-//          {prop: 'name', label: '不赞数', width: '120', align: 'right'},
           {prop: 'content', label: '评论内容', width: '100', align: ''},
           {prop: 'userId', label: '评论人', width: '150', align: ''},
           {prop: 'cdate', label: '评论时间', width: '180', align: 'right'},
@@ -1533,23 +1532,6 @@
       //添加文字
       addwords(){
           this.cont++;
-
-//          this.topicContentArr.forEach((val)=>{
-//              if(this.topicContentArr[this.topicContentArr.length-1].contentType == 1 && this.topicContentArr[this.topicContentArr.length-1].content){
-//                      alert(1)
-//                    this.topicContentArr.push({
-//                      contentType:1,
-//                      content:'',
-//                      imageUrl:'',
-//                      sort:this.cont
-//                    });
-//                    return;
-//
-//                  }else{
-//                    this.$message('您添加的内容不能为空，请填写后再添加！');
-//                    this.cont--;
-//                }
-//          })
         let flag = false;
         for(let i=0; i<this.topicContentArr.length; i++){
             if(this.topicContentArr[i].content){
@@ -1622,7 +1604,7 @@
                             this.countryList = val.childList;
                         }
                     })
-                }
+                };
             }
         }
     },
