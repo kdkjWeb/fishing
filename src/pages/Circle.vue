@@ -40,12 +40,12 @@
         <!-- start表格 -->
         <div class="table">
             <el-table
+               :row-class-name="tableRowClassName"
                 :max-height="height"
                 ref="multipleTable"
                 :data="tableData"
                 tooltip-effect="dark"
                 style="width: 100%"
-                stripe
                 :header-cell-style="getRowClass"
                 @selection-change="handleSelectionChange">
                 <el-table-column
@@ -426,6 +426,31 @@ export default {
         }
     },
     methods:{
+
+           tableRowClassName({row, rowIndex}) {
+
+               console.log(row,rowIndex)
+
+            if(row.status === '正常'){
+                return 'success-row';
+            }else if(row.status === '已关闭'){
+                return 'warning-row';
+            }else{
+                return '';
+            }
+
+
+        // if (rowIndex === 1) {
+        //   return 'warning-row';
+        // } else if (rowIndex === 3) {
+        //   return 'success-row';
+        // }
+        // return '';
+      },
+ 
+
+
+
         //获取圈子列表
         getCircleList(pageSize,pageNum){
             this.$post('circle/queryByRecord',{
@@ -503,13 +528,15 @@ export default {
         },
         //删除
         deleted(){
-            /*if(this.multipleSelection.length != 1){
+            if(this.multipleSelection.length != 1){
                 this.$message({
                 message: '请选择一条需要删除的数据！',
                 type: 'warning'
                 });
                 return;
-            }*/
+            }
+
+
             let id = this.multipleSelection[0].cId;   //保存选中的数据的cId
 
                this.$confirm('此操作将永久删除该圈子, 是否继续?', '提示', {
@@ -544,34 +571,7 @@ export default {
                 });
                 });
         },
-        //修改
-        edit(){
-            /*if(this.multipleSelection.length != 1){
-                this.$message({
-                message: '请选择一条需要修改的数据！',
-                type: 'warning'
-                });
-                return;
-            }*/
-            this.dialogVisible = true;
-            this.disabled = true;
-            this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-
-            if(this.circleId) {
-              this.$get('circle/queryById', {
-                circleId: this.circleId
-              }).then(res => {
-                console.log(res)
-                this.form = res.data;
-                this.form.status = this.form.status + "";
-                this.form.number = this.rowIndex;
-                this.imageUrl = this.form.iconUrl;
-                this.form.creator = this.form.creatorName;
-                this.form.manager = this.form.managerName;
-                this.form.modifier = this.form.modifierName;
-              })
-            }
-        },
+      
         //导出
         exportd(){
               let path = this.$store.state.baseUrl;
@@ -725,13 +725,6 @@ export default {
             m = m < 10 ? ('0' + m) : m;
             var d = date.getDate();
             d = d < 10 ? ('0' + d) : d;
-            // var h = date.getHours();
-            // var minute = date.getMinutes();
-            // minute = minute < 10 ? ('0' + minute) : minute;
-            // var second = date.getSeconds();
-            // second = second < 10 ? ('0' + second) : second;
-            // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
-
             return y + '-' + m + '-' + d;
         }else{
             return null;
@@ -796,7 +789,6 @@ export default {
         this.areaList.forEach((val)=>{
               if(id == val.cId){
                 this.countryList = val.childList;
-             this.form.countryId = '';
               }
           })
      },
@@ -810,6 +802,45 @@ export default {
             }
         })
     },
+
+      //修改
+        edit(){
+            if(this.multipleSelection.length != 1){
+                this.$message({
+                message: '请选择一条需要修改的数据！',
+                type: 'warning'
+                });
+                return;
+            }
+
+
+            this.dialogVisible = true;
+            this.disabled = true;
+            this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
+
+              
+
+
+            if(this.circleId) {
+              this.$get('circle/queryById', {
+                circleId: this.circleId
+              }).then(res => {
+                  console.log(res)
+                if(res.code == 0){
+                   
+                    this.form = res.data;
+                    this.form.status = this.form.status + "";
+                    this.form.number = this.rowIndex;
+                    this.imageUrl = this.form.iconUrl;
+                    this.form.creator = this.form.creatorName;
+                    this.form.manager = this.form.managerName;
+                    this.form.modifier = this.form.modifierName;
+                }
+              })
+            }
+
+        },
+
 
 
      /**start上传图片 */
@@ -871,14 +902,12 @@ export default {
         if(this.$store.state.token){
             this.myHeaders.token = this.$store.state.token
         }
-
-
-
-
         window.addEventListener('resize', ()=>{
              this.height = window.innerHeight - 240;
         })
 
+        //获取省份
+        this.getProvince();
 
 
     },
@@ -891,10 +920,35 @@ export default {
             if(val){
                 //调用圈子分类函数
                 that.getCodeName();
-                //获取省份
-                that.getProvince();
+
                 //获取管理人列表
                 that.getMangerList();
+            }
+        },
+        form:{
+            handler(value,oldVal){
+                if(value.provinceId){
+                    this.provinceList.forEach((val)=>{
+                        if(value.provinceId == val.cId){
+                            this.cityList = val.childList;
+                    
+                        }
+                    })
+                };
+                if(value.cityId){
+                     this.cityList.forEach((val)=>{
+                        if(value.cityId == val.cId){
+                            this.areaList = val.childList;
+                        }
+                    })
+                };
+                if(value.areaId){
+                    this.areaList.forEach((val)=>{
+                        if(value.areaId == val.cId){
+                            this.countryList = val.childList;
+                        }
+                    })
+                }
             }
         }
     }
@@ -904,6 +958,17 @@ export default {
 
 
 <style>
+.circle .el-table .warning-row {
+    background: oldlace;
+  }
+
+.circle .el-table .success-row {
+background: #f0f9eb;
+}
+
+
+
+
 .topSearch .el-form-item__content{
     width: 100px;
 }

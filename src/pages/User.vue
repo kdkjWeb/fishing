@@ -43,7 +43,7 @@
 
                 <el-col :span="10" class="right">
                     <el-button type="primary" size="mini" @click="search">查询</el-button>
-                    <el-button size="mini" @click="add" :disabled="disablesAdd">新增</el-button>
+                    <el-button size="mini" @click="add">新增</el-button>
                     <el-button size="mini" @click="deleted">删除</el-button>
                     <el-button size="mini" @click="edit">修改</el-button>
                     <el-button size="mini" @click="exportd">导出</el-button>
@@ -322,14 +322,14 @@
                       <el-col :span="6">
                            <el-form-item label="省：" prop="provinceId">
                             <el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince(form.provinceId)">
-                            <el-option :label="item.regionName" :value="item.regionId" v-for="item in provinceList" :key="item.cId"></el-option>
+                            <el-option :label="item.regionName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
                           <el-form-item label="市：" prop="cityId">
                                 <el-select v-model="form.cityId" placeholder="请选择市"  @change="chooseArea(form.cityId)">
-                                <el-option :label="item.regionName" :value="item.regionId" v-for="item in cityList" :key="item.cId"></el-option>
+                                <el-option :label="item.regionName" :value="item.cId" v-for="item in cityList" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -943,7 +943,7 @@ export default {
      chooseProvince(id){
         //根据省份id获取城市
           this.provinceList.forEach((val)=>{
-            if(id == val.regionId){
+            if(id == val.cId){
                 this.cityList = val.childList;
                 console.log(this.cityList)
                  this.form.cityId = '';
@@ -956,7 +956,7 @@ export default {
      chooseArea(id){
          //根据城市id获取县级
            this.cityList.forEach((val)=>{
-              if(id == val.regionId){
+              if(id == val.cId){
                 this.areaList = val.childList;
                 this.form.areaId = '';
                this.form.countryId = '';
@@ -1081,6 +1081,32 @@ export default {
                 that.getBaitList();
                 //获取鱼有什么分类
                 that.getFishList();
+            }
+        },
+        form:{
+            handler(value,oldVal){
+                if(value.provinceId){
+                    this.provinceList.forEach((val)=>{
+                        if(value.provinceId == val.cId){
+                            this.cityList = val.childList;
+                    
+                        }
+                    })
+                };
+                if(value.cityId){
+                     this.cityList.forEach((val)=>{
+                        if(value.cityId == val.cId){
+                            this.areaList = val.childList;
+                        }
+                    })
+                };
+                if(value.areaId){
+                    this.areaList.forEach((val)=>{
+                        if(value.areaId == val.cId){
+                            this.countryList = val.childList;
+                        }
+                    })
+                }
             }
         }
     }

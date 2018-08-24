@@ -4,7 +4,7 @@
       <!-- start顶部搜索按钮 -->
       <div class="topSearch">
         <el-row>
-          <el-col :span="14">
+          <el-col :span="16">
             <el-form :inline="true" :model="formInline" class="demo-form-inline" size="mini">
               <el-form-item label="标题：" >
                 <el-input clearable placeholder="标题" v-model="formInline.cityName"></el-input>
@@ -36,7 +36,7 @@
             </el-form>
           </el-col>
 
-          <el-col :span="10" class="right">
+          <el-col :span="8" class="right">
             <el-button type="primary" size="mini" @click="search">查询</el-button>
             <el-button size="mini" @click="add">新增</el-button>
             <el-button size="mini" @click="deleted">删除</el-button>
@@ -117,7 +117,7 @@
               <el-col :span="24">
                 <el-row>
                   <el-col :span="24">
-                    <el-form-item label="圈子：" prop="title">
+                    <el-form-item label="标题：" prop="title" ref="title">
                       <el-input v-model="form.title"></el-input>
                     </el-form-item>
                   </el-col>
@@ -150,20 +150,19 @@
                   <el-col :span="8">
                     <el-form-item label="状态：" prop="status">
                       <el-select v-model="form.status" placeholder="状态">
-                        <el-option label="正常" value="1"></el-option>
-                        <el-option label="已关闭" value="0"></el-option>
+                        <el-option label="审核" value="1"></el-option>
+                        <el-option label="未审" value="0"></el-option>
                       </el-select>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="排序号：" prop="sort">
-                      <el-input v-model="form.showSort"></el-input>
+                    <el-form-item label="排序号：" prop="showSort">
+                        <el-input v-model.number="form.showSort" placeholder="请输入数字（置顶大于排序号）"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="类型：" prop="topicType"  >
+                    <el-form-item label="类型：" prop="topicType"  ref="topicType">
                         <el-select v-model="form.topicType" placeholder="状态" @change="getType">
-                          <el-option label="店铺评论" value="0"></el-option>
                           <el-option label="标准" value="1"></el-option>
                           <el-option label="钓位" value="2"></el-option>
                           <el-option label="鱼情" value="3"></el-option>
@@ -257,7 +256,7 @@
                   <el-col :span="8">
                     <el-form-item label="钓法：">
 
-                      <el-select v-model="form.fishMethod" filterable>
+                      <el-select v-model="form.fishMethod" filterable multiple>
                         <el-option
                           v-for="item,index in categoryList"
                           :label="item.codeName"
@@ -269,7 +268,7 @@
                   <el-col :span="8">
                     <el-form-item label="鱼类：">
                       <!--<el-input v-model="form.fishType" ></el-input>-->
-                      <el-select v-model="form.fishType" filterable>
+                      <el-select v-model="form.fishType" filterable multiple>
                         <el-option
                           v-for="item,index in fishArr"
                           :label="item.codeName"
@@ -295,7 +294,7 @@
                 <el-row>
                   <el-col :span="8">
                     <el-form-item label="饵料类型：">
-                      <el-select v-model="form.baitType" filterable>
+                      <el-select v-model="form.baitType" filterable multiple>
                         <el-option
                           v-for="item,index in typeArr"
                           :label="item.codeName"
@@ -321,7 +320,7 @@
                       <el-select v-model="form.areaId" placeholder="县" @change="getCountryList(form.areaId)" filterable>
                         <el-option
                           v-for="item,index in areaList"
-                          :label="item.codeName"
+                          :label="item.regionName"
                           :value="item.cId"
                           :key="index"></el-option>
                       </el-select>
@@ -348,7 +347,7 @@
                       <el-select v-model="form.countryId" placeholder="乡" filterable>
                         <el-option
                           v-for="item,index in countryList"
-                          :label="item.codeName"
+                          :label="item.regionName"
                           :value="item.cId"
                           :key="index"></el-option>
                       </el-select>
@@ -611,13 +610,13 @@
               reward:'',   //打赏金币
               isVisibleCategoryId:'',  //是否可见
               topicCircleList:[],    //发送圈子
-              fishMethod:'',      //钓法
-              fishType:'',      //鱼类
+              fishMethod: [],      //钓法
+              fishType: [],      //鱼类
               provinceId:'',    //省
               cityId:'',        //市
               areaId:'',        //县
               countryId:'',     //乡
-              baitType:'',      //饵料类型
+              baitType: [],      //饵料类型
               isGoBoat:'',     //是否坐船
               longitude:'',     //经度
               farmhouseQqId:'',  //农家乐
@@ -653,7 +652,13 @@
               ],
               topicType:[
                 { required: true, message: '请选择类型', trigger: 'change' },
-              ]
+              ], 
+              showSort: {
+                    type: 'number',
+                    trigger: 'blur',
+                    required: false,
+                    message: '排序号必须为数字值'
+                }
             },
             multipleSelection: [],   //存放勾选的数据
             multipleComment:[],
@@ -674,17 +679,19 @@
             imagesShow:false,
             tableList: [   //表格的头部配置
               {prop: 'title', label: '标题', width: '200', align: ''},
-              {prop: 'status', label: '状态', width: '100', align: ''},
-              {prop: 'isTop', label: '置顶', width: '100', align: ''},
-              {prop: 'isBest', label: '精华', width: '100', align: ''},
-              {prop: 'showSort', label: '排序号', width: '100', align: ''},
-              {prop: 'viewNum', label: '浏览', width: '80', align: 'right'},
-              {prop: 'commentNum', label: '评论', width: '80', align: 'right'},
-              {prop: 'collects', label: '收藏', width: '80', align: 'right'},
-              {prop: 'clickNum', label: '点赞', width: '80', align: 'right'},
+              {prop: 'status', label: '状态', width: '80', align: ''},
+              {prop: 'isTop', label: '置顶', width: '60', align: ''},
+              {prop: 'isBest', label: '精华', width: '60', align: ''},
+              {prop: 'topicType', label: '类型', width: '80', align: ''},
+              {prop: 'showSort', label: '排序号', width: '70', align: ''},
+              {prop: 'viewNum', label: '浏览', width: '60', align: 'right'},
+              {prop: 'commentNum', label: '评论', width: '60', align: 'right'},
+              {prop: 'collects', label: '收藏', width: '60', align: 'right'},
+              {prop: 'clickNum', label: '点赞', width: '60', align: 'right'},
+              {prop: 'reward', label: '打赏', width: '60', align: 'right'},
               {prop: 'authorName', label: '作者', width: '100', align: ''},
               {prop: 'publishTime', label: '发布时间', width: '160', align: 'right'},
-              {prop: 'modifierName', label: '修改人', width: '150', align: ''},
+              {prop: 'modifierName', label: '修改人', width: '100', align: ''},
               {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right'},
               {prop: 'remark', label: '备注', width: '', align: ''},
             ],
@@ -704,6 +711,8 @@
           }
       },
     methods:{
+
+
 
       handleExceed(files, fileList) {
         this.$message.warning(`当前限制选择 1个文件，如果还想添加图片，请点击图片按钮添加`);
@@ -748,12 +757,12 @@
         this.$post('/sysCategory/queryByCategory',{
           category:34
         }).then(res=>{
+          console.log(res.data)
           this.typeArr = res.data;
         })
       },
       getType(){
         this.topicCircleArr = [];
-//        this.topicCircle = '';
         this.form.topicCircleList = [];
         this.getCircleList(this.topicType);
       },
@@ -829,29 +838,53 @@
           title:this.formInline.cityName? this.formInline.cityName:null,
           remark:this.formInline.remark? this.formInline.remark:null,
           authorName:this.formInline.authorId? this.formInline.authorId:null,
-          publishTime: this.formInline.date?  `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
-          publishTime2: this.formInline.date?  `${this.dataTransform(this.formInline.date[1])} 23:59:59` : null,
+          publishTime: this.formInline.date ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
+          publishTime2: this.formInline.date ? `${this.dataTransform(this.formInline.date[1])} 23:59:59` : null,
         }).then(res=>{
+            console.log(res)
             if(res.code == 0){
-              this.tableData = res.data.list
-              this.allNum.commentNum = this.allNum.collects = this.allNum.clickNum = 0;   //
-             if(res.data.list) {
-               res.data.list.forEach((val)=>{
-                 val.status  = val.status ? '正常' : '已关闭';
-                 val.isTop = val.isTop? '是':'否';
-                 val.isBest = val.isBest? '是':'否';
+              if(res.data.list.length <= 0){   //如果后面没返回数据就直接赋值
+                        this.tableData = res.data.list;
+                        this.total = 0;
+                        this.allNum.commentNum = this.allNum.collects = this.allNum.clickNum = 0;   //dom每次更新数据都清零
+                    }else{   //返回数据之后进行数据处理
+                        let arr = res.data.list;
+                        arr.forEach((e,index)=>{
+                            arr[index].status = e.status == 0 ? '未审' : '审核';
+                            arr[index].isTop = e.isTop == 0 ? '' : '是';
+                            arr[index].isBest = e.isBest == 0 ? '' : '是';
+                            if(e.topicType == 1){
+                              arr[index].topicType  = '标准'
+                            }else if(e.topicType == 2){
+                              arr[index].topicType  = '钓位'
+                            }else if(e.topicType == 3){
+                              arr[index].topicType  = '鱼情'
+                            }else if(e.topicType == 4){
+                              arr[index].topicType  = '鱼情'
+                            }else if(e.topicType == 5){
+                              arr[index].topicType  = '随便说说'
+                            }
+                        })
+                        console.log(arr)
+                       this.tableData = JSON.parse(JSON.stringify(arr))
+                         this.$nextTick(function(){
+                            this.checked();//每次更新了数据，触发这个函数即可。
 
-                 //合计
-                 this.allNum.commentNum += val.commentNum;
-                 this.allNum.collects += val.collects;
-                 this.allNum.clickNum += val.clickNum;
-               })
+                            // 每次dom数据更新以后重新计算总数
+                            this.allNum.commentNum = this.allNum.collects = this.allNum.clickNum = 0;   //dom每次更新数据都清零
+                            this.tableData.forEach((val,index)=>{
 
-               this.$nextTick(function(){
-                 this.checked();//每次更新了数据，触发这个函数即可。
-               })
-             }
-              this.total = res.data.total;
+                                this.allNum.commentNum +=val.commentNum;
+                                this.allNum.collects +=val.collects;
+                                this.allNum.clickNum +=val.clickNum;
+                            })
+                        })
+                    }
+                    this.total = res.data.total;
+
+
+
+
             }
         })
       },
@@ -921,12 +954,31 @@
 
       //新增
       add(){
-        this.imageUrl = '';
+       
+         this.imageUrl = '';
         this.videoPath = '';
         this.dialogVisible = true;
-        this.form = {};
+        // this.form = {};
         this.imagesShow = false;
 
+      console.log(this.form.topicCircleList)
+
+        this.$nextTick(()=>{
+
+            this.$refs['topicType'].resetField();
+            this.$refs['title'].resetField();
+
+
+          //将对象还原   shabisheji
+          Object.keys(this.form).forEach((key)=>{
+              if(key == 'fishType' || key == 'fishMethod' || key == 'baitType'){
+                  this.form[key] = []
+              }else{
+                this.form[key] = ''
+              }
+          })
+        })
+        this.topicCircleArr = [];
         this.topicContentArr=[
           {
             contentType:1,
@@ -1000,27 +1052,27 @@
 
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
-          this.form.status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
-          this.form.isTop = (this.form.status == '是' ||this.form.status == '1') ? 1 : 0;
-          this.form.isBest = (this.form.status == '是' ||this.form.status == '1') ? 1 : 0;
+          this.form.status = (this.form.status == '审核' ||this.form.status == '1') ? 1 : 0;
+          this.form.isTop = (this.form.isTop == '是' ||this.form.isTop == '1') ? 1 : 0;
+          this.form.isBest = (this.form.isBest == '是' ||this.form.isBest == '1') ? 1 : 0;
           this.form.isGoBoat = (this.form.isGoBoat == '是' ||this.form.isGoBoat == '1') ? 1 : 0;
 
             if(valid){
                 this.$post(url,{
                   cId: this.circleId ? this.circleId : null,
                   title: this.form.title,  //标题、圈子
-//                  isTop:this.form.isTop,  //是否置顶
-//                  isBest:this.form.isBest,  //精华
+                  isTop:this.form.isTop,  //是否置顶
+                  isBest:this.form.isBest,  //精华
                   status:this.form.status,  //状态
                   topicType:this.form.topicType,  //类型
                   isVisibleCategoryId:this.form.isVisibleCategoryId,  //是否可见
-                  fishMethod:this.form.fishMethod,      //钓法
-                  fishType:this.form.fishType,      //鱼类
+                  fishMethod: this.form.fishMethod.join(','),      //钓法
+                  fishType:this.form.fishType.join(','),      //鱼类
                   provinceId:this.form.provinceId,    //省
                   cityId:this.form.cityId,        //市
                   areaId:this.form.areaId,        //县
                   countryId:this.form.countryId,     //乡
-                  baitType:this.form.baitType,      //饵料类型
+                  baitType:this.form.baitType.join(','),      //饵料类型
                   isGoBoat:this.form.isGoBoat,     //是否坐船
                   longitude:this.form.longitude,     //经度
                   farmhouseQqId:this.form.farmhouseQqId,  //农家乐
@@ -1123,10 +1175,15 @@
           this.form = res.data;
           this.form.number = this.rowIndex;
           this.form.isGoBoat = this.form.isGoBoat==1? '是':'否';
-          this.form.status = this.form.status==1? '是':'否';
+          this.form.status = this.form.status + '';
           this.form.isTop = this.form.isTop==1? '是':'否';
           this.form.isBest = this.form.isBest==1? '是':'否';
           this.topicContentArr = this.form.topicContentList;
+          this.form.fishType = this.form.fishType ? this.form.fishType.split(',') : [];
+          this.form.baitType = this.form.baitType ? this.form.baitType.split(',') : [];
+          this.form.fishMethod = this.form.fishMethod ? this.form.fishMethod.split(',') : [];
+
+
 
           if(this.form.topicType == 2 || this.form.topicType == 3){
             this.titleName = '钓场：';
@@ -1541,6 +1598,34 @@
       },
 
     },
+    watch: {
+       form:{
+            handler(value,oldVal){
+                if(value.provinceId){
+                    this.provinceList.forEach((val)=>{
+                        if(value.provinceId == val.cId){
+                            this.cityList = val.childList;
+                    
+                        }
+                    })
+                };
+                if(value.cityId){
+                     this.cityList.forEach((val)=>{
+                        if(value.cityId == val.cId){
+                            this.areaList = val.childList;
+                        }
+                    })
+                };
+                if(value.areaId){
+                    this.areaList.forEach((val)=>{
+                        if(value.areaId == val.cId){
+                            this.countryList = val.childList;
+                        }
+                    })
+                }
+            }
+        }
+    },
     mounted(){
       //获取所有帖子列表 /basicTopic/queryCommon
       this.getPostList();
@@ -1573,10 +1658,10 @@
 
 <style>
   #post .topSearch .el-form-item__content{
-    width: 100px;
+    width: 80px;
   }
   #lists .topSearch  .el-date-editor{
-    width: 220px;
+    width: 200px;
   }
   #post .topSearch  .el-table{
     overflow-y: scroll;
@@ -1669,7 +1754,7 @@
   padding-right: 15px;
 }
 .aboutNum{
-  width: 1024px;
+  width: 895px;
   height: 30px;
   line-height: 30px;
   margin-top: 10px;
@@ -1680,7 +1765,7 @@
 }
  .aboutNum span:nth-child(2),.aboutNum span:nth-child(3),.aboutNum span:nth-child(4){
     display: inline-block;
-    width: 80px;
+    width: 60px;
     float: right;
     text-align: right;
     padding: 0 10px;

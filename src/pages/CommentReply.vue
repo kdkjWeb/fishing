@@ -196,7 +196,6 @@ export default {
                             // 每次dom数据更新以后重新计算总数
                             this.allNum.commentCount = this.allNum.viewCount = 0;   //dom每次更新数据都清零
                             this.tableData.forEach((val,index)=>{
-
                                 this.allNum.commentCount +=parseInt(val.recommendNum);
                                 this.allNum.viewCount +=parseInt(val.likedNum);
                             })
@@ -476,7 +475,7 @@ export default {
 
 
 .giveUp .aboutNum{
-    width: 605px;
+    width: 785px;
     height: 30px;
     line-height: 30px;
     margin-top: 10px;

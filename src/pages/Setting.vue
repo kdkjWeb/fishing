@@ -233,7 +233,7 @@ export default {
                 {prop: 'codeName', label: '名称', width: '80', align: ''},
                 {prop: 'status', label: '状态', width: '80', align: ''},
                 {prop: 'sort', label: '排序', width: '80', align: 'right'},
-                {prop: 'rewards', label: '打赏渔乐', width: '200', align: ''},
+                {prop: 'rewards', label: '打赏渔乐', width: '80', align: 'right'},
                 {prop: 'creator', label: '创建人', width: '100', align: ''},
                 {prop: 'creatTime', label: '创建时间', width: '160', align: 'right'},
                 {prop: 'modifier', label: '修改人', width: '100', align: ''},

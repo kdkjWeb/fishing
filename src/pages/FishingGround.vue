@@ -270,14 +270,14 @@
                       <el-col :span="6">
                         <el-form-item label="省：" prop="provinceId">
                             <el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince(form.provinceId)">
-                            <el-option :label="item.regionName" :value="item.regionId" v-for="item in provinceList" :key="item.cId"></el-option>
+                            <el-option :label="item.regionName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
                         <el-form-item label="市：" prop="cityId">
                                 <el-select v-model="form.cityId" placeholder="请选择市"  @change="chooseArea(form.cityId)">
-                                <el-option :label="item.regionName" :value="item.regionId" v-for="item in cityList" :key="item.cId"></el-option>
+                                <el-option :label="item.regionName" :value="item.cId" v-for="item in cityList" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
@@ -579,13 +579,13 @@ export default {
         },
         //删除
         deleted(){
-            /*if(this.multipleSelection.length != 1){
+            if(this.multipleSelection.length != 1){
                 this.$message({
                 message: '请选择一条需要删除的数据！',
                 type: 'warning'
                 });
                 return;
-            }*/
+            }
             let id = this.multipleSelection[0].cId;   //保存选中的数据的cId
 
                this.$confirm('此操作将永久删除该钓场, 是否继续?', '提示', {
@@ -811,12 +811,6 @@ export default {
             m = m < 10 ? ('0' + m) : m;
             var d = date.getDate();
             d = d < 10 ? ('0' + d) : d;
-           /* var h = date.getHours();
-            var minute = date.getMinutes();
-            minute = minute < 10 ? ('0' + minute) : minute;
-            var second = date.getSeconds();	
-            second = second < 10 ? ('0' + second) : second;
-            return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;*/
             return y + '-' + m + '-' + d;
         }else{
             return null;
@@ -872,6 +866,7 @@ export default {
      getProvince(){
          this.$get('/region/queryTrees',{}).then(res=>{
               if(res.code == 0){
+                  console.log(res.data)
                 this.provinceList = res.data;
               }
           })
@@ -880,7 +875,7 @@ export default {
      chooseProvince(id){
         //根据省份id获取城市
           this.provinceList.forEach((val)=>{
-            if(id == val.regionId){
+            if(id == val.cId){
                 this.cityList = val.childList;
                 console.log(this.cityList)
                  this.form.cityId = '';
@@ -893,7 +888,7 @@ export default {
      chooseArea(id){
          //根据城市id获取县级
            this.cityList.forEach((val)=>{
-              if(id == val.regionId){
+              if(id == val.cId){
                 this.areaList = val.childList;
                 this.form.areaId = '';
                this.form.countryId = '';
@@ -948,7 +943,8 @@ export default {
         this.getGroundList()
         //表格第一行默认选中
         this.checked();
-      
+           //获取省份
+        this.getProvince();
 
 
          window.addEventListener('resize', ()=>{
@@ -975,10 +971,35 @@ export default {
                 this.getFishMethodList();
                 //有什么饵料
                 this.getBaitList();
-                //获取省份
-                this.getProvince();
+           
                 //获取管理人列表
                 this.getMangerList();
+            }
+        },
+          form:{
+            handler(value,oldVal){
+                if(value.provinceId){
+                    this.provinceList.forEach((val)=>{
+                        if(value.provinceId == val.cId){
+                            this.cityList = val.childList;
+                    
+                        }
+                    })
+                };
+                if(value.cityId){
+                     this.cityList.forEach((val)=>{
+                        if(value.cityId == val.cId){
+                            this.areaList = val.childList;
+                        }
+                    })
+                };
+                if(value.areaId){
+                    this.areaList.forEach((val)=>{
+                        if(value.areaId == val.cId){
+                            this.countryList = val.childList;
+                        }
+                    })
+                }
             }
         }
     }
