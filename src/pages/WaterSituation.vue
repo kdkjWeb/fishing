@@ -136,7 +136,6 @@ export default {
                 cdate2: this.formInline.date ?  `${this.dataTransform(this.formInline.date[1])}`: null,
             }).then(res=>{
                 if(res.code == 0){
-                        console.log(res)
                         if(res.data.list.length<0){
                             this.tableData = res.data.list;
                             this.total = 0;
@@ -206,7 +205,6 @@ export default {
         
             // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
             if(this.multipleSelection.length == 2){
-                console.log(1)
                      for(var i= 0; i<this.tableData.length; i++){
                     if(this.tableData[i].cId == this.multipleSelection[0].cId){
                         this.$refs.multipleTable.toggleRowSelection(this.tableData[i],false);
@@ -267,12 +265,6 @@ export default {
             m = m < 10 ? ('0' + m) : m;
             var d = date.getDate();
             d = d < 10 ? ('0' + d) : d;
-            // var h = date.getHours();
-            // var minute = date.getMinutes();
-            // minute = minute < 10 ? ('0' + minute) : minute;
-            // var second = date.getSeconds();	
-            // second = second < 10 ? ('0' + second) : second;
-            // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
 
             return y + '-' + m + '-' + d;
         }

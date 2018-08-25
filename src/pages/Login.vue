@@ -75,7 +75,6 @@ export default {
         },
         //登录
         login(){
-            console.log(this.userInfo.userName,this.userInfo.userPas)
             if(this.userInfo.userName == '' || this.userInfo.userPas == ''){
                 this.show = false;
                 this.text = '请输入用户名和密码'

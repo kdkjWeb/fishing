@@ -535,7 +535,6 @@
                 val.status  = val.status ? '审核' : '未审';
                 val.isTop = val.isTop? '是':'';
                 val.isBest = val.isBest? '是':'';
-                console.log(val.topicType)
                 switch (val.topicType){
                   case '1':
                       val.topicType = '标准';
@@ -663,7 +662,6 @@
           this.$post('/sysCategory/queryByCategory',{
               category:31
           }).then(res=>{
-            console.log(res)
             this.videoList = res.data
           })
       },
@@ -774,7 +772,6 @@
        this.$get('videoTopic/queryById',{
          topicId: this.circleId
        }).then(res=>{
-         console.log(res)
          if(res.code == 0){
            this.form = res.data;
            this.form.title = res.data.title;
@@ -814,7 +811,7 @@
             });
             }
 
-            // console.log(href)
+            
             location.href = href;
       },
 
@@ -840,7 +837,6 @@
           pid:this.multipleSelection[0].cId,
           type:4
         }).then(res=>{
-            console.log(res)
           res.data.forEach((val)=>{
             //判读审核、取消审核按钮哪一个可以点
             val.status = val.status==1? '正常':'禁用';
@@ -1028,7 +1024,6 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          console.log(1)
           this.$get('comments/offComments',{
             id: id
           }).then(res=>{
@@ -1097,7 +1092,6 @@
         }).then(() => {
           this.topicContentArr.forEach((val,num)=>{
             if(index == num){
-              console.log(val,index)
               this.topicContentArr.splice(index,1);
             }
           })

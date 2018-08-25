@@ -147,7 +147,7 @@ export default {
     },
     computed:{
         onRoutes(){
-            console.log(this.$route)
+            // console.log(this.$route)
             return this.$route.path.replace('/','')
         }
     },

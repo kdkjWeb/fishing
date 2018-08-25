@@ -105,10 +105,7 @@ export default {
                 pageSize: pageSize ? pageSize : 30,
                 pageNum: pageNum ? pageNum : 1,
                 name: this.formInline.name ? this.formInline.name : null,
-                // cdate: this.formInline.date ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
-                // enddate: this.formInline.date ?  `${this.dataTransform(this.formInline.date[1])} 23:59:59`: null,
             }).then(res=>{
-                console.log(res)
                 if(res.code == 0){
                   
                         this.tableData = res.data.list;
@@ -149,7 +146,6 @@ export default {
         
             // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
             if(this.multipleSelection.length == 2){
-                console.log(1)
                      for(var i= 0; i<this.tableData.length; i++){
                     if(this.tableData[i].cId == this.multipleSelection[0].cId){
                         this.$refs.multipleTable.toggleRowSelection(this.tableData[i],false);

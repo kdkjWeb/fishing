@@ -234,7 +234,6 @@ export default {
      getProvince(){
          this.$get('region/queryTrees',{}).then(res=>{
              this.provinceList = res.data;
-             console.log(this.provinceList)
              this.$nextTick(()=>{
                  this.checkArr.push(this.provinceList[0].cId);
                  this.checkData = this.provinceList[0];

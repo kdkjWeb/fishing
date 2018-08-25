@@ -862,7 +862,6 @@
           topicType: this.formInline.topicType ? this.formInline.topicType : null,
         }).then(res=>{
             if(res.code == 0){
-              console.log(res)
               if(res.data.list == undefined){   //如果后面没返回数据就直接赋值
                         this.tableData = res.data.list;
                         this.total = 0;
@@ -1342,16 +1341,7 @@
           this.commentData = res.data;
           this.$nextTick(function(){
             this.check();//每次更新了数据，触发这个函数即可。
-            //判读审核、取消审核按钮哪一个可以点
-
-            /*if(this.multipleComment != undefined){
-              console.log(this.multipleComment[0])
-              if(this.multipleComment[0].status == '正常'){
-                this.disabled = false;
-              }else if(this.multipleComment[0].status == '禁用'){
-                this.disabled = true;
-              }
-            }*/
+         
           })
 
         })

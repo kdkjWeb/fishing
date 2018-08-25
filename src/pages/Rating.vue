@@ -429,7 +429,6 @@ export default {
               }
             })
           } else {
-            console.log('error submit!!');
             return false;
           }
         });
@@ -530,7 +529,6 @@ export default {
                 }
             });
             }
-            console.log(href)
            location.href = href;
         },
 

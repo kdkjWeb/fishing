@@ -561,13 +561,11 @@ export default {
                 enddate: this.formInline.cDate ?  `${this.dataTransform(this.formInline.cDate[0])} 23:59:59`: null,
 
             }).then(res=>{
-                console.log(res)
                if(res.code == 0){
                     if(res.data.list <=0){
                     this.tableData = res.data.list;
                     this.total = res.data.total;
                     }else{
-                        console.log(res.data.list)
                         let arr = res.data.list;
                         arr.forEach((e,index)=>{
                            arr[index].status = e.status == 0? '禁用' : '正常'
@@ -626,7 +624,6 @@ export default {
 
                             //将对象还原   shabisheji
                             Object.keys(this.form).forEach((key)=>{
-                                // console.log(key)
                                 if(key == 'targetFish' || key == 'fishWay' || key == 'bait'){
                                     this.form[key] = []
                                 }else if(key == 'status'){
@@ -699,7 +696,6 @@ export default {
             this.$get('user/getUserInfo',{
                 id: this.circleId
             }).then(res=>{
-                console.log(res)
                 this.form = res.data;
                 this.form.password = '******';
                 this.form.status = this.form.status + "";
@@ -806,7 +802,6 @@ export default {
                     }else{
                         role = 4;
                     }
-                    console.log(this.form.targetFish.length)
                     this.$post(url,{
                         cId: this.circleId ? this.circleId : null,
                         forumId: this.form.forumId,
@@ -921,7 +916,6 @@ export default {
           this.provinceList.forEach((val)=>{
             if(id == val.cId){
                 this.cityList = val.childList;
-                console.log(this.cityList)
                  this.form.cityId = '';
                 this.form.areaId = '';
                 this.form.countryId = '';
@@ -977,7 +971,6 @@ export default {
 
      /**start上传图片 */
       handleAvatarSuccess(res, file) {
-          console.log(file)
         this.imageUrl = URL.createObjectURL(file.raw);
         this.form.icon = file.response.data;
       },

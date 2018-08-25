@@ -475,7 +475,6 @@ export default {
       },
       //查询
       search(){
-          console.log(1)
       },
        //每页显示多少条数据
         handleSizeChange(val) {

@@ -555,7 +555,6 @@ export default {
 
                             //将对象还原   shabisheji
                             Object.keys(this.form).forEach((key)=>{
-                                // console.log(key)
                                 if(key == 'fishType' || key == 'fishingType' || key == 'forbiddenFishing' || key == 'forbiddenBaits' || key == 'baits'){
                                     this.form[key] = []
                                 }else if(key == 'status'){
@@ -634,7 +633,6 @@ export default {
             this.$get('fishplace/getFishPlaceById',{
                 id: this.circleId
             }).then(res=>{
-                console.log(res)
                 this.form = res.data;
                 this.form.phone = parseInt(this.form.phone);
 
@@ -864,7 +862,6 @@ export default {
      getProvince(){
          this.$get('/region/queryTrees',{}).then(res=>{
               if(res.code == 0){
-                  console.log(res.data)
                 this.provinceList = res.data;
               }
           })
@@ -875,7 +872,6 @@ export default {
           this.provinceList.forEach((val)=>{
             if(id == val.cId){
                 this.cityList = val.childList;
-                console.log(this.cityList)
                  this.form.cityId = '';
                 this.form.areaId = '';
                 this.form.countryId = '';
@@ -916,10 +912,8 @@ export default {
 
      /**start上传图片 */
       handleAvatarSuccess(res, file) {
-          console.log(file)
         this.imageUrl = URL.createObjectURL(file.raw);
         this.form.icon = file.response.data;
-        console.log(this.form.icon)
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
@@ -960,7 +954,6 @@ export default {
         dialogVisible: function(val){
             let that = this;
             if(val){
-                console.log(1)
                 //调用圈子分类函数
                 this.getCodeName();
                   //获取鱼类分类

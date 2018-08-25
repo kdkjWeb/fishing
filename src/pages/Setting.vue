@@ -363,7 +363,6 @@ export default {
               break;
           }
 
-          console.log(this.form.category)
         }
         /*if(!this.form.icon){
           this.$message({
@@ -450,7 +449,7 @@ export default {
             this.dialogVisible = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
             let data = this.multipleSelection[0];
-            
+
             if(this.circleId){
               this.form = data;
               this.imageUrl = this.form.iconUrl;
