@@ -105,8 +105,8 @@ export default {
                 date: ''
             },
             tableList: [   //表格的头部配置
-                {prop: 'getter', label: '收款人', width: '100', align: ''},
-                {prop: 'payer', label: '付款人', width: '100', align: ''},
+                {prop: 'getter', label: '用户', width: '100', align: ''},
+                {prop: 'payer', label: '打赏人', width: '100', align: ''},
                 {prop: 'num', label: '打赏金额', width: '80', align: 'right'},
                 {prop: 'cdate', label: '打赏时间', width: '160', align: 'right'},
                 {prop: 'phone', label: '打赏人电话', width: '120', align: 'right'},
@@ -139,25 +139,6 @@ export default {
                         this.tableData = res.data.list;
                         this.total = res.data.total;
                     
-
-/**
- * 
- * else{
-                        let arr = res.data.list;
-                        arr.forEach((e,index)=>{
-                            if(e.type == 1){
-                                arr[index].type = '帖子'
-                            }else if(e.type == 3){
-                                arr[index].type = '评论'
-                            }else{
-                                arr[index].type = '视频'
-                            } 
-                        })
-                        this.tableData = JSON.parse(JSON.stringify(arr));
-                        this.total = res.data.total;
-                    }
- */
-
 
                       this.$nextTick(function(){
                             this.checked();//每次更新了数据，触发这个函数即可。
@@ -266,13 +247,6 @@ export default {
             m = m < 10 ? ('0' + m) : m;
             var d = date.getDate();
             d = d < 10 ? ('0' + d) : d;
-            // var h = date.getHours();
-            // var minute = date.getMinutes();
-            // minute = minute < 10 ? ('0' + minute) : minute;
-            // var second = date.getSeconds();	
-            // second = second < 10 ? ('0' + second) : second;
-            // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
-
             return y + '-' + m + '-' + d;
         }
       }
@@ -294,10 +268,10 @@ export default {
 </script>
 
 <style>
-.topSearch .el-form-item__content{
+.giveUp .topSearch .el-form-item__content{
     width: 100px;
 }
-.topSearch .el-date-editor{
+.giveUp .topSearch .el-date-editor{
     width: 220px;
 }
 .giveUp .table .el-table .el-table__body-wrapper{

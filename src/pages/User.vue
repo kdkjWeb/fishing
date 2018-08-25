@@ -55,6 +55,7 @@
         <!-- start表格 -->
         <div class="table">
             <el-table
+                :row-class-name="tableRowClassName"
                 :max-height="height"
                 ref="multipleTable"
                 :data="tableData"
@@ -65,7 +66,7 @@
                 @selection-change="handleSelectionChange">
                 <el-table-column
                 type="selection"
-                width="55">
+                width="30">
                 </el-table-column>
                 <el-table-column
                 type="index"
@@ -185,14 +186,11 @@
                    
 
                     <el-row>
-                      <!-- <el-col :span="8">
-                          <el-form-item label="级别：">
-                            <el-input v-model="form.creator"></el-input>
-                        </el-form-item>
-                      </el-col> -->
                       <el-col :span="8">
                           <el-form-item label="头衔：">
-                            <el-input v-model="form.rank"></el-input>
+                            <el-select v-model="form.rank" placeholder="请选择头衔" :disabled="disabled3">
+                            <el-option :label="item.name" :value="item.name" v-for="item in rankList" :key="item.cId"></el-option>
+                            </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
@@ -261,14 +259,7 @@
                                 </el-select>
                             </el-form-item>
                       </el-col>
-                      <!-- <el-col :span="8">
-                          <el-form-item label="认证方式：">
-                                <el-select v-model="form.kind" placeholder="认证方式">
-                                <el-option label="官方" value="官方"></el-option>
-                                <el-option label="个人" value="个人"></el-option>
-                                </el-select>
-                            </el-form-item>
-                      </el-col> -->
+                   
                     </el-row>
                     <el-row>
                       <el-col :span="8">
@@ -430,6 +421,7 @@ export default {
         return{
             disablesAdd: false,
             height: null,
+            disabled3: false,
             disabled: false,   //是否禁止填写
             disabled1: false,   //是否禁止填写
             disabled2: true,   //是否禁止填写
@@ -451,6 +443,7 @@ export default {
             baitList: [],   //饵料列表
             fishMethodList: [],   //有什么钓法
             fishList: [],   //鱼类分类
+            rankList: [],    //头衔
             formInline: {   //圈子、详细地址、创建时间的表单
                 nickname: '',
                 phone: '',
@@ -496,11 +489,11 @@ export default {
                 remark: '',  //备注
             },
             tableList: [   //表格的头部配置
+                {prop: 'status', label: '状态', width: '80', align: ''},
                 {prop: 'forumId', label: '论坛ID', width: '80', align: 'right'},
                 {prop: 'motorcade', label: '车贴编号', width: '80', align: 'right'},
                 {prop: 'phone', label: '手机号', width: '120', align: 'right'},
                 {prop: 'nickname', label: '昵称', width: '120', align: ''},
-                {prop: 'status', label: '状态', width: '80', align: ''},
                 // {prop: 'level', label: '级别', width: '80', align: ''},
                 {prop: 'role', label: '用户类别', width: '80', align: ''},
                 {prop: 'token', label: '用户组（积分或自定义）', width: '180', align: ''},   //level等级数字   token等级数字对应的汉字
@@ -544,6 +537,17 @@ export default {
         }
     },
     methods:{
+          //根据不同状态添加样式
+      tableRowClassName({row, rowIndex}) {
+          if(row.status === '正常'){
+              return 'success-row';
+          }else if(row.status === '禁用'){
+              return 'warning-row';
+          }else{
+              return '';
+          }
+    },
+
         //获取用户列表
         getUserList(pageSize,pageNum){
             this.$post('user/getUserList',{
@@ -607,6 +611,7 @@ export default {
             this.circleId = '';
             this.disabled = true;
             this.disabled1 = false;
+            this.disabled3 = true;
             //点击新增清空表单
                 for(var i in this.form){
                 if(i == 'status'){  //遇到默认项跳过，执行下面的循环
@@ -689,22 +694,37 @@ export default {
             this.disabled = true;
             this.disabled1 = true;
             this.disabled2 = false;
+            this.disabled3 = false;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-
             this.$get('user/getUserInfo',{
                 id: this.circleId
             }).then(res=>{
+                console.log(res)
                 this.form = res.data;
                 this.form.password = '******';
                 this.form.status = this.form.status + "";
                 this.form.gender = this.form.gender + "";
                 this.form.number = this.rowIndex;
-                // this.form.level = this.form.token;
                 this.form.targetFish = this.form.targetFish ? this.form.targetFish.split(',') : [];
-                this.form.fishWay = this.form.fishWay ? this.form.fishWay.split(',') : []
-                this.form.bait = this.form.bait ? this.form.bait.split(',') : []
+                this.form.fishWay = this.form.fishWay ? this.form.fishWay.split(',') : [];
+                this.form.bait = this.form.bait ? this.form.bait.split(',') : [];
+
+
+                if(res.data.role){
+                    this.getrankList(res.data.role)
+                }
             })
 
+        },
+        //获取头衔
+        getrankList(rank){
+            this.$get('levelRule/queryByType',{
+                type: rank
+            }).then(res=>{
+                if(res.code == 0){
+                    this.rankList = res.data;
+                }
+            })
         },
         //导出
         exportd(){
@@ -1071,10 +1091,10 @@ export default {
 
 
 <style>
-.topSearch .el-form-item__content{
+.user .topSearch .el-form-item__content{
     width: 100px;
 }
-.topSearch .el-date-editor{
+.user .topSearch .el-date-editor{
     width: 220px;
 }
 .user .table .el-table .el-table__body-wrapper{
@@ -1124,6 +1144,16 @@ display: block;
 .user .el-upload__tip{
     text-align: right;
 }
+
+
+ .user .el-table .warning-row {
+    /* background:#3399fb; */
+    color: red;
+  }
+
+  .user .el-table .success-row {
+    background: #fff;
+ }
 </style>
 
 <style scoped>

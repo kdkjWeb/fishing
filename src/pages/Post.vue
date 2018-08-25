@@ -21,6 +21,14 @@
                   <el-option label="未审" value="0"></el-option>
                 </el-select>
               </el-form-item>
+              <el-form-item label="类型：">
+                        <el-select v-model="formInline.topicType" placeholder="类型" clearable >
+                          <el-option label="标准" value="1"></el-option>
+                          <el-option label="钓位" value="2"></el-option>
+                          <el-option label="鱼情" value="3"></el-option>
+                          <el-option label="随便说说" value="5"></el-option>
+                        </el-select>
+                    </el-form-item>
               <el-form-item label="发布时间：">
                 <el-date-picker
                   v-model="formInline.date"
@@ -51,6 +59,7 @@
       <div style="padding-right: 20px;">
         <div class="table">
           <el-table
+            :row-class-name="tableRowClassName"
             height="300"
             ref="multipleTable"
             :data="tableData"
@@ -61,7 +70,7 @@
             @selection-change="handleSelectionChange">
             <el-table-column
               type="selection"
-              width="55">
+              width="30">
             </el-table-column>
             <el-table-column
               type="index"
@@ -575,11 +584,12 @@
             },
             //查询
             formInline:{
-              status: '',
+              status: '0',
               cityName:'',
               remark:'',
               authorId:'',
               date:'',
+              topicType: ''
             },
             //增加
             topicCircle:'',
@@ -674,18 +684,19 @@
             ],
             imagesShow:false,
             tableList: [   //表格的头部配置
-              {prop: 'title', label: '标题', width: '200', align: ''},
-              {prop: 'status', label: '状态', width: '80', align: ''},
+              {prop: 'status', label: '状态', width: '50', align: ''},
               {prop: 'isTop', label: '置顶', width: '60', align: ''},
               {prop: 'isBest', label: '精华', width: '60', align: ''},
+              {prop: 'title', label: '标题', width: '300', align: ''},
               {prop: 'topicType', label: '类型', width: '80', align: ''},
+              {prop: 'circleList', label: '发送圈子', width: '120', align: ''},
+              {prop: 'authorName', label: '作者', width: '100', align: ''},
               {prop: 'showSort', label: '排序号', width: '70', align: ''},
               {prop: 'viewNum', label: '浏览', width: '60', align: 'right'},
               {prop: 'commentNum', label: '评论', width: '60', align: 'right'},
               {prop: 'collects', label: '收藏', width: '60', align: 'right'},
               {prop: 'clickNum', label: '点赞', width: '60', align: 'right'},
-              {prop: 'reward', label: '打赏', width: '60', align: 'right'},
-              {prop: 'authorName', label: '作者', width: '100', align: ''},
+              {prop: 'reward', label: '打赏', width: '60', align: 'right'},   
               {prop: 'publishTime', label: '发布时间', width: '160', align: 'right'},
               {prop: 'modifierName', label: '修改人', width: '100', align: ''},
               {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right'},
@@ -707,7 +718,15 @@
           }
       },
     methods:{
-
+      tableRowClassName({row, rowIndex}) {
+          if(row.status === '审核'){
+              return 'success-row';
+          }else if(row.status === '未审'){
+              return 'warning-row';
+          }else{
+              return '';
+          }
+    },
 
 
       handleExceed(files, fileList) {
@@ -753,7 +772,6 @@
         this.$post('/sysCategory/queryByCategory',{
           category:34
         }).then(res=>{
-          console.log(res.data)
           this.typeArr = res.data;
         })
       },
@@ -795,7 +813,6 @@
           this.$get('/region/queryTrees',{}).then(res=>{
               if(res.code == 0){
                 this.provinceList = res.data;
-                console.log(res.data)
               }
           })
       },
@@ -836,16 +853,17 @@
         this.$post('/basicTopic/queryCommenToWeb',{
           pageSize: pageSize? pageSize : 30,
           pageNum: pageNum ? pageNum : 1,
-          status: this.formInline.status? this.formInline.status:null,
+          status: this.formInline.status? this.formInline.status: null,
           title:this.formInline.cityName? this.formInline.cityName:null,
           remark:this.formInline.remark? this.formInline.remark:null,
           authorName:this.formInline.authorId? this.formInline.authorId:null,
           publishTime: this.formInline.date ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
           publishTime2: this.formInline.date ? `${this.dataTransform(this.formInline.date[1])} 23:59:59` : null,
+          topicType: this.formInline.topicType ? this.formInline.topicType : null,
         }).then(res=>{
-            console.log(res)
             if(res.code == 0){
-              if(res.data.list.length <= 0){   //如果后面没返回数据就直接赋值
+              console.log(res)
+              if(res.data.list == undefined){   //如果后面没返回数据就直接赋值
                         this.tableData = res.data.list;
                         this.total = 0;
                         this.allNum.commentNum = this.allNum.collects = this.allNum.clickNum = 0;   //dom每次更新数据都清零
@@ -855,6 +873,21 @@
                             arr[index].status = e.status == 0 ? '未审' : '审核';
                             arr[index].isTop = e.isTop == 0 ? '' : '是';
                             arr[index].isBest = e.isBest == 0 ? '' : '是';
+                            if(e.circleList != undefined){
+                               let str = '';
+                                e.circleList.forEach((e)=>{
+                                  if(e.circleName){
+                                    str += e.circleName+'、';
+                                    arr[index].circleList = str.replace(/、$/gi,"");
+                                  }else{
+                                    arr[index].circleList = ''
+                                  }
+                                })
+
+                            }else{
+                              
+                            }
+
                             if(e.topicType == 1){
                               arr[index].topicType  = '标准'
                             }else if(e.topicType == 2){
@@ -867,7 +900,6 @@
                               arr[index].topicType  = '随便说说'
                             }
                         })
-                        console.log(arr)
                        this.tableData = JSON.parse(JSON.stringify(arr))
                          this.$nextTick(function(){
                             this.checked();//每次更新了数据，触发这个函数即可。
@@ -1120,12 +1152,20 @@
         }
         let id = this.multipleSelection[0].cId;   //保存选中的数据的cId
 
+        if(this.multipleSelection[0].status === '审核'){
+          this.$message({
+              type: 'warning',
+              message: '该帖子已被审核，不允许删除!'
+            });
+            return;
+        }
+
         this.$confirm('此操作将永久删除该帖子, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$get('/basicTopic/falseDeleteBasicTopic',{
+          this.$get('/basicTopic/deleteBasicTopic',{
             topicId: id
           }).then(res=>{
             if(res.code == 0){
@@ -1185,6 +1225,7 @@
               this.isShow = false;
             }else{
               this.isShow = true;
+              this.isDesable = false;
             }
 
           if(this.form.topicType == 2 || this.form.topicType == 3){
@@ -1258,7 +1299,8 @@
             pid:this.multipleSelection[0].cId,
             type:1
         }).then(res=>{
-          res.data.list.forEach((val)=>{
+         if(res.data != undefined){
+            res.data.forEach((val)=>{
             //判读审核、取消审核按钮哪一个可以点
             val.status = val.status==1? '正常':'禁用';
             val.userId = val.commentUser.nickname;
@@ -1296,19 +1338,20 @@
                 break;
             };
           })
-          this.commentData = res.data.list;
-
+         }
+          this.commentData = res.data;
           this.$nextTick(function(){
             this.check();//每次更新了数据，触发这个函数即可。
             //判读审核、取消审核按钮哪一个可以点
 
-            if(this.commentData.length){
-              if(this.commentData[0].status == '正常'){
+            /*if(this.multipleComment != undefined){
+              console.log(this.multipleComment[0])
+              if(this.multipleComment[0].status == '正常'){
                 this.disabled = false;
-              }else if(this.commentData[0].status == '禁用'){
+              }else if(this.multipleComment[0].status == '禁用'){
                 this.disabled = true;
               }
-            }
+            }*/
           })
 
         })
@@ -1368,7 +1411,7 @@
         ];
 
         this.$post('scorecoin/getAllCoinList',{
-          getter:this.multipleSelection[0].cId,
+          topicId:this.multipleSelection[0].cId,
             type:'打赏'
         }).then(res=>{
             res.data.list.forEach((val)=> {
@@ -1399,6 +1442,7 @@
       //多选框选中之后存放的数据
       selectionChange(val){
         this.multipleComment = val;
+
         // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
         if(this.multipleComment.length == 2){
           for(var i= 0; i<this.commentData.length; i++){
@@ -1406,11 +1450,11 @@
               this.$refs.multiple.toggleRowSelection(this.commentData[i],false);
 
               //判读审核、取消审核按钮哪一个可以点
-              if(this.commentData[i+1].status == '正常'){
-                this.disabled = false;
-              }else if(this.commentData[i+1].status == '禁用'){
-                this.disabled = true;
-              }
+              // if(this.commentData[i+1].status == '正常'){
+              //   this.disabled = false;
+              // }else if(this.commentData[i+1].status == '禁用'){
+              //   this.disabled = true;
+              // }
               break;
             }
           }
@@ -1423,11 +1467,29 @@
             }
           }
         }
+        
+ 
+        if(this.multipleComment[0] != undefined){
+              if(this.multipleComment[0].status == '正常'){
+                  this.disabled = false;
+                }else if(this.multipleComment[0].status == '禁用'){
+                  this.disabled = true;
+                }
+            }
       },
 
       //默认选择一行
       check(){
         this.$refs.multiple.toggleRowSelection(this.commentData[0],true);
+           this.multipleComment[0] = this.commentData[0];
+      
+           if(this.multipleComment[0] != undefined){
+             if(this.multipleComment[0].status == '正常'){
+                this.disabled = false;
+              }else if(this.multipleComment[0].status == '禁用'){
+                this.disabled = true;
+              }
+           }
       },
 
       //审核、取消审核
@@ -1438,7 +1500,6 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          console.log(1)
           this.$get('comments/offComments',{
             id: id
           }).then(res=>{
@@ -1507,7 +1568,6 @@
         }).then(() => {
           this.topicContentArr.forEach((val,num)=>{
             if(index == num){
-              console.log(val,index)
               this.topicContentArr.splice(index,1);
             }
           })
@@ -1638,6 +1698,20 @@
   }
 </script>
 
+
+
+
+<style>
+  #post .el-table .warning-row {
+    /* background:#3399fb; */
+    color: red;
+  }
+
+  #post .el-table .success-row {
+background: #fff;
+}
+</style>
+
 <style>
   #post .topSearch .el-form-item__content{
     width: 80px;
@@ -1736,7 +1810,7 @@
   padding-right: 15px;
 }
 .aboutNum{
-  width: 895px;
+  width: 1160px;
   height: 30px;
   line-height: 30px;
   margin-top: 10px;

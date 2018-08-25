@@ -55,6 +55,7 @@
          <!-- start表格 -->
         <div class="table">
             <el-table
+                :row-class-name="tableRowClassName"
                 :max-height="height"
                 ref="multipleTable"
                 :data="tableData"
@@ -130,9 +131,9 @@ export default {
                 date: '',    //时间
             },
             tableList: [   //表格的头部配置
-                {prop: 'provinceName', label: '帖子标题', width: '300', align: ''},
                 {prop: 'cityName', label: '帖子状态', width: '80', align: ''},
                 {prop: 'status', label: '评论状态', width: '80', align: ''},
+                {prop: 'provinceName', label: '帖子标题', width: '300', align: ''},
                 {prop: 'areaName', label: '评论类型', width: '80', align: ''},
                 {prop: 'recommendNum', label: '回复数', width: '70', align: 'right'},
                 {prop: 'likedNum', label: '点赞数', width: '70', align: 'right'},
@@ -152,6 +153,15 @@ export default {
         }
     },
     methods: {
+        tableRowClassName({row, rowIndex}) {
+          if(row.status === '正常'){
+              return 'success-row';
+          }else if(row.status === '禁用'){
+              return 'warning-row';
+          }else{
+              return '';
+          }
+    },
         //获取所有点赞列表
         getAllCmtsList(pageSize,pageNum){
             this.$post('comments/getAllCmtsList',{
@@ -296,7 +306,6 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
                 }).then(() => {
-                    console.log(1)
                     this.$get('comments/offComments',{
                         id: id
                     }).then(res=>{
@@ -310,7 +319,6 @@ export default {
                             this.getAllCmtsList();
                         }
                     })
-                    console.log(2)
                 }).catch(() => {
                 this.$message({
                     type: 'info',
@@ -318,15 +326,6 @@ export default {
                 });
                 });
 
-
-
-                /*this.$get('comments/offComments',{
-                        id: id
-                    }).then(res=>{
-                        if(res.code == 0){
-                           console.log(res)
-                        }
-                    })*/
         },
 
         //多选框选中之后存放的数据
@@ -339,22 +338,19 @@ export default {
                      for(var i= 0; i<this.tableData.length; i++){
                     if(this.tableData[i].cId == this.multipleSelection[0].cId){
                         this.$refs.multipleTable.toggleRowSelection(this.tableData[i],false);
-
-
-                        console.log(this.tableData[i+1])
-
-                        //判读审核、取消审核按钮哪一个可以点
-                        if(this.tableData[i+1].status == '正常'){
-                                this.disabled = false;
-                            }else if(this.tableData[i+1].status == '禁用'){
-                                this.disabled = true;
-                            }
-
                         break;
                     }
                 }
             }
 
+            //判读审核、取消审核按钮哪一个可以点
+             if(this.multipleSelection[0] != undefined){
+                if(this.multipleSelection[0].status == '正常'){
+                    this.disabled = false;
+                    }else if(this.multipleSelection[0].status == '禁用'){
+                    this.disabled = true;
+                    }
+            }
 
 
             //虽然是多选框，但是产品设计每次只能选着一个,换页的时候重新计算序列编号
@@ -366,17 +362,24 @@ export default {
                     }
                 }
             }
-
-
-            
-
         },
+
+
         //默认选中第一行
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
             this.$refs.multipleTable.toggleRowSelection(this.tableData[0],true);
             if(this.currentPage == 1){
                 this.rowIndex = 1;
+            }
+
+            //判读审核、取消审核按钮哪一个可以点
+             if(this.multipleSelection[0] != undefined){
+                if(this.multipleSelection[0].status == '正常'){
+                    this.disabled = false;
+                    }else if(this.multipleSelection[0].status == '禁用'){
+                    this.disabled = true;
+                    }
             }
       },
         //设置表头的背景颜色
@@ -409,13 +412,6 @@ export default {
             m = m < 10 ? ('0' + m) : m;
             var d = date.getDate();
             d = d < 10 ? ('0' + d) : d;
-            // var h = date.getHours();
-            // var minute = date.getMinutes();
-            // minute = minute < 10 ? ('0' + minute) : minute;
-            // var second = date.getSeconds();	
-            // second = second < 10 ? ('0' + second) : second;
-            // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
-
             return y + '-' + m + '-' + d;
         }
       }
@@ -437,10 +433,10 @@ export default {
 </script>
 
 <style>
-.topSearch .el-form-item__content{
+.giveUp .topSearch .el-form-item__content{
     width: 100px;
 }
-.topSearch .el-date-editor{
+.giveUp .topSearch .el-date-editor{
     width: 220px;
 }
 .giveUp .table .el-table .el-table__body-wrapper{
@@ -458,6 +454,14 @@ export default {
 .giveUp .el-upload__tip{
     text-align: right;
 } */
+.giveUp .el-table .warning-row {
+    /* background:#3399fb; */
+    color: red;
+  }
+
+.giveUp .el-table .success-row {
+background: #fff;
+}
 </style>
 
 

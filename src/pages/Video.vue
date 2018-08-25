@@ -51,6 +51,7 @@
       <div style="padding-right: 20px;">
         <div class="table">
           <el-table
+           :row-class-name="tableRowClassName"
             height="300"
             ref="multipleTable"
             :data="tableData"
@@ -61,7 +62,7 @@
             @selection-change="handleSelectionChange">
             <el-table-column
               type="selection"
-              width="55">
+              width="30">
             </el-table-column>
             <el-table-column
               type="index"
@@ -445,16 +446,16 @@
         disabled: false,
         tableList: [   //表格的头部配置
           {prop: 'title', label: '标题', width: '200', align: ''},
-          {prop: 'status', label: '状态', width: '', align: ''},
+          {prop: 'status', label: '状态', width: '60', align: ''},
           {prop: 'isTop', label: '置顶', width: '50', align: ''},
           {prop: 'isBest', label: '精华', width: '50', align: ''},
           {prop: 'topicType', label: '类型', width: '50', align: ''},
           {prop: 'sort', label: '排序号', width: '80', align: 'right'},
-          {prop: 'viewNum', label: '浏览', width: '80', align: 'right'},
-          {prop: 'commentNum', label: '评论', width: '80', align: 'right'},
-          {prop: 'collects', label: '收藏', width: '80', align: 'right'},
-          {prop: 'clickNum', label: '点赞', width: '80', align: 'right'},
-          {prop: 'isVisibleCategoryId', label: '打赏', width: '80', align: 'right'},
+          {prop: 'viewNum', label: '浏览', width: '60', align: 'right'},
+          {prop: 'commentNum', label: '评论', width: '60', align: 'right'},
+          {prop: 'collects', label: '收藏', width: '60', align: 'right'},
+          {prop: 'clickNum', label: '点赞', width: '60', align: 'right'},
+          {prop: 'isVisibleCategoryId', label: '打赏', width: '60', align: 'right'},
           {prop: 'publisherName', label: '作者', width: '', align: ''},
           {prop: 'publishTime', label: '发布时间', width: '160', align: 'right'},
           {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right'},
@@ -476,6 +477,18 @@
       }
     },
     methods:{
+      //根据不同状态添加样式
+      tableRowClassName({row, rowIndex}) {
+          if(row.status === '审核'){
+              return 'success-row';
+          }else if(row.status === '未审'){
+              return 'warning-row';
+          }else{
+              return '';
+          }
+    },
+
+
       handleExceed(files, fileList) {
         this.$message.warning(`当前限制选择 1个文件`);
       },
@@ -816,7 +829,6 @@
           {prop: 'type', label: '评论类型', width: '100', align: ''},
           {prop: 'recommendNum', label: '回复数', width: '100', align: 'right'},
           {prop: 'likedNum', label: '点赞数', width: '100', align: 'right'},
-//          {prop: 'name', label: '不赞数', width: '120', align: 'right'},
           {prop: 'content', label: '评论内容', width: '100', align: ''},
           {prop: 'userId', label: '评论人', width: '150', align: ''},
           {prop: 'cdate', label: '评论时间', width: '180', align: 'right'},
@@ -829,7 +841,7 @@
           type:4
         }).then(res=>{
             console.log(res)
-          res.data.list.forEach((val)=>{
+          res.data.forEach((val)=>{
             //判读审核、取消审核按钮哪一个可以点
             val.status = val.status==1? '正常':'禁用';
             val.userId = val.commentUser.nickname;
@@ -867,19 +879,10 @@
                 break;
             };
           })
-          this.commentData = res.data.list;
+          this.commentData = res.data;
 
           this.$nextTick(function(){
             this.check();//每次更新了数据，触发这个函数即可。
-            //判读审核、取消审核按钮哪一个可以点
-
-            if(this.commentData.length){
-              if(this.commentData[0].status == '正常'){
-                this.disabled = false;
-              }else if(this.commentData[0].status == '禁用'){
-                this.disabled = true;
-              }
-            }
           })
 
         })
@@ -943,7 +946,7 @@
         ];
 
         this.$post('scorecoin/getAllCoinList',{
-          getter:this.multipleSelection[0].cId,
+          topicId:this.multipleSelection[0].cId,
           type:'打赏'
         }).then(res=>{
           res.data.list.forEach((val)=> {
@@ -981,13 +984,6 @@
           for(var i= 0; i<this.commentData.length; i++){
             if(this.commentData[i].cId == this.multipleComment[0].cId){
               this.$refs.multiple.toggleRowSelection(this.commentData[i],false);
-
-              //判读审核、取消审核按钮哪一个可以点
-              if(this.commentData[i+1].status == '正常'){
-                this.disabled = false;
-              }else if(this.commentData[i+1].status == '禁用'){
-                this.disabled = true;
-              }
               break;
             }
           }
@@ -1000,11 +996,28 @@
             }
           }
         }
+
+
+        if(this.multipleComment[0] != undefined){
+              if(this.multipleComment[0].status == '正常'){
+                  this.disabled = false;
+                }else if(this.multipleComment[0].status == '禁用'){
+                  this.disabled = true;
+                }
+            }
       },
 
       //默认选择一行
       check(){
         this.$refs.multiple.toggleRowSelection(this.commentData[0],true);
+
+        if(this.multipleComment[0] != undefined){
+             if(this.multipleComment[0].status == '正常'){
+                this.disabled = false;
+              }else if(this.multipleComment[0].status == '禁用'){
+                this.disabled = true;
+              }
+           }
       },
 
       //审核、取消审核
@@ -1103,13 +1116,13 @@
 
       //上传视频
       beforeUploadVideo(file) {
-        const isLt10M = file.size / 1024 / 1024  < 10;
+        const isLt10M = file.size / 1024 / 1024  < 50;
         if (['video/mp4', 'video/ogg', 'video/flv','video/avi','video/wmv','video/rmvb','video/x-ms-wmv'].indexOf(file.type) == -1) {
           this.$message.error('请上传正确的视频格式');
           return false;
         }
         if (!isLt10M) {
-          this.$message.error('上传视频大小不能超过10MB哦!');
+          this.$message.error('上传视频大小不能超过50MB哦!');
           return false;
         }
       },
@@ -1231,6 +1244,15 @@
     line-height: 150px;
     text-align: center;
   }
+
+   #post .el-table .warning-row {
+    /* background:#3399fb; */
+    color: red;
+  }
+
+  #post .el-table .success-row {
+     background: #fff;
+  }
 </style>
 <style scoped>
   #post{
@@ -1268,7 +1290,7 @@
     text-align: right;
   }
   .aboutNum{
-    width: 992px;
+    width: 810px;
     height: 30px;
     line-height: 30px;
     margin-top: 10px;
@@ -1279,7 +1301,7 @@
   }
   .aboutNum span:nth-child(2),.aboutNum span:nth-child(3),.aboutNum span:nth-child(4){
     display: inline-block;
-    width: 80px;
+    width: 60px;
     float: right;
     text-align: right;
     padding: 0 10px;

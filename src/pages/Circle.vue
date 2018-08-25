@@ -50,7 +50,7 @@
                 @selection-change="handleSelectionChange">
                 <el-table-column
                 type="selection"
-                width="55">
+                width="30">
                 </el-table-column>
                 <el-table-column
                 type="index"
@@ -382,8 +382,8 @@ export default {
 
             },
             tableList: [   //表格的头部配置
+                {prop: 'status', label: '状态', width: '50', align: '',align1: 'left'},
                 {prop: 'circleName', label: '圈子', width: '100', align: '',align1: 'left'},
-                {prop: 'status', label: '状态', width: '70', align: '',align1: 'left'},
                 {prop: 'kind', label: '类型', width: '60', align: '',align1: 'left'},
                 {prop: 'codeName', label: '圈子分类', width: '80', align: '',align1: 'left'},
                 {prop: 'sort', label: '排序号', width: '70', align: 'right',align1: 'right'},
@@ -428,24 +428,13 @@ export default {
     methods:{
 
            tableRowClassName({row, rowIndex}) {
-
-               console.log(row,rowIndex)
-
-            if(row.status === '正常'){
+            if(row.status === '审核'){
                 return 'success-row';
-            }else if(row.status === '已关闭'){
+            }else if(row.status === '未审'){
                 return 'warning-row';
             }else{
                 return '';
             }
-
-
-        // if (rowIndex === 1) {
-        //   return 'warning-row';
-        // } else if (rowIndex === 3) {
-        //   return 'success-row';
-        // }
-        // return '';
       },
  
 
@@ -471,7 +460,7 @@ export default {
                         //  this.tableData = res.data.list;
                         let arr = res.data.list;
                         arr.forEach((e,index)=>{
-                            arr[index].status = e.status == 0 ? '已关闭' : '正常'
+                            arr[index].status = e.status == 0 ? '未审' : '审核'
                         })
 
                        this.tableData = JSON.parse(JSON.stringify(arr))
@@ -536,6 +525,13 @@ export default {
                 return;
             }
 
+               if(this.multipleSelection[0].status === '审核'){
+                    this.$message({
+                        type: 'warning',
+                        message: '该帖子已被审核，不允许删除!'
+                        });
+                        return;
+                    }
 
             let id = this.multipleSelection[0].cId;   //保存选中的数据的cId
 
@@ -703,8 +699,6 @@ export default {
         //弹出框的取消按钮
         cancel(formName){
             this.dialogVisible = false;
-            // this.$refs[formName].resetFields();
-            // this.imageUrl = '';
             this.disabled = false;
         },
 
@@ -754,7 +748,6 @@ export default {
      getProvince(){
          this.$get('/region/queryTrees',{}).then(res=>{
               if(res.code == 0){
-                  console.log(res.data)
                 this.provinceList = res.data;
               }
           })
@@ -765,7 +758,6 @@ export default {
           this.provinceList.forEach((val)=>{
             if(id == val.cId){
                 this.cityList = val.childList;
-                console.log(this.cityList)
                  this.form.cityId = '';
                 this.form.areaId = '';
                 this.form.countryId = '';
@@ -825,7 +817,6 @@ export default {
               this.$get('circle/queryById', {
                 circleId: this.circleId
               }).then(res => {
-                  console.log(res)
                 if(res.code == 0){
                    
                     this.form = res.data;
@@ -845,7 +836,6 @@ export default {
 
      /**start上传图片 */
       handleAvatarSuccess(res, file) {
-          console.log(file)
         this.imageUrl = URL.createObjectURL(file.raw);
         this.form.icon = file.response.data;
       },
@@ -959,20 +949,21 @@ export default {
 
 <style>
 .circle .el-table .warning-row {
-    background: oldlace;
+    /* background:#3399fb; */
+    color: red;
   }
 
 .circle .el-table .success-row {
-background: #f0f9eb;
+background: #fff;
 }
 
 
 
 
-.topSearch .el-form-item__content{
+.circle .topSearch .el-form-item__content{
     width: 100px;
 }
-.topSearch .el-date-editor{
+.circle .topSearch .el-date-editor{
     width: 220px;
 }
 .circle .table .el-table .el-table__body-wrapper{
@@ -1045,7 +1036,7 @@ display: block;
     padding-right: 15px;
 }
 .circle .aboutNum{
-    width: 665px;
+    width: 620px;
     height: 30px;
     line-height: 30px;
     margin-top: 10px;

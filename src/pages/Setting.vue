@@ -32,6 +32,7 @@
         <!-- start表格 -->
         <div class="table">
             <el-table
+                :row-class-name="tableRowClassName"
                 :max-height="height"
                 ref="multipleTable"
                 :data="tableData"
@@ -42,7 +43,7 @@
                 @selection-change="handleSelectionChange">
                 <el-table-column
                 type="selection"
-                width="55">
+                width="30">
                 </el-table-column>
                 <el-table-column
                 type="index"
@@ -229,9 +230,9 @@ export default {
               icon:''   //图标
             },
             tableList: [   //表格的头部配置
+                {prop: 'status', label: '状态', width: '80', align: ''},
                 {prop: 'category', label: '类别parent_id', width: '120', align: ''},
                 {prop: 'codeName', label: '名称', width: '80', align: ''},
-                {prop: 'status', label: '状态', width: '80', align: ''},
                 {prop: 'sort', label: '排序', width: '80', align: 'right'},
                 {prop: 'rewards', label: '打赏渔乐', width: '80', align: 'right'},
                 {prop: 'creator', label: '创建人', width: '100', align: ''},
@@ -252,6 +253,17 @@ export default {
         }
     },
     methods:{
+        //根据不同状态添加样式
+      tableRowClassName({row, rowIndex}) {
+          if(row.status === '正常'){
+              return 'success-row';
+          }else if(row.status === '已关闭'){
+              return 'warning-row';
+          }else{
+              return '';
+          }
+    },
+
         //获取圈子列表
         getCircleList(pageSize,pageNum){
             this.$post('/sysCategory/queryByRecord',{
@@ -285,6 +297,9 @@ export default {
                                  break;
                              case 35:
                                  arr[index].category = '鱼类';
+                                 break;
+                             case 36:
+                                 arr[index].category = '用户标签';
                                  break;
                            }
 
@@ -324,7 +339,7 @@ export default {
       //弹出框的确认按钮
       comfirm(form){
         let url = this.circleId ? '/sysCategory/updateSysCategory' : '/sysCategory/addSysCategory'   //如果this.circleId存在，那就是调修改接口，否则就是新增接口
-        let status = (this.form.status == '正常'                                                                              ||this.form.status == '1') ? 1 : 0;
+        let status = (this.form.status == '正常'||this.form.status == '1') ? 1 : 0;
 
         if(this.circleId){
           switch(this.form.category){
@@ -350,13 +365,13 @@ export default {
 
           console.log(this.form.category)
         }
-        if(!this.form.icon){
+        /*if(!this.form.icon){
           this.$message({
-            message: '请上传等级的图标！',
+            message: '请上传图标！',
             type: 'warning'
           });
           return;
-        }
+        }*/
 
         this.$refs[form].validate((valid)=>{
           if(valid){
@@ -435,8 +450,7 @@ export default {
             this.dialogVisible = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
             let data = this.multipleSelection[0];
-
-            console.log(data)
+            
             if(this.circleId){
               this.form = data;
               this.imageUrl = this.form.iconUrl;
@@ -595,10 +609,10 @@ export default {
 
 
 <style>
-.topSearch .el-form-item__content{
+.setting .topSearch .el-form-item__content{
     width: 100px;
 }
-.topSearch .el-date-editor{
+.setting .topSearch .el-date-editor{
     width: 220px;
 }
 .setting .table .el-table .el-table__body-wrapper{
@@ -642,6 +656,15 @@ export default {
 .setting .el-upload__tip{
     text-align: right;
 }
+
+ .setting .el-table .warning-row {
+    /* background:#3399fb; */
+    color: red;
+  }
+
+  .setting .el-table .success-row {
+    background: #fff;
+ }
 </style>
 
 <style scoped>

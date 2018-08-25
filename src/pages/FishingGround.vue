@@ -315,9 +315,7 @@
                       </el-col>
                       <el-col :span="8">
                           <el-form-item label="管理人：">
-                            <!-- <el-input v-model="form.manager"></el-input> -->
-
-                            <el-select v-model="form.manager" placeholder="管理人">
+                            <el-select v-model="form.manager" placeholder="管理人" filterable>
                                 <el-option :label="item.nickname" :value="item.cId" v-for="item in managerList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
@@ -1008,10 +1006,10 @@ export default {
 
 
 <style>
-.topSearch .el-form-item__content{
+.fishingGround .topSearch .el-form-item__content{
     width: 100px;
 }
-.topSearch .el-date-editor{
+.fishingGround .topSearch .el-date-editor{
     width: 220px;
 }
 .fishingGround .table .el-table .el-table__body-wrapper{

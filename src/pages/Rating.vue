@@ -31,6 +31,7 @@
         <!-- start表格 -->
         <div class="table">
             <el-table
+                :row-class-name="tableRowClassName"
                 :max-height="height"
                 ref="multipleTable"
                 :data="tableData"
@@ -157,7 +158,7 @@
                 </el-row>
                  <el-row>
                   <el-col :span="12">
-                     <el-form-item label="等级名称：" prop="name">
+                     <el-form-item label="名称：" prop="name">
                           <el-input v-model="form.name"></el-input>
                      </el-form-item>
                   </el-col>
@@ -174,6 +175,7 @@
                             <el-option label="钓友" value="1"></el-option>
                             <el-option label="农家乐" value="2"></el-option>
                             <el-option label="渔具店" value="3"></el-option>
+                            <el-option label="头衔" value="4"></el-option>
                             </el-select>
                         </el-form-item>
                   </el-col>
@@ -280,18 +282,15 @@ export default {
               { required: true, message: '类型不能为空，请选择', trigger: 'change' }
             ],
             level:[
-              { required: true, message: '等级不能为空，请输入', trigger: 'blur' },
-              {pattern: /^([0-9][0-9]{0,1}|100)$/, message: '等级必须是数字0-100', trigger: 'blur' }
+            //   { required: true, message: '等级不能为空，请输入', trigger: 'blur' },
+              {pattern: /^([0-9][0-9]{0,1}|100)$/, message: '等级必须是数字0-100', trigger: 'blur', required: false}
             ],
-            score: [{
-                type: 'number',
-                trigger: 'blur',
-                required: false,
-                message: '升级分值必须为数字值'
-            }]
+            score: [
+                {type: 'number',trigger: 'blur',required: false, message: '升级分值必须为数字值'}
+            ]
           },
             tableList: [   //表格的头部配置
-                {prop: 'status', label: '状态', width: '60', align: '',align1: 'left'},
+                {prop: 'status', label: '状态', width: '80', align: '',align1: 'left'},
                 {prop: 'type', label: '类型', width: '80', align: '',align1: 'left'},
                 {prop: 'level', label: '等级', width: '60', align: 'right',align1: 'right'},
                 {prop: 'name', label: '名称', width: '100', align: '',align1: 'left'},
@@ -307,6 +306,18 @@ export default {
         }
     },
     methods:{
+
+        //根据不同状态添加样式
+      tableRowClassName({row, rowIndex}) {
+          if(row.status === '正常'){
+              return 'success-row';
+          }else if(row.status === '已关闭'){
+              return 'warning-row';
+          }else{
+              return '';
+          }
+    },
+
         //获取所有等级列表
         getRatingList(pageSize,pageNum){
 
@@ -692,6 +703,15 @@ display: block;
 .rating .el-upload__tip{
     text-align: right;
 }
+
+ .rating .el-table .warning-row {
+    /* background:#3399fb; */
+    color: red;
+  }
+
+  .rating .el-table .success-row {
+    background: #fff;
+ }
 </style>
 
 <style scoped>

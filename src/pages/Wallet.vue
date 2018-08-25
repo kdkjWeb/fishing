@@ -234,10 +234,10 @@ export default {
 </script>
 
 <style>
-.topSearch .el-form-item__content{
+.giveUp .topSearch .el-form-item__content{
     width: 100px;
 }
-.topSearch .el-date-editor{
+.giveUp .topSearch .el-date-editor{
     width: 220px;
 }
 .giveUp .table .el-table .el-table__body-wrapper{

@@ -288,7 +288,7 @@ export default {
     padding: 0 40px;
     box-sizing: border-box;
 }
-.topSearch{
+.area .topSearch{
     margin-bottom: 20px;
 }
 .content{
