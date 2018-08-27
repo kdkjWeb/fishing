@@ -16,8 +16,8 @@
                         </el-form-item>
                          <el-form-item label="帖子状态：">
                             <el-select clearable v-model="formInline.postStatus" placeholder="帖子状态">
-                            <el-option label="正常" value="1"></el-option>
-                            <el-option label="禁用" value="0"></el-option>
+                            <el-option label="审核" value="1"></el-option>
+                            <el-option label="待审" value="0"></el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="评论状态：">
@@ -154,9 +154,9 @@ export default {
     },
     methods: {
         tableRowClassName({row, rowIndex}) {
-          if(row.status === '正常'){
+          if(row.cityName === '审核'){
               return 'success-row';
-          }else if(row.status === '禁用'){
+          }else if(row.cityName === '待审'){
               return 'warning-row';
           }else{
               return '';
@@ -184,7 +184,7 @@ export default {
                         let arr = res.data.list;
                         arr.forEach((e,index)=>{
                             arr[index].status = e.status == 1 ? '正常' : '禁用';
-                            arr[index].cityName = e.cityName == 1 ? '正常' : '禁用';
+                            arr[index].cityName = e.cityName == 1 ? '审核' : '待审';
                             if(e.countryId == 0){
                                 arr[index].countryId = '超级管理员'
                             }else if(e.countryId == 1){
@@ -210,10 +210,8 @@ export default {
                                 this.allNum.viewCount +=parseInt(val.likedNum);
                             })
                         })
-                    }
 
-
-                      this.$nextTick(function(){
+                        this.$nextTick(function(){
                             this.checked();//每次更新了数据，触发这个函数即可。
 
                               //判读审核、取消审核按钮哪一个可以点
@@ -223,6 +221,10 @@ export default {
                                 this.disabled = true;
                             }
                         })
+                    }
+
+
+                      
                 }
             })
         },

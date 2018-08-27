@@ -102,7 +102,7 @@
                         <el-form-item label="类别：" prop="category">
                             <el-select v-model="form.category" placeholder="类别">
                                 <el-option
-                                  v-for="data,index in parentList"
+                                  v-for="(data,index) in parentList"
                                   :label="data.codeName"
                                   :value="data.cId"
                                   :key="index"></el-option>
@@ -123,7 +123,7 @@
                         </el-form-item>
                       </el-col>
                        <el-col :span="24">
-                        <el-form-item label="排序：">
+                        <el-form-item label="排序：" :error="errMsg">
                             <el-input v-model="form.sort"></el-input>
                         </el-form-item>
                       </el-col>
@@ -142,6 +142,7 @@
                         :action="`${this.$store.state.baseUrl}common/uploadOssPic`"
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
+                        :headers="myHeaders"
                         name="picture"
                         :before-upload="beforeAvatarUpload">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
@@ -202,6 +203,10 @@
 export default {
     data(){
         return{
+            myHeaders: {     //上传图片携带token
+                    token: ''
+                },
+            errMsg: '',
             height:0,
             dialogVisible: false,   //弹出框是否显示
             imageUrl: '',  //上传图片显示
@@ -374,6 +379,10 @@ export default {
 
         this.$refs[form].validate((valid)=>{
           if(valid){
+               if(!Number.isInteger(parseInt(this.form.sort))&&this.form.sort!= undefined){
+                    this.errMsg = '请输入数字';
+                    return;
+                }
             this.$post(url,{
               cId: this.circleId ? this.circleId : null,
               category:this.form.category,  //类别
@@ -450,10 +459,21 @@ export default {
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
             let data = this.multipleSelection[0];
 
-            if(this.circleId){
-              this.form = data;
-              this.imageUrl = this.form.iconUrl;
-            }
+            // console.log(data)
+            this.$get('/sysCategory/queryById',{
+                sysCategoryId: this.circleId
+            }).then(res=>{
+                if(res.code == 0){
+                    if(this.circleId){
+                        this.form = res.data;
+                        this.form.category = res.data.category + '';
+                        this.form.status = res.data.status + '';
+                        this.imageUrl = this.form.iconUrl;
+                        }
+                }
+            })
+
+            
         },
 
         //导出
@@ -572,6 +592,7 @@ export default {
         handleAvatarSuccess(res, file) {
          this.imageUrl = URL.createObjectURL(file.raw);
          this.form.icon = file.response.data;
+   
         },
         beforeAvatarUpload(file) {
           const isJPG = file.type === 'image/jpeg';
@@ -585,10 +606,13 @@ export default {
             this.$message.error('上传图片大小不能超过 2MB!');
           }
           return (isJPG || isPNG) && isLt2M;
-        }
+        },
        /**end上传图片 */
     },
     mounted(){
+     if(this.$store.state.token){
+            this.myHeaders.token = this.$store.state.token
+        }
       window.addEventListener('resize', ()=>{
         this.height = window.innerHeight - 240;
       })

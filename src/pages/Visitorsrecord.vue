@@ -103,7 +103,7 @@ export default {
             tableList: [   //表格的头部配置
             
                 {prop: 'visitor', label: '访客', width: '100', align: ''},
-                {prop: 'userId', label: '被访问者', width: '100', align: ''},
+                {prop: 'userId', label: '被访人', width: '100', align: ''},
                 {prop: 'cdate', label: '收藏时间', width: '160', align: 'right'},
                 {prop: '', label: '', width: '', align: ''}
             ],

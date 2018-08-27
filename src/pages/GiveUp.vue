@@ -112,7 +112,7 @@ export default {
                 date: ''
             },
             tableList: [   //表格的头部配置
-                {prop: 'commentId', label: '被点赞ID', width: '150', align: ''},
+                {prop: 'commentId', label: '帖子标题', width: '400', align: ''},
                 {prop: 'userId', label: '点赞人', width: '120', align: ''},
                 {prop: 'phone', label: '手机号', width: '120', align: 'right'},
                 {prop: 'cdate', label: '点赞时间', width: '160', align: 'right'},

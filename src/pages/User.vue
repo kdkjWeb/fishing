@@ -973,6 +973,14 @@ export default {
       handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);
         this.form.icon = file.response.data;
+        if(res.code == 602){
+            this.$message.error(res.msg);
+            setTimeout(()=>{
+                this.$router.push({
+                    name: 'login'
+                })
+            },1500)
+            }
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';

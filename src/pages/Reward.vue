@@ -5,11 +5,11 @@
             <el-row>
                 <el-col :span="14">
                     <el-form :inline="true" :model="formInline" class="demo-form-inline" size="mini">
-                        <el-form-item label="收款人：">
-                            <el-input clearable v-model="formInline.getter" placeholder="收款人"></el-input>
+                        <el-form-item label="用户：">
+                            <el-input clearable v-model="formInline.getter" placeholder="用户"></el-input>
                         </el-form-item>
-                        <el-form-item label="付款人：">
-                            <el-input clearable v-model="formInline.payer" placeholder="付款人"></el-input>
+                        <el-form-item label="打赏人：">
+                            <el-input clearable v-model="formInline.payer" placeholder="打赏人"></el-input>
                         </el-form-item>
                         <el-form-item label="手机号：">
                             <el-input clearable v-model="formInline.phone" placeholder="手机号"></el-input>

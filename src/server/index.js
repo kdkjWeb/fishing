@@ -29,17 +29,26 @@ Axios.interceptors.request.use(
 
 
 // http response 拦截器
-/*Axios.interceptors.response.use(
+Axios.interceptors.response.use(
     response =>{
-        console.log(response)
+        //如果返回602  需要重新登录
+        if(response.code == 602){
+            this.$message.error(response.msg);
+            setTimeout(()=>{
+                this.$router.push({
+                    name: 'login'
+                })
+            },1500)
+            }
         return response;
     },
     err =>{
+        console.log(err)
         if(err.response){
-            console.log(err)
+            
         }
     }
-)*/
+)
 
 
 

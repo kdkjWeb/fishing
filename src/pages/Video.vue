@@ -118,7 +118,7 @@
               <el-col :span="24">
                 <el-row>
                   <el-col :span="24">
-                    <el-form-item label="圈子：" prop="title">
+                    <el-form-item label="标题：" prop="title">
                       <el-input v-model="form.title"></el-input>
                     </el-form-item>
                   </el-col>
@@ -157,8 +157,8 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="排序号：" prop="sort">
-                      <el-input v-model="form.sort"></el-input>
+                    <el-form-item label="排序号：" prop="sort" :error="errMsg">
+                      <el-input v-model="form.sort" placeholder="请输入数字"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
@@ -186,7 +186,7 @@
                         <el-option
                           v-for="(item,index) in videoList"
                           :label="item.codeName"
-                          :value="item.codeName"
+                          :value="item.cId"
                           :key="index"></el-option>
                       </el-select>
                     </el-form-item>
@@ -370,6 +370,7 @@
       ElRow},
     data(){
       return{
+        errMsg: '',
         height: '',
         video: '',
         allNum: {
@@ -672,6 +673,12 @@
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/videoTopic/updateVideoTopic' : 'videoTopic/addVideoTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           if(valid){
+            console.log(this.form.sort)
+             if(!Number.isInteger(parseInt(this.form.sort))&&(this.form.sort!= undefined)){
+               console.log(1)
+                  this.errMsg = '请输入数字';
+                  return;
+               }
             this.$post(url,{
               cId: this.circleId ? this.circleId : null,
               title:this.form.title,  //标题、圈子
@@ -729,11 +736,11 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$get('/videoTopic/falseDeleteBasicTopic',{
+          this.$get('/videoTopic/deleteVideoTopic',{
             topicId: id
           }).then(res=>{
             if(res.code == 0){
-              this.tableData.forEach((val,index)=>{
+              /*this.tableData.forEach((val,index)=>{
                 if(val.cId == id){
                   this.tableData.splice(index,1)
                   this.total -=1;
@@ -742,11 +749,31 @@
                     message: '删除成功!'
                   });
                 }
-              })
+              })*/
+               this.$message({
+                    type: 'success',
+                    message: '删除成功!'
+                  });
+
+              //获取所有帖子列表 /basicTopic/queryCommon
+              this.getPostList();
               //表格第一行默认选中
               this.$nextTick(()=>{
                     this.checked();
               })
+            }else if(res.code == 500){
+              this.$message({
+                    type: 'warning',
+                    message: res.msg
+                  });
+              //获取所有帖子列表 /basicTopic/queryCommon
+              this.getPostList();
+              
+              //表格第一行默认选中
+              this.$nextTick(()=>{
+                    this.checked();
+              })
+              
             }
           })
         }).catch(() => {
@@ -773,12 +800,14 @@
          topicId: this.circleId
        }).then(res=>{
          if(res.code == 0){
+           console.log(res)
            this.form = res.data;
            this.form.title = res.data.title;
            this.form.number = this.rowIndex;
            this.form.isTop = res.data.isTop + '';
            this.form.isBest = res.data.isBest + '';
            this.form.status = res.data.status + '';
+          //  this.form.videoCategoryId = res.data.videoCategoryId + '';
            this.video = this.form.topicContentList[0];
          }
        })
@@ -833,55 +862,57 @@
           {prop: 'commentUser.phone', label: '手机号', width: '120', align: 'right'},
           {prop: 'commentUser.role', label: '用户类别', width: '', align: ''},
         ]
-        this.$post('/comments/getCommentList',{
-          pid:this.multipleSelection[0].cId,
-          type:4
-        }).then(res=>{
-          res.data.forEach((val)=>{
-            //判读审核、取消审核按钮哪一个可以点
-            val.status = val.status==1? '正常':'禁用';
-            val.userId = val.commentUser.nickname;
+        if(this.multipleSelection[0] != undefined){
+             this.$post('/comments/getCommentList',{
+              pid:this.multipleSelection[0].cId,
+              type:4
+            }).then(res=>{
+              res.data.forEach((val)=>{
+                //判读审核、取消审核按钮哪一个可以点
+                val.status = val.status==1? '正常':'禁用';
+                val.userId = val.commentUser.nickname;
 
-            switch(val.type){
-              case 1:
-                val.type = '帖子评论';
-                break;
-              case 2:
-                val.type = '店铺评论';
-                break;
-              case 11:
-                val.type = '帖子评论的回复';
-                break;
-              case 21:
-                val.type = '店铺评论的回复';
-                break;
-            };
+                switch(val.type){
+                  case 1:
+                    val.type = '帖子评论';
+                    break;
+                  case 2:
+                    val.type = '店铺评论';
+                    break;
+                  case 11:
+                    val.type = '帖子评论的回复';
+                    break;
+                  case 21:
+                    val.type = '店铺评论的回复';
+                    break;
+                };
 
-            switch(val.commentUser.role){
-              case 0:
-                val.commentUser.role = '超级管理员';
-                break;
-              case 1:
-                val.commentUser.role = '管理员';
-                break;
-              case 2:
-                val.commentUser.role = '钓友';
-                break;
-              case 3:
-                val.commentUser.role = '农家乐';
-                break;
-              default:
-                val.commentUser.role = '渔具店';
-                break;
-            };
-          })
-          this.commentData = res.data;
+                switch(val.commentUser.role){
+                  case 0:
+                    val.commentUser.role = '超级管理员';
+                    break;
+                  case 1:
+                    val.commentUser.role = '管理员';
+                    break;
+                  case 2:
+                    val.commentUser.role = '钓友';
+                    break;
+                  case 3:
+                    val.commentUser.role = '农家乐';
+                    break;
+                  default:
+                    val.commentUser.role = '渔具店';
+                    break;
+                };
+              })
+              this.commentData = res.data;
 
-          this.$nextTick(function(){
-            this.check();//每次更新了数据，触发这个函数即可。
-          })
+              this.$nextTick(function(){
+                this.check();//每次更新了数据，触发这个函数即可。
+              })
 
-        })
+            })
+        }
 
       },
 
@@ -896,13 +927,60 @@
           {prop: '', label: '', width: '', align: ''}
         ]
 
-        this.$post('liked/getAllLList',{
-          commentId: this.multipleSelection[0].cId,
-          type:4
-        }).then(res=>{
-          if(res.code == 0){
-            res.data.list.forEach((val)=>{
-              switch(val.role){
+        if(this.multipleSelection[0] != undefined){
+          this.$post('liked/getAllLList',{
+            commentId: this.multipleSelection[0].cId,
+            type:4
+          }).then(res=>{
+            if(res.code == 0){
+              res.data.list.forEach((val)=>{
+                switch(val.role){
+                  case 0:
+                    val.role = '超级管理员';
+                    break;
+                  case 1:
+                    val.role = '管理员';
+                    break;
+                  case 2:
+                    val.role = '钓友';
+                    break;
+                  case 3:
+                    val.role = '农家乐';
+                    break;
+                  default:
+                    val.role = '渔具店';
+                    break;
+                };
+              })
+              this.commentData = res.data.list;
+
+              this.$nextTick(function(){
+                this.check();//每次更新了数据，触发这个函数即可。
+              })
+            }
+          })
+        }
+      },
+
+      //打赏明细
+      praiseTheDetailClick(){
+        this.commentShow = false;
+        this.commentList = [   //表格的头部配置
+          {prop: 'payer', label: '打赏人', width: '100', align: ''},
+          {prop: 'num', label: '打赏金额', width: '100', align: 'right'},
+          {prop: 'cdate', label: '打赏时间', width: '180', align: 'right'},
+          {prop: 'phone', label: '手机号', width: '120', align: 'right'},
+          {prop: 'type', label: '用户类别', width: '100', align: ''},
+          {prop: '', label: '', width: '', align: ''}
+        ];
+
+        if(this.multipleSelection[0] != undefined){
+          this.$post('scorecoin/getAllCoinList',{
+            topicId:this.multipleSelection[0].cId,
+            type:'打赏'
+          }).then(res=>{
+            res.data.list.forEach((val)=> {
+              switch (val.role) {
                 case 0:
                   val.role = '超级管理员';
                   break;
@@ -918,58 +996,15 @@
                 default:
                   val.role = '渔具店';
                   break;
-              };
+              }
             })
             this.commentData = res.data.list;
-
             this.$nextTick(function(){
               this.check();//每次更新了数据，触发这个函数即可。
             })
-          }
-        })
-      },
 
-      //打赏明细
-      praiseTheDetailClick(){
-        this.commentShow = false;
-        this.commentList = [   //表格的头部配置
-          {prop: 'payer', label: '打赏人', width: '100', align: ''},
-          {prop: 'num', label: '打赏金额', width: '100', align: 'right'},
-          {prop: 'cdate', label: '打赏时间', width: '180', align: 'right'},
-          {prop: 'phone', label: '手机号', width: '120', align: 'right'},
-          {prop: 'type', label: '用户类别', width: '100', align: ''},
-          {prop: '', label: '', width: '', align: ''}
-        ];
-
-        this.$post('scorecoin/getAllCoinList',{
-          topicId:this.multipleSelection[0].cId,
-          type:'打赏'
-        }).then(res=>{
-          res.data.list.forEach((val)=> {
-            switch (val.role) {
-              case 0:
-                val.role = '超级管理员';
-                break;
-              case 1:
-                val.role = '管理员';
-                break;
-              case 2:
-                val.role = '钓友';
-                break;
-              case 3:
-                val.role = '农家乐';
-                break;
-              default:
-                val.role = '渔具店';
-                break;
-            }
           })
-          this.commentData = res.data.list;
-          this.$nextTick(function(){
-            this.check();//每次更新了数据，触发这个函数即可。
-          })
-
-        })
+        }
       },
 
       //多选框选中之后存放的数据
@@ -1129,18 +1164,27 @@
       handleVideoSuccess(res, file){
         this.videoUploadPercent = 100;
         this.videoPath = URL.createObjectURL(file.raw);
-//        this.form.videoUrl = res.data;
 
-        this.$message({
-          message:'上传视频成功',
-          type: 'success',
-        });
+        if(res.code == 0){
+            this.$message({
+              message:'上传视频成功',
+              type: 'success',
+            });
 
-        this.form.topicContentList=[{
-          contentType:3,
-          content:res.data,
-          sort:1
-        }]
+          this.form.topicContentList=[{
+            contentType:3,
+            content:res.data,
+            sort:1
+          }]
+        }else if(res.code == 602){
+           this.$message.error(res.msg);
+            setTimeout(()=>{
+                this.$router.push({
+                    name: 'login'
+                })
+            },1500)
+        }
+        
       },
     },
     created(){
@@ -1216,9 +1260,8 @@
     /*text-align: right;*/
     margin-left:80px;
   }
-  #post .el-table th, .el-table tr{
-    /*background: #EFEFEF;*/
-  }
+ 
+ 
 
   #post.avatar-uploader .el-upload {
     border: 1px dashed #d9d9d9;

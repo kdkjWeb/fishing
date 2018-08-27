@@ -165,8 +165,8 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="排序号：" prop="showSort">
-                        <el-input v-model.number="form.showSort" placeholder="请输入数字（置顶大于排序号）"></el-input>
+                    <el-form-item label="排序号：" prop="showSort" :error="errMsg">
+                        <el-input v-model="form.showSort" placeholder="请输入数字（置顶大于排序号）"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
@@ -411,6 +411,17 @@
                     <el-input v-model="form.publishTime" disabled></el-input>
                 </el-form-item>
               </el-col>
+              <!-- <el-col :span="8">
+                <el-form-item label="创建人：" >
+                  <el-select v-model="form.authorId"  filterable>
+                    <el-option
+                      v-for="(item,index) in userList"
+                      :label="item.nickname"
+                      :value="item.cId"
+                      :key="index"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col> -->
             </el-row>
             <el-row>
               <el-col :span="8">
@@ -524,7 +535,7 @@
       <div style="padding-right: 20px;">
         <div class="table">
           <el-table
-            height="300"
+            max-height="height"
             ref="multiple"
             :data="commentData"
             tooltip-effect="dark"
@@ -565,17 +576,16 @@
 </template>
 
 <script>
-  import ElRow from "element-ui/packages/row/src/row";
-  import ElCol from "element-ui/packages/col/src/col";
+
   export default {
-    components: {
-      ElCol,
-      ElRow},
+ 
     data(){
           return{
+            height: '',
+            errMsg: '',
             isDesable: false,
             allNum: {
-              commentNum: 0,   //评论总数 mmm m
+              commentNum: 0,   //评论总数
               collects: 0,    //收藏总数
               clickNum: 0   //点赞总数
             },
@@ -659,12 +669,12 @@
               topicType:[
                 { required: true, message: '请选择类型', trigger: 'change' },
               ], 
-              showSort: [{
+              /*showSort: [{
                         type: 'number',
                         trigger: 'blur',
                         required: false,
                         message: '排序号必须为数字值'
-                }]
+                }]*/
             },
             multipleSelection: [],   //存放勾选的数据
             multipleComment:[],
@@ -1025,6 +1035,14 @@
           this.topicContentArr[this.topicContentArr.length - 1].imageUrl = URL.createObjectURL(file.raw);
           this.topicContentArr[this.topicContentArr.length - 1].content = file.response.data;
         }
+         if(res.code == 602){
+            this.$message.error(res.msg);
+            setTimeout(()=>{
+                this.$router.push({
+                    name: 'login'
+                })
+            },1500)
+          }
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
@@ -1084,6 +1102,10 @@
       
 
             if(valid){
+               if(!Number.isInteger(parseInt(this.form.showSort))&&this.form.showSort!= undefined){
+                  this.errMsg = '请输入数字';
+                  return;
+               }
                 this.$post(url,{
                   cId: this.circleId ? this.circleId : null,
                   title: this.form.title,  //标题、圈子
@@ -1294,7 +1316,9 @@
           {prop: 'commentUser.phone', label: '手机号', width: '120', align: 'right'},
           {prop: 'commentUser.role', label: '用户类别', width: '', align: ''},
         ]
-        this.$post('/comments/getCommentList',{
+        if(this.multipleSelection[0] != undefined){
+     
+            this.$post('/comments/getCommentList',{
             pid:this.multipleSelection[0].cId,
             type:1
         }).then(res=>{
@@ -1345,6 +1369,9 @@
           })
 
         })
+        }
+
+        
 
       },
 
@@ -1359,7 +1386,8 @@
           {prop: '', label: '', width: '', align: ''}
         ]
 
-        this.$post('liked/getAllLList',{
+       if(this.multipleSelection[0] != undefined){
+          this.$post('liked/getAllLList',{
             commentId: this.multipleSelection[0].cId,
               type:3
         }).then(res=>{
@@ -1386,6 +1414,7 @@
               this.commentData = res.data.list;
             }
         })
+       }
       },
 
       //打赏明细
@@ -1400,33 +1429,35 @@
           {prop: '', label: '', width: '', align: ''}
         ];
 
-        this.$post('scorecoin/getAllCoinList',{
-          topicId:this.multipleSelection[0].cId,
-            type:'打赏'
-        }).then(res=>{
-            res.data.list.forEach((val)=> {
-              switch (val.role) {
-                case 0:
-                  val.role = '超级管理员';
-                  break;
-                case 1:
-                  val.role = '管理员';
-                  break;
-                case 2:
-                  val.role = '钓友';
-                  break;
-                case 3:
-                  val.role = '农家乐';
-                  break;
-                default:
-                  val.role = '渔具店';
-                  break;
-              }
+        if(this.multipleSelection[0] != undefined){
+          this.$post('scorecoin/getAllCoinList',{
+            topicId:this.multipleSelection[0].cId,
+              type:'打赏'
+          }).then(res=>{
+              res.data.list.forEach((val)=> {
+                switch (val.role) {
+                  case 0:
+                    val.role = '超级管理员';
+                    break;
+                  case 1:
+                    val.role = '管理员';
+                    break;
+                  case 2:
+                    val.role = '钓友';
+                    break;
+                  case 3:
+                    val.role = '农家乐';
+                    break;
+                  default:
+                    val.role = '渔具店';
+                    break;
+                }
 
-            })
-            this.commentData = res.data.list;
+              })
+              this.commentData = res.data.list;
 
-        })
+          })
+        }
       },
 
       //多选框选中之后存放的数据
@@ -1658,7 +1689,14 @@
             }
         }
     },
+    created(){
+      this.height = window.innerHeight - 674;
+    },
     mounted(){
+       window.addEventListener('resize', ()=>{
+             this.height = window.innerHeight - 674;
+        })
+
       //获取所有帖子列表 /basicTopic/queryCommon
       this.getPostList();
       //表格第一行默认选中

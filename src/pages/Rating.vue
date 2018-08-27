@@ -42,7 +42,7 @@
                 @selection-change="handleSelectionChange">
                 <el-table-column
                 type="selection"
-                width="55">
+                width="30">
                 </el-table-column>
                 <el-table-column
                 type="index"
@@ -98,7 +98,7 @@
 
         <!-- start弹出框 -->
         <el-dialog
-        title="等级-新增用户等级"
+        title="等级"
         :visible.sync="dialogVisible"
         top="8vh"
         width="600px">
@@ -426,6 +426,11 @@ export default {
                   type: 'success',
                 });
                 this.getRatingList();
+              }else{
+                  this.$message({
+                  message:res.msg,
+                  type: 'warning',
+                });
               }
             })
           } else {
@@ -616,7 +621,15 @@ export default {
      /**start上传图片 */
       handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);
-       this.form.icon = file.response.data;
+        this.form.icon = file.response.data;
+        if(res.code == 602){
+            this.$message.error(res.msg);
+            setTimeout(()=>{
+                this.$router.push({
+                    name: 'login'
+                })
+            },1500)
+            }
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';

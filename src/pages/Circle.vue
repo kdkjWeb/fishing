@@ -120,16 +120,16 @@
                         <el-col :span="12">
                             <el-form-item label="状态：" prop="status">
                                 <el-select v-model="form.status" placeholder="状态">
-                                <el-option label="正常" value="1"></el-option>
-                                <el-option label="已关闭" value="0"></el-option>
+                                <el-option label="审核" value="1"></el-option>
+                                <el-option label="待审" value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
                         </el-row>
                         <el-row>
                        <el-col :span="12">
-                            <el-form-item label="排序号：" prop="sort">
-                                <el-input v-model.number="form.sort" placeholder="请输入数字"></el-input>
+                            <el-form-item label="排序号：" prop="sort" :error="errMsg">
+                                <el-input v-model="form.sort" placeholder="请输入数字"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="12">
@@ -325,6 +325,7 @@
 export default {
     data(){
         return{
+            errMsg: '',
             allNum: {
                 commentCount: 0,   //总评论数
                 viewCount: 0,    //总阅读数
@@ -416,12 +417,12 @@ export default {
                 remark: [
                      { required: false, min: 0, max: 200, message: '长度在 0 到 200 个字符', trigger: 'blur' }
                 ],
-                sort: [{
+                /*sort: [{
                     type: 'number',
                     trigger: 'blur',
                     required: false,
                     message: '排序号必须为数字值'
-                }]
+                }]*/
             }
         }
     },
@@ -650,6 +651,10 @@ export default {
 
             this.$refs[formName].validate((valid)=>{
                 if(valid){
+                    if(!Number.isInteger(parseInt(this.form.sort))&&this.form.sort!= undefined){
+                            this.errMsg = '请输入数字';
+                            return;
+                        }
                     let url = this.circleId ? 'circle/updateCircle' : 'circle/addCircle'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
                     let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
                     this.$post(url,{
@@ -838,6 +843,14 @@ export default {
       handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);
         this.form.icon = file.response.data;
+        if(res.code == 602){
+            this.$message.error(res.msg);
+            setTimeout(()=>{
+                this.$router.push({
+                    name: 'login'
+                })
+            },1500)
+         }
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';

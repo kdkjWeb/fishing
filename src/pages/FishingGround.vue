@@ -50,7 +50,7 @@
                 @selection-change="handleSelectionChange">
                 <el-table-column
                 type="selection"
-                width="55">
+                width="30">
                 </el-table-column>
                 <el-table-column
                 type="index"
@@ -128,7 +128,7 @@
                         </el-row>
                         <el-row>
                        <el-col :span="12">
-                            <el-form-item label="排序号：">
+                            <el-form-item label="排序号：" :error="errMsg">
                                 <el-input v-model="form.position"></el-input>
                             </el-form-item>
                         </el-col>
@@ -151,7 +151,7 @@
                         <el-col :span="12">
                              <el-form-item label="圈子分类：" prop="type" ref="type">
                                 <el-select v-model="form.type" placeholder="圈子分类">
-                                <el-option :label="item.codeName" :value="item.cId" v-for="item in codeNameList" :key="item.cId"></el-option>
+                                <el-option :label="item.codeName" :value="item.codeName" v-for="item in codeNameList" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
@@ -377,6 +377,7 @@
 export default {
     data(){
         return{
+            errMsg: '',
             disabled: false,   //是否禁止填写
             myHeaders: {     //上传图片携带token
                     token: ''
@@ -442,11 +443,11 @@ export default {
             tableList: [   //表格的头部配置
                 {prop: 'name', label: '钓场', width: '90', align: '',align1: 'left'},
                 {prop: 'ispass', label: '审核状态', width: '90', align: ''},
-                {prop: 'type', label: '类型', width: '80', align: ''},
+                {prop: 'ownertype', label: '类型', width: '60', align: ''},
                 {prop: 'type', label: '钓场分类', width: '80', align: ''},
                 {prop: 'position', label: '排序号', width: '70', align: 'right'},
-                {prop: 'topicNum', label: '贴子', width: '80', align: 'right'},
-                {prop: 'attentionNum', label: '成员', width: '80', align: 'right'},
+                {prop: 'topicNum', label: '贴子', width: '60', align: 'right'},
+                {prop: 'attentionNum', label: '成员', width: '60', align: 'right'},
                 {prop: 'location', label: '详细地址', width: '', align: ''},
                 {prop: 'manager', label: '管理人', width: '100', align: ''},
                 {prop: 'cUser', label: '创建人', width: '100', align: ''},
@@ -459,7 +460,7 @@ export default {
             rules: {
                 name: [
                       { required: true, message: '请输入钓场名称', trigger: 'blur' },
-                      { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+                      { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
                 ],
                 phone: [
                     { required: true, message: '电话号码不能为空', trigger: 'blur'},
@@ -509,20 +510,16 @@ export default {
                                 arr[index].ispass = '不通过'
                             }
 
-                            this.tableData = JSON.parse(JSON.stringify(arr))
-                            this.total = res.data.total;
                         })
+                         this.tableData = JSON.parse(JSON.stringify(arr))
+                            this.total = res.data.total;
                     }
 
                       this.$nextTick(function(){
                         this.checked();//每次更新了数据，触发这个函数即可。
                     })
 
-                     /*this.tableData = res.data.list;
-                     this.$nextTick(function(){
-                        this.checked();//每次更新了数据，触发这个函数即可。
-                    })
-                    this.total = res.data.total;*/
+              
                 }
             })
         },
@@ -619,13 +616,13 @@ export default {
         },
         //修改
         edit(){
-            /*if(this.multipleSelection.length != 1){
+            if(this.multipleSelection.length != 1){
                 this.$message({
                 message: '请选择一条需要修改的数据！',
                 type: 'warning'
                 });
                 return;
-            }*/
+            }
             this.dialogVisible = true;
             this.disabled = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
@@ -732,6 +729,10 @@ export default {
 
                  this.$refs[formName].validate((valid)=>{
                 if(valid){
+                    if(!Number.isInteger(parseInt(this.form.position))&&this.form.position!= undefined){
+                            this.errMsg = '请输入数字';
+                            return;
+                        }
                     let url = this.circleId ? 'fishplace/updateFishplace' : 'fishplace/addFishplace'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
                     // let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
                     this.$post(url,{
@@ -759,7 +760,8 @@ export default {
                         location: this.form.location,
                         remark: this.form.remark,
                         detailsRule: this.form.detailsRule,
-                        icon: this.form.icon
+                        icon: this.form.icon,
+                        position: this.form.position
                     }).then(res=>{
                         if(res.code == 0){
                             //隐藏dialog框
@@ -827,7 +829,7 @@ export default {
      //获取圈子分类列表
      getCodeName(){
          this.$post('sysCategory/queryByCategory',{
-             category: 32
+             category: 30
          }).then(res=>{
              this.codeNameList = res.data;
          })
@@ -914,6 +916,14 @@ export default {
       handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);
         this.form.icon = file.response.data;
+        if(res.code == 602){
+            this.$message.error(res.msg);
+            setTimeout(()=>{
+                this.$router.push({
+                    name: 'login'
+                })
+            },1500)
+            }
       },
       beforeAvatarUpload(file) {
         const isJPG = file.type === 'image/jpeg';
@@ -1048,6 +1058,9 @@ display: block;
 
 .fishingGround .el-upload__tip{
     text-align: right;
+}
+.fishingGround .el-textarea__inner{
+    font-family: "Microsoft YaHei"; 
 }
 </style>
 
