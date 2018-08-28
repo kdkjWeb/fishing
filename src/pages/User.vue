@@ -275,7 +275,7 @@
                       </el-col>
                       <el-col :span="8">
                            <el-form-item label="用户组：">
-                            <el-input v-model="form.level" :disabled="disabled1"></el-input>
+                            <el-input v-model="form.level"></el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
@@ -704,7 +704,7 @@ export default {
                 this.form.targetFish = this.form.targetFish ? this.form.targetFish.split(',') : [];
                 this.form.fishWay = this.form.fishWay ? this.form.fishWay.split(',') : [];
                 this.form.bait = this.form.bait ? this.form.bait.split(',') : [];
-
+                this.imageUrl = res.data.iconUrl;
 
                 if(res.data.role){
                     this.getrankList(res.data.role)
