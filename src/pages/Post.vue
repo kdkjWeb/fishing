@@ -120,8 +120,82 @@
         :visible.sync="dialogVisible"
         top="8vh"
         width="925px">
+        <!--<span slot="footer" class="dialog-footer">-->
+        <div>
+          <el-button size="mini" type="primary" @click="comfirm('form')">确 定</el-button>
+          <el-button size="mini" @click="cancel('form')">取 消</el-button>
+        </div>
+
+
+        <!--</span>-->
         <div class="dialog_content">
           <el-form label-position="right" ref="form" :rules="rules"  label-width="110px" :model="form" size="mini">
+
+            <el-row>
+              <div style="text-align: right;margin-bottom: 20px;">
+                <el-button type="primary" size="mini" class="add" @click="addContent" v-if="addIsShow">+ 添加</el-button>
+                <el-button-group v-else>
+                  <el-button type="primary" size="mini" @click="addwords">文字</el-button>
+                  <el-button type="primary" size="mini" @click="addImages">图片</el-button>
+                </el-button-group>
+              </div>
+
+              <div v-for="(item,index) in topicContentArr" :key="index">
+
+                <el-col :span="24" v-if="item.contentType==1" >
+                  <el-row>
+                    <el-col :span="23">
+                      <el-form-item label="内容：">
+                        <el-input type="textarea" v-model="topicContentArr[index].content" :value="item.content"></el-input>
+                      </el-form-item>
+                    </el-col>
+                    <el-col :span="1" style="text-align: right;font-size: 18px;">
+                      <i class="el-icon-delete" @click="deleteImage(index)" style="cursor:pointer"></i>
+                    </el-col>
+                  </el-row>
+                </el-col>
+
+                <div v-if="imagesShow">
+                  <el-col :span="24" v-if="item.contentType==2" >
+                    <el-row>
+                      <el-col :span="23">
+                        <div style="width: 600px;margin: 0 auto;">
+                          <img :src="item.contentUrl" style="width:100%;"/>
+                        </div>
+                      </el-col>
+                      <el-col :span="1" style="text-align: right;font-size: 18px;">
+                        <i class="el-icon-delete" @click="deleteImage(index)" style="cursor:pointer"></i>
+                      </el-col>
+                    </el-row>
+                  </el-col>
+                </div>
+
+                <div v-else>
+                  <el-col :span="24" :offset="1"  v-if="item.contentType==2">
+                    <span class="uploadTitle">上传图标：</span>
+                    <el-upload
+                      class="avatar-uploader"
+                      accept="image/jpeg,image/png"
+                      :action="$store.state.imagesUrl"
+                      list-type="picture-card"
+                      :show-file-list="true"
+                      :on-success="handleAvatarSuccess"
+                      :headers="myHeaders"
+                      name="picture"
+                      :limit="1"
+                      :on-exceed="handleExceed"
+                      :before-upload="beforeAvatarUpload">
+                      <i  class="el-icon-plus avatar-uploader-icon"></i>
+                      <div slot="tip" class="el-upload__tip">只支持jpg/png类型</div>
+                    </el-upload>
+                  </el-col>
+                </div>
+
+
+              </div>
+
+
+            </el-row>
             <el-row>
               <el-col :span="24">
                 <el-row>
@@ -436,80 +510,13 @@
               </el-col>
             </el-row>
 
-            <el-row>
-              <div style="text-align: right;margin-bottom: 20px;">
-                <el-button type="primary" size="mini" class="add" @click="addContent" v-if="addIsShow">+ 添加</el-button>
-                <el-button-group v-else>
-                  <el-button type="primary" size="mini" @click="addwords">文字</el-button>
-                  <el-button type="primary" size="mini" @click="addImages">图片</el-button>
-                </el-button-group>
-              </div>
 
-              <div v-for="(item,index) in topicContentArr" :key="index">
-
-                <el-col :span="24" v-if="item.contentType==1" >
-                  <el-row>
-                      <el-col :span="23">
-                        <el-form-item label="内容：">
-                          <el-input type="textarea" v-model="topicContentArr[index].content" :value="item.content"></el-input>
-                        </el-form-item>
-                      </el-col>
-                      <el-col :span="1" style="text-align: right;font-size: 18px;">
-                        <i class="el-icon-delete" @click="deleteImage(index)" style="cursor:pointer"></i>
-                      </el-col>
-                  </el-row>
-                </el-col>
-
-                <div v-if="imagesShow">
-                  <el-col :span="24" v-if="item.contentType==2" >
-                    <el-row>
-                      <el-col :span="23">
-                        <div style="width: 600px;margin: 0 auto;">
-                          <img :src="item.contentUrl" style="width:100%;"/>
-                        </div>
-                      </el-col>
-                      <el-col :span="1" style="text-align: right;font-size: 18px;">
-                        <i class="el-icon-delete" @click="deleteImage(index)" style="cursor:pointer"></i>
-                      </el-col>
-                    </el-row>
-                  </el-col>
-                </div>
-
-              <div v-else>
-                <el-col :span="24" :offset="1"  v-if="item.contentType==2">
-                  <span class="uploadTitle">上传图标：</span>
-                  <el-upload
-                    class="avatar-uploader"
-                    accept="image/jpeg,image/png"
-                    :action="$store.state.imagesUrl"
-                    list-type="picture-card"
-                    :show-file-list="true"
-                    :on-success="handleAvatarSuccess"
-                    :headers="myHeaders"
-                    name="picture"
-                    :limit="1"
-                    :on-exceed="handleExceed"
-                    :before-upload="beforeAvatarUpload">
-                    <i  class="el-icon-plus avatar-uploader-icon"></i>
-                    <div slot="tip" class="el-upload__tip">只支持jpg/png类型</div>
-                  </el-upload>
-                </el-col>
-              </div>
-
-
-              </div>
-
-
-            </el-row>
 
 
           </el-form>
 
         </div>
-        <span slot="footer" class="dialog-footer">
-            <el-button size="mini" @click="cancel('form')">取 消</el-button>
-            <el-button size="mini" type="primary" @click="comfirm('form')">确 定</el-button>
-        </span>
+
       </el-dialog>
       <!-- end弹出框 -->
 
