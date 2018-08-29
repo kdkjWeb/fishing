@@ -578,7 +578,7 @@
 <script>
 
   export default {
- 
+
     data(){
           return{
             height: '',
@@ -668,7 +668,7 @@
               ],
               topicType:[
                 { required: true, message: '请选择类型', trigger: 'change' },
-              ], 
+              ],
               /*showSort: [{
                         type: 'number',
                         trigger: 'blur',
@@ -706,7 +706,7 @@
               {prop: 'commentNum', label: '评论', width: '60', align: 'right'},
               {prop: 'collects', label: '收藏', width: '60', align: 'right'},
               {prop: 'clickNum', label: '点赞', width: '60', align: 'right'},
-              {prop: 'reward', label: '打赏', width: '60', align: 'right'},   
+              {prop: 'reward', label: '打赏', width: '60', align: 'right'},
               {prop: 'publishTime', label: '发布时间', width: '160', align: 'right'},
               {prop: 'modifierName', label: '修改人', width: '100', align: ''},
               {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right'},
@@ -894,7 +894,7 @@
                                 })
 
                             }else{
-                              
+
                             }
 
                             if(e.topicType == 1){
@@ -997,7 +997,6 @@
 
       //新增
       add(){
-       
         this.imageUrl = '';
         this.videoPath = '';
         this.dialogVisible = true;
@@ -1099,7 +1098,7 @@
 
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
-      
+
 
             if(valid){
                if(!Number.isInteger(parseInt(this.form.showSort))&&this.form.showSort!= undefined){
@@ -1317,7 +1316,7 @@
           {prop: 'commentUser.role', label: '用户类别', width: '', align: ''},
         ]
         if(this.multipleSelection[0] != undefined){
-     
+
             this.$post('/comments/getCommentList',{
             pid:this.multipleSelection[0].cId,
             type:1
@@ -1365,13 +1364,13 @@
           this.commentData = res.data;
           this.$nextTick(function(){
             this.check();//每次更新了数据，触发这个函数即可。
-         
+
           })
 
         })
         }
 
-        
+
 
       },
 
@@ -1488,8 +1487,8 @@
             }
           }
         }
-        
- 
+
+
         if(this.multipleComment[0] != undefined){
               if(this.multipleComment[0].status == '正常'){
                   this.disabled = false;
@@ -1503,7 +1502,7 @@
       check(){
         this.$refs.multiple.toggleRowSelection(this.commentData[0],true);
            this.multipleComment[0] = this.commentData[0];
-      
+
            if(this.multipleComment[0] != undefined){
              if(this.multipleComment[0].status == '正常'){
                 this.disabled = false;
@@ -1668,7 +1667,7 @@
                     this.provinceList.forEach((val)=>{
                         if(value.provinceId == val.cId){
                             this.cityList = val.childList;
-                    
+
                         }
                     })
                 };
