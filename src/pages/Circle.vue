@@ -443,7 +443,7 @@ export default {
 
         //获取圈子列表
         getCircleList(pageSize,pageNum){
-            this.$post('circle/queryByRecord',{
+            this.$post('circle/queryByRecordForRole',{
                 pageSize: pageSize ? pageSize : 30,
                 pageNum: pageNum ? pageNum : 1,
                 circleName: this.formInline.name ? this.formInline.name : null,

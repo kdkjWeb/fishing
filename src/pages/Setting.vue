@@ -236,7 +236,7 @@ export default {
             },
             tableList: [   //表格的头部配置
                 {prop: 'status', label: '状态', width: '80', align: ''},
-                {prop: 'category', label: '类别parent_id', width: '120', align: ''},
+                {prop: 'category', label: '类别', width: '120', align: ''},
                 {prop: 'codeName', label: '名称', width: '80', align: ''},
                 {prop: 'sort', label: '排序', width: '80', align: 'right'},
                 {prop: 'rewards', label: '打赏渔乐', width: '80', align: 'right'},

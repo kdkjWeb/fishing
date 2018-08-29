@@ -1099,7 +1099,6 @@
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
 
-
             if(valid){
                if(!Number.isInteger(parseInt(this.form.showSort))&&this.form.showSort!= undefined){
                   this.errMsg = '请输入数字';
@@ -1145,7 +1144,6 @@
                           message: res.msg,
                           type: 'warning'
                         });
-                        this.circleId = ''
 
                     }
                     this.getPostList();
@@ -1223,9 +1221,9 @@
         }
         this.dialogVisible = true;
         this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
+        console.log(this.circleId)
 
-
-        this.$get('/basicTopic/queryById',{
+        this.$get('/basicTopic/queryByIdForRole',{
           topicId: this.circleId
         }).then(res=>{
           this.form = res.data;
@@ -1386,7 +1384,7 @@
         ]
 
        if(this.multipleSelection[0] != undefined){
-          this.$post('liked/getAllLList',{
+          this.$post('liked/getAllLListByTopic',{
             commentId: this.multipleSelection[0].cId,
               type:3
         }).then(res=>{

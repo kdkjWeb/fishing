@@ -270,6 +270,7 @@
               <el-col :span="24" v-else>
                 <span class="uploadTitle">上传视频：</span>
                 <el-upload
+                  ref="upload"
                   class="avatar-uploader"
                   accept="image/jpeg,image/png"
                   :action="`${this.$store.state.baseUrl}/common/uploadOssVideo`"
@@ -411,13 +412,6 @@
           topicContentList:[], //视频
           publisher:''
         },
-        topicContentArr:[
-          {
-            contentType:1,
-            content:'.....',
-            sort:0
-          }
-        ],
         userList:[],
         myHeaders: {     //上传图片携带token
           token: ''
@@ -634,12 +628,17 @@
 
       //新增
       add(){
-        this.imageUrl = '';
+        if(this.videoPath){
+          this.$refs.upload.clearFiles(); 
+        }
         this.videoPath = '';
         this.dialogVisible = true;
         this.form = {};
         this.videoShow = false;
         this.circleId = '';
+        this.form.topicContentList = [];
+        this.videoUploadPercent = 0;
+        
       },
 
 
@@ -796,7 +795,7 @@
        this.dialogVisible = true;
        this.videoShow = true;
        this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-       this.$get('videoTopic/queryById',{
+       this.$get('videoTopic/queryByIdForRole',{
          topicId: this.circleId
        }).then(res=>{
          if(res.code == 0){
@@ -1118,30 +1117,6 @@
         });
       },
 
-      //删除内容
-      deleteImage(index){
-        this.$confirm('此操作将永久删除, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.topicContentArr.forEach((val,num)=>{
-            if(index == num){
-              this.topicContentArr.splice(index,1);
-            }
-          })
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
-
-      },
 
       //上传视频
       beforeUploadVideo(file) {

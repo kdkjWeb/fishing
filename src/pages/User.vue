@@ -187,8 +187,8 @@
 
                     <el-row>
                       <el-col :span="8">
-                          <el-form-item label="头衔：">
-                            <el-select v-model="form.rank" placeholder="请选择头衔" :disabled="disabled3">
+                          <el-form-item label="用户组：">
+                            <el-select v-model="form.rank" placeholder="请选择用户组">
                             <el-option :label="item.name" :value="item.name" v-for="item in rankList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
@@ -201,7 +201,7 @@
                     </el-row>
                      <el-row>
                       <el-col :span="8">
-                          <el-form-item label="手机号：" prop="phone" ref="phone">
+                          <el-form-item label="手机号：" prop="phone" ref="phone" :error="errMsg">
                             <el-input v-model="form.phone" :disabled="disabled1"></el-input>
                         </el-form-item>
                       </el-col>
@@ -273,13 +273,13 @@
                                 </el-select>
                             </el-form-item>
                       </el-col>
-                      <el-col :span="8">
+                      <!-- <el-col :span="8">
                            <el-form-item label="用户组：">
-                            <el-input v-model="form.level" :disabled="disabled1"></el-input>
+                            <el-input v-model="form.level"></el-input>
                         </el-form-item>
-                      </el-col>
+                      </el-col> -->
                     </el-row>
-                     <el-row>
+                     <!-- <el-row>
                       <el-col :span="8">
                           <el-form-item label="对象鱼：">
                                <el-select v-model="form.targetFish" multiple  placeholder="对象鱼">
@@ -301,7 +301,7 @@
                                 </el-select>
                             </el-form-item>
                       </el-col>
-                    </el-row>
+                    </el-row> -->
                     <el-row>
                       <el-col :span="24">
                              <el-form-item label="地址：">
@@ -419,6 +419,7 @@
 export default {
     data(){
         return{
+            errMsg: '',
             disablesAdd: false,
             height: null,
             disabled3: false,
@@ -470,10 +471,10 @@ export default {
                 showPhone: '',   //电话显示
                 showQq: '',   //qq显示
                 role: '',   //用户类型
-                level: '',   //用户组
-                targetFish: [],   //对象鱼
-                fishWay: [],   //钓法
-                bait: [],   //饵料
+                // level: '',   //用户组
+                // targetFish: [],   //对象鱼
+                // fishWay: [],   //钓法
+                // bait: [],   //饵料
                 address: '',   //地址
                 province: '',  //省份
                 city: '',   //市
@@ -496,7 +497,7 @@ export default {
                 {prop: 'nickname', label: '昵称', width: '120', align: ''},
                 // {prop: 'level', label: '级别', width: '80', align: ''},
                 {prop: 'role', label: '用户类别', width: '80', align: ''},
-                {prop: 'token', label: '用户组（积分或自定义）', width: '180', align: ''},   //level等级数字   token等级数字对应的汉字
+                {prop: 'token', label: '用户组', width: '180', align: ''},   //level等级数字   token等级数字对应的汉字
                 {prop: 'gender', label: '性别', width: '60', align: ''},
                 {prop: 'birthday', label: '生日', width: '120', align: 'right'},
                 {prop: 'seatPhone', label: '电话', width: '120', align: 'right'},
@@ -518,10 +519,10 @@ export default {
                 password: [
                     { required: true, message: '请输入密码', trigger: 'change' }
                 ],
-                phone: [
+                /*phone: [
                     { required: true, message: '请输入手机号', trigger: 'blur' },
                     {pattern:  /^1[3|4|5|6|8|7|9][0-9]\d{8}$/, message: '请输入正确的手机号', trigger: 'blur' }
-                ],
+                ],*/
                 /*seatPhone: [
                     { required: false, type: 'number', message: '电话必须为数字值', trigger: 'blur'}
                 ],
@@ -704,7 +705,7 @@ export default {
                 this.form.targetFish = this.form.targetFish ? this.form.targetFish.split(',') : [];
                 this.form.fishWay = this.form.fishWay ? this.form.fishWay.split(',') : [];
                 this.form.bait = this.form.bait ? this.form.bait.split(',') : [];
-
+                this.imageUrl = res.data.iconUrl;
 
                 if(res.data.role){
                     this.getrankList(res.data.role)
@@ -714,6 +715,14 @@ export default {
         },
         //获取头衔
         getrankList(rank){
+            console.log(rank)
+            if(rank == 2){
+                rank = 4;
+            }else if(rank == 3){
+                rank = 2;
+            }else if(rank == 4){
+                rank = 3;
+            }
             this.$get('levelRule/queryByType',{
                 type: rank
             }).then(res=>{
@@ -786,7 +795,14 @@ export default {
             this.getUserList(this.pageSize,val)
         },
         //弹出框的确认按钮
-        comfirm(formName){            
+        comfirm(formName){
+            if(!this.circleId && this.form.phone == ''){
+                let reg = /^1[3|4|5|6|8|7|9][0-9]\d{8}$/;
+                if(!reg.test(this.form.phone)){
+                    this.errMsg = '请输入正确的手机号';
+                }
+                return;
+            }           
             this.$refs[formName].validate((valid)=>{
                 if(valid){
                     let url = this.circleId ? 'user/updateUserByManager' : 'user/addManager'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
@@ -820,10 +836,10 @@ export default {
                         showPhone: this.form.showPhone,
                         showQq: this.form.showQq,
                         role: role,
-                        level: this.form.level,
-                        targetFish: (this.form.targetFish.length > 0) ? this.form.targetFish.join(',') : '',
-                        fishWay: (this.form.fishWay.length > 0) ? this.form.fishWay.join(',') : '',
-                        bait: (this.form.bait.length > 0) ? this.form.bait.join(',') : '',
+                        // level: this.form.level,
+                        // targetFish: (this.form.targetFish.length > 0) ? this.form.targetFish.join(',') : '',
+                        // fishWay: (this.form.fishWay.length > 0) ? this.form.fishWay.join(',') : '',
+                        // bait: (this.form.bait.length > 0) ? this.form.bait.join(',') : '',
                         address: this.form.address,
                         province: this.form.province,
                         city: this.form.city,
@@ -851,12 +867,11 @@ export default {
                            this.getUserList()
 
                            this.circleId = ''
-                        }else{
+                        }else if(res.code == 500){
                             this.$message({
                             message: res.msg,
                             type: 'warning'
                             });
-                            this.circleId = ''
                         }
                     })
                 }else{
