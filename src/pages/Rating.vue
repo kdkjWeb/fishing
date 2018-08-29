@@ -147,6 +147,7 @@
                          <el-option label="钓友" value="1"></el-option>
                          <el-option label="农家乐" value="2"></el-option>
                          <el-option label="渔具店" value="3"></el-option>
+                         <el-option label="头衔" value="4"></el-option>
                        </el-select>
                      </el-form-item>
                   </el-col>
@@ -169,7 +170,7 @@
                   </el-col>
                 </el-row>
                  <el-row>
-                  <el-col :span="12">
+                  <!-- <el-col :span="12">
                       <el-form-item label="用户类型：">
                             <el-select v-model="form.userType" placeholder="用户类型">
                             <el-option label="钓友" value="1"></el-option>
@@ -178,7 +179,7 @@
                             <el-option label="头衔" value="4"></el-option>
                             </el-select>
                         </el-form-item>
-                  </el-col>
+                  </el-col> -->
                   <el-col :span="12">
                      <el-form-item label="娱乐币奖励：">
                         <el-input v-model="form.coin"></el-input>
@@ -267,7 +268,7 @@ export default {
                 modifyUser:'',  //修改人
                 coin:'',  //娱乐奖励金币
                 type:'',  //类型
-                userType:'',  //用户类型
+                // userType:'',  //用户类型
                 score:'',  //升级分值
                 name:'',  //等级名称
                 userPacote:'',  //用户分组
@@ -505,7 +506,7 @@ export default {
 
           if(this.circleId){
             this.form = data;
-            this.form.userType = this.form.type;
+            // this.form.userType = this.form.type;
             this.form.number = this.rowIndex;
             this.imageUrl = this.form.iconUrl;
           }
