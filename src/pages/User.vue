@@ -273,11 +273,11 @@
                                 </el-select>
                             </el-form-item>
                       </el-col>
-                      <!-- <el-col :span="8">
-                           <el-form-item label="用户组：">
-                            <el-input v-model="form.level"></el-input>
+                      <el-col :span="8">
+                           <el-form-item label="等级：">
+                            <el-input v-model="form.level" :disabled="disabled1"></el-input>
                         </el-form-item>
-                      </el-col> -->
+                      </el-col>
                     </el-row>
                      <!-- <el-row>
                       <el-col :span="8">
@@ -471,7 +471,7 @@ export default {
                 showPhone: '',   //电话显示
                 showQq: '',   //qq显示
                 role: '',   //用户类型
-                // level: '',   //用户组
+                level: '',   //等级
                 // targetFish: [],   //对象鱼
                 // fishWay: [],   //钓法
                 // bait: [],   //饵料
@@ -495,9 +495,9 @@ export default {
                 {prop: 'motorcade', label: '车贴编号', width: '80', align: 'right'},
                 {prop: 'phone', label: '手机号', width: '120', align: 'right'},
                 {prop: 'nickname', label: '昵称', width: '120', align: ''},
-                // {prop: 'level', label: '级别', width: '80', align: ''},
+                {prop: 'token', label: '级别', width: '80', align: ''},
                 {prop: 'role', label: '用户类别', width: '80', align: ''},
-                {prop: 'token', label: '用户组', width: '180', align: ''},   //level等级数字   token等级数字对应的汉字
+                {prop: 'rank', label: '用户组', width: '180', align: ''},   //level等级数字   token等级数字对应的汉字
                 {prop: 'gender', label: '性别', width: '60', align: ''},
                 {prop: 'birthday', label: '生日', width: '120', align: 'right'},
                 {prop: 'seatPhone', label: '电话', width: '120', align: 'right'},
@@ -853,6 +853,7 @@ export default {
                         updateTime: this.form.updateTime,
                         description: this.form.description,
                         remark: this.form.remark,
+                        icon: this.form.icon
                     }).then(res=>{
                         if(res.code == 0){
                             //隐藏dialog框
