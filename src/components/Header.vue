@@ -16,12 +16,12 @@
                      <input type="text" placeholder="搜索"/>
                      <span class="iconfont icon-sousuo"></span>
                 </div>
-                <div class="msg_num">
-                    <span class="iconfont icon-tixing"></span>
-                    <span class="num">16</span>
-                </div>
+                <!--<div class="msg_num">-->
+                    <!--<span class="iconfont icon-tixing"></span>-->
+                    <!--<span class="num">16</span>-->
+                <!--</div>-->
             </div>
-            <div class="notice">支持与服务</div>
+            <!--<div class="notice">支持与服务</div>-->
             <div class="user" @click="downList">
                 <img src="../../static/images/header.jpg" alt="">
                 <div class="down">
@@ -83,7 +83,7 @@ export default {
         downClick(index){
             switch(index){
                 case 0:    //点击安全退出
-                // console.log(1)
+
                 this.$get('/logout',{}).then(res=>{
                     if(res.code == 0){
                         //删除localStorage的数据

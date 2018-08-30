@@ -424,7 +424,7 @@
         circleId:'',
         rules:{
           title: [
-            { required: true, message: '请输入圈子名称', trigger: 'blur' },
+            { required: true, message: '请输入标题名称', trigger: 'blur' },
           ],
           videoCategoryId:[
             {required: true, message: '请选择视频分类', trigger: 'change' },
@@ -451,7 +451,7 @@
           {prop: 'collects', label: '收藏', width: '60', align: 'right'},
           {prop: 'clickNum', label: '点赞', width: '60', align: 'right'},
           {prop: 'isVisibleCategoryId', label: '打赏', width: '60', align: 'right'},
-          {prop: 'publisherName', label: '作者', width: '', align: ''},
+          {prop: 'publisherName', label: '创建人', width: '', align: ''},
           {prop: 'publishTime', label: '发布时间', width: '160', align: 'right'},
           {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right'},
           {prop: 'remark', label: '备注', width: '', align: ''},
@@ -865,7 +865,7 @@
         if(this.multipleSelection[0] != undefined){
              this.$post('/comments/getCommentList',{
               pid:this.multipleSelection[0].cId,
-              type:4
+              type:3
             }).then(res=>{
               res.data.forEach((val)=>{
                 //判读审核、取消审核按钮哪一个可以点

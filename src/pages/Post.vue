@@ -671,7 +671,7 @@
             circleId:'',
             rules:{
               title: [
-                { required: true, message: '请输入圈子名称', trigger: 'blur' },
+                { required: true, message: '请输入标题名称', trigger: 'blur' },
               ],
               topicType:[
                 { required: true, message: '请选择类型', trigger: 'change' },
@@ -707,7 +707,7 @@
               {prop: 'title', label: '标题', width: '300', align: ''},
               {prop: 'topicType', label: '类型', width: '80', align: ''},
               {prop: 'circleList', label: '发送圈子', width: '120', align: ''},
-              {prop: 'authorName', label: '作者', width: '100', align: ''},
+              {prop: 'authorName', label: '创建人', width: '100', align: ''},
               {prop: 'showSort', label: '排序号', width: '70', align: ''},
               {prop: 'viewNum', label: '浏览', width: '60', align: 'right'},
               {prop: 'commentNum', label: '评论', width: '60', align: 'right'},
@@ -1107,10 +1107,14 @@
           let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
 
             if(valid){
-               if(!Number.isInteger(parseInt(this.form.showSort))&&this.form.showSort!= undefined){
-                  this.errMsg = '请输入数字';
-                  return;
+              //验证排序号
+              if( (/^\d+$/.test(this.form.showSort)) || !this.form.showSort){
+                this.errMsg = '';
+               }else{
+                this.errMsg = '请输入数字';
+                return;
                }
+
                 this.$post(url,{
                   cId: this.circleId ? this.circleId : null,
                   title: this.form.title,  //标题、圈子
@@ -1216,7 +1220,7 @@
 
       //修改
       edit(){
-
+        this.errMsg = '';
           this.imagesShow = true;
           this.topicContentArr = [];
         if(this.multipleSelection.length != 1){
