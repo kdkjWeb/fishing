@@ -651,7 +651,7 @@ export default {
 
             this.$refs[formName].validate((valid)=>{
                 if(valid){
-                    if(!Number.isInteger(parseInt(this.form.sort))&&this.form.sort!= undefined){
+                    if(!Number.isInteger(parseInt(this.form.sort))&&this.form.sort!= ''){
                             this.errMsg = '请输入数字';
                             return;
                         }

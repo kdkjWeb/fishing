@@ -14,7 +14,7 @@ export default new Router({
     },{
       path: '/',
       component: resolve => require(['@/components/Home.vue'],resolve),
-      redirect: '/post',
+      redirect: '/index',
       children: [
         {
           path: '/index',

@@ -47,25 +47,25 @@ export default {
             show: false,
             userName: '',
             userList: [
-//                {
-//                    icon: 'icon-fcstubiao18',
-//                    title: '修改用户信息'
-//                },{
-//                    icon: 'icon-qingkong',
-//                    title: '清空缓存'
-//                },{
-//                    icon: 'icon-tianjiarenyuan',
-//                    title: '添加管理员'
-//                },{
-//                    icon: 'icon-liebiao',
-//                    title: '管理员列表'
-//                },{
-//                    icon: 'icon-rizhi-copy',
-//                    title: '管理员日志'
-//                },{
-//                    icon: 'icon-jiaose',
-//                    title: '角色管理'
-//                },
+               /*{
+                   icon: 'icon-fcstubiao18',
+                   title: '修改用户信息'
+               },{
+                   icon: 'icon-qingkong',
+                   title: '清空缓存'
+               },{
+                   icon: 'icon-tianjiarenyuan',
+                   title: '添加管理员'
+               },{
+                   icon: 'icon-liebiao',
+                   title: '管理员列表'
+               },{
+                   icon: 'icon-rizhi-copy',
+                   title: '管理员日志'
+               },{
+                   icon: 'icon-jiaose',
+                   title: '角色管理'
+               },*/
               {
                     icon: 'icon-084tuichu',
                     title: '安全退出'
@@ -82,7 +82,7 @@ export default {
         //点击下拉列表的每一个选项
         downClick(index){
             switch(index){
-                case 6:    //点击安全退出
+                case 0:    //点击安全退出
                 // console.log(1)
                 this.$get('/logout',{}).then(res=>{
                     if(res.code == 0){
