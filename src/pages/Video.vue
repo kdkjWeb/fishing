@@ -262,7 +262,7 @@
 
             <el-row>
               <el-col :span="16" v-if="videoShow">
-                <div class="video">
+                <div class="video" v-if="video!=undefined">
                   <video :src="video.contentUrl" :poster="video.thumbUrl?video.thumbUrl:'../../static/images/header.jpg'" width="300" height="240" controls></video>
                 </div>
               </el-col>
@@ -373,7 +373,7 @@
       return{
         errMsg: '',
         height: '',
-        video: '',
+        video: {},
         allNum: {
           commentNum: 0,   //评论总数
           collects: 0,    //收藏总数
@@ -629,7 +629,7 @@
       //新增
       add(){
         if(this.videoPath){
-          this.$refs.upload.clearFiles(); 
+          this.$refs.upload.clearFiles();
         }
         this.videoPath = '';
         this.dialogVisible = true;
@@ -638,7 +638,7 @@
         this.circleId = '';
         this.form.topicContentList = [];
         this.videoUploadPercent = 0;
-        
+
       },
 
 
@@ -767,12 +767,12 @@
                   });
               //获取所有帖子列表 /basicTopic/queryCommon
               this.getPostList();
-              
+
               //表格第一行默认选中
               this.$nextTick(()=>{
                     this.checked();
               })
-              
+
             }
           })
         }).catch(() => {
@@ -808,6 +808,7 @@
            this.form.status = res.data.status + '';
           //  this.form.videoCategoryId = res.data.videoCategoryId + '';
            this.video = this.form.topicContentList[0];
+           console.log(this.video)
          }
        })
       },
@@ -839,7 +840,7 @@
             });
             }
 
-            
+
             location.href = href;
       },
 
@@ -1159,7 +1160,7 @@
                 })
             },1500)
         }
-        
+
       },
     },
     created(){
@@ -1235,8 +1236,8 @@
     /*text-align: right;*/
     margin-left:80px;
   }
- 
- 
+
+
 
   #post.avatar-uploader .el-upload {
     border: 1px dashed #d9d9d9;
