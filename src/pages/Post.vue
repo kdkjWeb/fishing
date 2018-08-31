@@ -762,6 +762,7 @@
       getUser(){
         this.$get('/user/getUserNameList',{}).then(res=>{
             if(res.code == 0){
+                console.log(res.data)
               this.userList = res.data
             }
         })
@@ -776,7 +777,7 @@
           })
       },
       //获取鱼类  /sysCategory/queryByCategory
-      getFishList(){
+      getFishList(){6
         this.$post('/sysCategory/queryByCategory',{
           category:35
         }).then(res=>{
