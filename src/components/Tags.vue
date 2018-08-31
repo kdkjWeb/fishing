@@ -9,7 +9,7 @@
             <div class="all_tags" ref="allTags">
                 <!-- 遍历所有标签，超出隐藏 -->
                 <ul class="tags_list" ref="lagsList" style="left: 0">
-                    <li v-for="item,index in routerList" :key="index">
+                    <li v-for="(item,index) in routerList" :key="index">
                        <router-link class="tags_li_title" to="/about">{{item.title}}</router-link>
                         <span class="iconfont icon-guanbi"></span>
                     </li>
