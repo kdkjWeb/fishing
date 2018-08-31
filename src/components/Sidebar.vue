@@ -141,6 +141,10 @@ export default {
                             title: '充值记录'
                         }*/
                     ]
+                },{
+                    icon: 'icon-weizhi',
+                    index: 'feedback',
+                    title: '意见反馈'
                 }
             ]
         }

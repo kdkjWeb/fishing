@@ -121,9 +121,13 @@ export default new Router({
           name: 'GiveUp',
           component: resolve=>require(['@/pages/GiveUp.vue'],resolve)
         },{
-          path: 'Reward',
+          path: '/Reward',
           name: 'Reward',
           component: resolve=>require(['@/pages/Reward.vue'],resolve)
+        },{
+          path: '/Feedback',
+          name: 'Feedback',
+          component: resolve=>require(['@/pages/Feedback.vue'],resolve)
         }
       ]
     }
