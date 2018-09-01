@@ -145,7 +145,7 @@
                 <el-col :span="24" v-if="item.contentType==1" >
                   <el-row>
                     <el-col :span="23">
-                      <el-form-item label="内容：">
+                      <el-form-item label="内容：" class="content" :error="contentError">
                         <el-input type="textarea" v-model="topicContentArr[index].content" :value="item.content"></el-input>
                       </el-form-item>
                     </el-col>
@@ -190,12 +190,9 @@
                     </el-upload>
                   </el-col>
                 </div>
-
-
               </div>
-
-
             </el-row>
+
             <el-row>
               <el-col :span="24">
                 <el-row>
@@ -295,8 +292,8 @@
 
                 <el-row>
                   <el-col :span="8">
-                    <el-form-item :label="titleName" prop="topicCircleArr">
-                      <el-select v-model="topicCircleArr" multiple v-if="isShow" filterable>
+                    <el-form-item :label="titleName" prop="topicCircleArr" class="topicCircle" :error="error">
+                      <el-select v-model="topicCircleArr" multiple v-if="isShow" filterable  :disabled="isDesable">
                         <el-option
                           v-for="(item,index) in circleList"
                           :label="item.circleName"
@@ -305,7 +302,7 @@
                         </el-option>
                       </el-select>
 
-                      <el-select v-model="topicCircle"  v-else filterable>
+                      <el-select v-model="topicCircle"  v-else filterable :disabled="isDesable">
                         <el-option
                           v-for="(data,index) in anglingSiteList"
                           :label="data.name"
@@ -417,7 +414,7 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="经度：">
+                    <el-form-item label="纬度：">
                       <el-input v-model="form.latitude" ></el-input>
                     </el-form-item>
                   </el-col>
@@ -446,7 +443,7 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="纬度：">
+                    <el-form-item label="经度：">
                       <el-input v-model="form.longitude" ></el-input>
                     </el-form-item>
                   </el-col>
@@ -590,6 +587,8 @@
             height: '',
             errMsg: '',
             isDesable: false,
+            error:'',
+            contentError:'',
             allNum: {
               commentNum: 0,   //评论总数
               collects: 0,    //收藏总数
@@ -675,9 +674,7 @@
               topicType:[
                 { required: true, message: '请选择类型', trigger: 'change' },
               ],
-//              topicCircleArr:[
-//              { required: true, message: '请选择圈子', trigger: 'change' },
-//            ],
+
               /*showSort: [{
                         type: 'number',
                         trigger: 'blur',
@@ -747,7 +744,6 @@
           }
     },
 
-
       handleExceed(files, fileList) {
         this.$message.warning(`当前限制选择 1个文件，如果还想添加图片，请点击图片按钮添加`);
       },
@@ -795,12 +791,18 @@
           this.typeArr = res.data;
         })
       },
+
+      //通过类型判断发送圈子
       getType(){
+
+        this.error = '';
         if(this.form.topicType == 5){
             this.isDesable = true;
         }else{
           this.isDesable = false;
         }
+
+
 
         this.topicCircleArr = [];
         this.form.topicCircleList = [];
@@ -1092,13 +1094,14 @@
       comfirm(form){
 
         this.form.topicCircleList = [];
+
         if(this.form.topicType == 2 || this.form.topicType == 3){
             this.form.topicCircleList=[{
               cType: 1,
               placeId:this.topicCircle
             }]
         } else{
-          this.topicCircleArr.forEach((val)=>{
+            this.topicCircleArr.forEach((val)=>{
             let obj = {};
             obj.cType = 0;
             obj.placeId = val;
@@ -1106,7 +1109,36 @@
           })
         }
 
-        this.$refs[form].validate((valid)=>{
+//        if(this.form.topicType != 5){}
+
+        if(this.form.topicCircleList.length == 0){
+            this.error = '请选择发送圈子';
+            return;
+        }else{
+          for(let i=0; i< this.form.topicCircleList.length; i++){
+            if(this.form.topicCircleList[i].cType == 0){
+              if(!this.form.topicCircleList[i].placeId){
+                alert(1)
+                this.error = '请选择发送圈子';
+                return;
+              }else{
+                this.error = '';
+              }
+            }else{
+              if(!this.form.topicCircleList[i].placeId){
+                this.error = '请选择钓场';
+                return;
+              }else{
+                this.error = '';
+              }
+            }
+          }
+        }
+
+
+
+        console.log(this.form.topicCircleList)
+       /* this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
 
             if(valid){
@@ -1118,7 +1150,20 @@
                 return;
                }
 
-                this.$post(url,{
+
+
+
+              this.topicContentArr.forEach((val)=>{
+                if(!val.content){
+                  this.contentError = '请输入内容';
+                  return;
+                }else{
+                    this.contentError = '';
+                }
+              })
+
+
+              this.$post(url,{
                   cId: this.circleId ? this.circleId : null,
                   title: this.form.title,  //标题、圈子
                   isTop:this.form.isTop,  //是否置顶
@@ -1163,7 +1208,7 @@
                     this.getPostList();
                 })
             }
-        })
+        })*/
       },
 
       //点击取消
@@ -1223,8 +1268,9 @@
 
       //修改
       edit(){
-        // this.errMsg = '';
-
+         this.errMsg = '';
+         this.error = '';
+          this.contentError = '';
           this.imagesShow = true;
           this.topicContentArr = [];
         if(this.multipleSelection.length != 1){
@@ -1750,6 +1796,17 @@
   #post .el-table .success-row {
 background: #fff;
 }
+
+  .content>.el-form-item__label:before {
+    content: '*';
+    color: #f56c6c;
+    margin-right: 4px;
+  }
+  .topicCircle>.el-form-item__label:before {
+    content: '*';
+    color: #f56c6c;
+    margin-right: 4px;
+  }
 </style>
 
 <style>

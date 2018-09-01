@@ -184,7 +184,7 @@
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
                         name="picture"
-                        :headers="myHeaders"   
+                        :headers="myHeaders"
                         auto-upload
                         :before-upload="beforeAvatarUpload">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
@@ -193,7 +193,7 @@
                         </el-upload>
                     </el-col>
                     </el-row>
-                    
+
 
                     <el-row>
                       <!-- <el-col :span="8">
@@ -239,7 +239,7 @@
                     </el-row>
                     <el-row>
                       <el-col :span="8">
-                           <el-form-item label="经度：">
+                           <el-form-item label="纬度：">
                                 <el-input v-model="form.longitude"></el-input>
                             </el-form-item>
                       </el-col>
@@ -253,7 +253,7 @@
                     </el-row>
                     <el-row>
                       <el-col :span="8">
-                          <el-form-item label="纬度：">
+                          <el-form-item label="经度：">
                                 <el-input v-model="form.latitude"></el-input>
                         </el-form-item>
                       </el-col>
@@ -408,7 +408,7 @@ export default {
             form:{
                 name: '',  //钓场名称
                 number: '',   //编号
-                status: '1',   //状态    
+                status: '1',   //状态
                 position: '',   //排序号
                 ispass: '',    //审核状态
                 phone: '',   //钓场电话
@@ -519,7 +519,7 @@ export default {
                         this.checked();//每次更新了数据，触发这个函数即可。
                     })
 
-              
+
                 }
             })
         },
@@ -533,14 +533,14 @@ export default {
             this.dialogVisible = true;
              //新增有些字段禁止填写
             this.disabled = true;
-            
+
 
                  //点击新增清空表单
                 for(var i in this.form){
                 if(i == 'status'){  //遇到默认项跳过，执行下面的循环
                     continue;
                 }else if(this.form[i] != ''){
-                  
+
                     this.$nextTick(() => {
                             this.$refs['name'].resetField();
                             this.$refs['phone'].resetField();
@@ -563,11 +563,11 @@ export default {
                             this.imageUrl = '';
                         });
 
-                    
+
                 }
                 }
 
-        
+
 
             this.circleId = '';
         },
@@ -611,7 +611,7 @@ export default {
                 this.$message({
                     type: 'info',
                     message: '已取消删除'
-                });          
+                });
                 });
         },
         //修改
@@ -626,7 +626,7 @@ export default {
             this.dialogVisible = true;
             this.disabled = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-    
+
             this.$get('fishplace/getFishPlaceById',{
                 id: this.circleId
             }).then(res=>{
@@ -682,7 +682,7 @@ export default {
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
-            
+
                  // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
             if(this.multipleSelection.length == 2){
                      for(var i= 0; i<this.tableData.length; i++){
@@ -805,7 +805,7 @@ export default {
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
             this.$refs.multipleTable.toggleRowSelection(this.tableData[0],true);
-            
+
             if(this.currentPage == 1){
                 this.rowIndex = 1;
             }
@@ -981,7 +981,7 @@ export default {
                 this.getFishMethodList();
                 //有什么饵料
                 this.getBaitList();
-           
+
                 //获取管理人列表
                 this.getMangerList();
             }
@@ -992,7 +992,7 @@ export default {
                     this.provinceList.forEach((val)=>{
                         if(value.provinceId == val.cId){
                             this.cityList = val.childList;
-                    
+
                         }
                     })
                 };
@@ -1069,7 +1069,7 @@ display: block;
     text-align: right;
 }
 .fishingGround .el-textarea__inner{
-    font-family: "Microsoft YaHei"; 
+    font-family: "Microsoft YaHei";
 }
 </style>
 

@@ -451,7 +451,7 @@
           {prop: 'collects', label: '收藏', width: '60', align: 'right'},
           {prop: 'clickNum', label: '点赞', width: '60', align: 'right'},
           {prop: 'isVisibleCategoryId', label: '打赏', width: '60', align: 'right'},
-          {prop: 'publisher', label: '创建人', width: '', align: ''},
+          {prop: 'publisherName', label: '创建人', width: '', align: ''},
           {prop: 'publishTime', label: '发布时间', width: '160', align: 'right'},
           {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right'},
           {prop: 'remark', label: '备注', width: '', align: ''},

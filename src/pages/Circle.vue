@@ -229,12 +229,12 @@
                       <el-col :span="16">
                            <el-row>
                             <el-col :span="12">
-                                <el-form-item label="经度：" prop="longitude">
+                                <el-form-item label="纬度：" prop="longitude">
                                     <el-input v-model="form.longitude"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-                                <el-form-item label="纬度：" prop="latitude">
+                                <el-form-item label="经度：" prop="latitude">
                                       <el-input v-model="form.latitude"></el-input>
                                 </el-form-item>
                             </el-col>
@@ -388,7 +388,7 @@ export default {
                 {prop: 'kind', label: '类型', width: '60', align: '',align1: 'left'},
                 {prop: 'codeName', label: '圈子分类', width: '80', align: '',align1: 'left'},
                 {prop: 'sort', label: '排序号', width: '70', align: 'right',align1: 'right'},
-                {prop: 'commentCount', label: '评论', width: '60', align: 'right',align1: 'right'},
+                {prop: 'commentCount', label: '帖子数', width: '60', align: 'right',align1: 'right'},
                 {prop: 'viewCount', label: '阅读', width: '60', align: 'right',align1: 'right'},
                 {prop: 'memberCount', label: '成员', width: '60', align: 'right',align1: 'right'},
                 {prop: 'location', label: '详细地址', width: '180', align: '',align1: 'left'},
@@ -437,7 +437,7 @@ export default {
                 return '';
             }
       },
- 
+
 
 
 
@@ -457,7 +457,7 @@ export default {
                         this.total = 0;
                         this.allNum.commentCount = this.allNum.viewCount = this.allNum.memberCount = 0;   //dom每次更新数据都清零
                     }else{   //返回数据之后进行数据处理
-            
+
                         //  this.tableData = res.data.list;
                         let arr = res.data.list;
                         arr.forEach((e,index)=>{
@@ -568,7 +568,7 @@ export default {
                 });
                 });
         },
-      
+
         //导出
         exportd(){
               let path = this.$store.state.baseUrl;
@@ -596,7 +596,7 @@ export default {
             });
             }
 
-            location.href = href; 
+            location.href = href;
         },
         //多选框选中之后存放的数据
         handleSelectionChange(val){
@@ -662,7 +662,7 @@ export default {
                         this.errMsg = '请输入数字';
                         return;
                     }
-                    
+
                     let url = this.circleId ? 'circle/updateCircle' : 'circle/addCircle'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
                     let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
                     this.$post(url,{
@@ -821,7 +821,7 @@ export default {
             this.disabled = true;
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
 
-              
+
 
 
             if(this.circleId) {
@@ -830,7 +830,7 @@ export default {
               }).then(res => {
                   console.log(res)
                 if(res.code == 0){
-                   
+
                     this.form = res.data;
                     this.form.status = this.form.status + "";
                     this.form.circleCategoryId = this.form.circleCategoryId + "";
@@ -942,7 +942,7 @@ export default {
                     this.provinceList.forEach((val)=>{
                         if(value.provinceId == val.cId){
                             this.cityList = val.childList;
-                    
+
                         }
                     })
                 };
@@ -1030,7 +1030,7 @@ display: block;
 }
 
 .circle .el-textarea__inner{
-    font-family: "Microsoft YaHei"; 
+    font-family: "Microsoft YaHei";
 }
 .circle .el-dialog__body{
     padding: 0 20px;
