@@ -501,20 +501,29 @@ export default {
 
      //用户统计查询
       search(){
-            if((!Number.isInteger(this.formInline.minscore)&&this.formInline.minscore!= '') || (!Number.isInteger(this.formInline.maxscore)&&this.formInline.maxscore!= '') || (!Number.isInteger(this.formInline.mincoin)&&this.formInline.mincoin!= '') || (!Number.isInteger(this.formInline.maxcoin)&&this.formInline.maxcoin!='')){
+          let reg = new RegExp('^[0-9]+$')
+            if((!reg.test(this.formInline.minscore)&&this.formInline.minscore!= '')||(!reg.test(this.formInline.maxscore)&&this.formInline.maxscore!= '')||(!reg.test(this.formInline.mincoin)&&this.formInline.mincoin!= '')||(!reg.test(this.formInline.maxcoin)&&this.formInline.maxcoin!= '')){
                 this.$message({
-                message: '请输入整数',
+                message: '请输入正整数',
                 type: 'warning'
                 });
                 return;
             }
+             
+             
+           //  console.log(reg.test(this.formInline.minscore))
+          //   console.log((!reg.test(this.formInline.minscore)&&this.formInline.minscore!= ''))
            this.getSeconedUserNum();
+           this.getAreaNum();
       },
 
 
       //获取注册地用户
       getAreaNum(){
-          this.$get('/user/getCityUserNum',{}).then(res=>{
+          this.$get('/user/getCityUserNum',{
+            startdt: this.formInline.date ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
+            enddt: this.formInline.date ?  `${this.dataTransform(this.formInline.date[0])} 23:59:59`: null,
+          }).then(res=>{
               if(res.code == 0){
                   this.tableData2 = res.data;
               }

@@ -687,13 +687,11 @@ export default {
                              //重新获取圈子列表
                             this.getCircleList();
 
-                           this.circleId = ''
                         }else{
                             this.$message({
                             message: res.msg,
                             type: 'warning'
                             });
-                            this.circleId = ''
                         }
                     })
                 }else{
@@ -822,10 +820,12 @@ export default {
               this.$get('circle/queryById', {
                 circleId: this.circleId
               }).then(res => {
+                  console.log(res)
                 if(res.code == 0){
                    
                     this.form = res.data;
                     this.form.status = this.form.status + "";
+                    this.form.circleCategoryId = this.form.circleCategoryId + "";
                     this.form.number = this.rowIndex;
                     this.imageUrl = this.form.iconUrl;
                     this.form.creator = this.form.creatorName;

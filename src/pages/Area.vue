@@ -134,6 +134,11 @@ export default {
                         type: 'success',
                         message: '删除成功!'
                     });
+                }else if(res.code == 500){
+                    this.$message({
+                    type: 'warning',
+                    message: res.msg
+                }); 
                 }
             })
 

@@ -195,7 +195,7 @@
                       </el-col>
                       <el-col :span="8">
                           <el-form-item label="密码：" prop="password" ref="password">
-                            <el-input  type="password" v-model="form.password" :disabled="disabled1"></el-input>
+                            <el-input  type="password" v-model="form.password"></el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
@@ -826,7 +826,7 @@ export default {
                         status:  (this.form.status == '正常' || this.form.status == 1) ? 1 : 0,  //因为修改回显如果状态不改变，那么传给后台的会是’正常‘汉字，需要进行转换成1，否则就是正常的
                         gender: (this.form.gender == '男' || this.form.gender == 1) ? 1 : 0,
                         rank: this.form.rank,
-                        token: this.form.password,
+                        password: this.form.password,
                         phone: this.form.phone,
                         birthday: this.form.birthday,
                         wechat: this.form.wechat,

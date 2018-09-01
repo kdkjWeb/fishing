@@ -87,6 +87,10 @@ export default {
                     index: 'area',
                     title: '区域'
                 },{
+                    icon: 'icon-iconyijianfankui',
+                    index: 'feedback',
+                    title: '意见反馈'
+                },{
                     icon: 'icon-search',
                     index: '9',
                     title: '查询',
@@ -141,11 +145,7 @@ export default {
                             title: '充值记录'
                         }*/
                     ]
-                },{
-                    icon: 'icon-weizhi',
-                    index: 'feedback',
-                    title: '意见反馈'
-                }
+                },
             ]
         }
     },

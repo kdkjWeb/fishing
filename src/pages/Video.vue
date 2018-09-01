@@ -672,11 +672,14 @@
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/videoTopic/updateVideoTopic' : 'videoTopic/addVideoTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           if(valid){
-            console.log(this.form.sort)
-             if(!Number.isInteger(parseInt(this.form.sort))&&(this.form.sort!= undefined)){
-               console.log(1)
-                  this.errMsg = '请输入数字';
-                  return;
+             
+               //验证排序号
+              if( (/^\d+$/.test(this.form.sort)) || !this.form.sort){
+                this.errMsg = '';
+                this.form.sort = ''
+               }else{
+                this.errMsg = '请输入数字';
+                return;
                }
             this.$post(url,{
               cId: this.circleId ? this.circleId : null,
@@ -785,6 +788,7 @@
 
 //      //修改
       edit(){
+
        if(this.multipleSelection.length != 1){
          this.$message({
            message: '请选择一条需要修改的数据！',
