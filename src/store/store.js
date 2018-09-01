@@ -9,6 +9,7 @@ const state = {
     // imagesUrl:'http://www.scdiaoyu.cn/fish/common/uploadOssPic',
     imagesUrl:'http://192.168.20.3:8080/common/uploadOssPic',
 
+
 };
 export default new Vuex.Store({
     state: state,
