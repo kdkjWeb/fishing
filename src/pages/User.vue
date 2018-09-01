@@ -194,8 +194,8 @@
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
-                          <el-form-item label="密码：" prop="password" ref="password">
-                            <el-input  type="password" v-model="form.password"></el-input>
+                          <el-form-item label="密码：" prop="password" ref="password" :error="errMsg1">
+                            <el-input  type="password" v-model="form.password" :disabled="isPas"></el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
@@ -312,31 +312,31 @@
                       <el-row>
                       <el-col :span="6">
                            <el-form-item label="省：" prop="provinceId">
-                            <el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince(form.provinceId)">
-                            <el-option :label="item.regionName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>
+                            <el-select v-model="form.province" placeholder="请选择省份" @change="chooseProvince(form.province)">
+                            <el-option :label="item.regionName" :value="item.regionName" v-for="item in provinceList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
                           <el-form-item label="市：" prop="cityId">
-                                <el-select v-model="form.cityId" placeholder="请选择市"  @change="chooseArea(form.cityId)">
-                                <el-option :label="item.regionName" :value="item.cId" v-for="item in cityList" :key="item.cId"></el-option>
+                                <el-select v-model="form.city" placeholder="请选择市"  @change="chooseArea(form.city)">
+                                <el-option :label="item.regionName" :value="item.regionName" v-for="item in cityList" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
                       </el-col>
                       <el-col :span="6">
                           <el-form-item label="县：" prop="areaId">
-                            <el-select v-model="form.areaId" placeholder="请选择区县" @change="chooseCountry(form.areaId)">
-                            <el-option :label="item.regionName" :value="item.cId" v-for="item in areaList" :key="item.cId"></el-option>
+                            <el-select v-model="form.area" placeholder="请选择区县" @change="chooseCountry(form.area)">
+                            <el-option :label="item.regionName" :value="item.regionName" v-for="item in areaList" :key="item.cId"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
-                          <el-form-item label="乡：">
-                            <el-select v-model="form.countryId" placeholder="请选择乡镇">
-                                <el-option :label="item.regionName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>
-                            </el-select>
-                        </el-form-item>
+                         <el-form-item label="乡：" prop="countryId">
+                                <el-select v-model="form.country" placeholder="请选择乡镇">
+                                 <el-option v-for="item in countryList" :label="item.regionName" :value="item.regionName" :key="item.cId"></el-option>
+                                </el-select>
+                            </el-form-item>
                       </el-col>
                     </el-row>
                      <el-row>
@@ -420,7 +420,9 @@ export default {
     data(){
         return{
             errMsg: '',
+            errMsg1: '',
             disablesAdd: false,
+            isPas: true,
             height: null,
             disabled3: false,
             disabled: false,   //是否禁止填写
@@ -459,7 +461,7 @@ export default {
                 nickname: '',    //昵称
                 motorcade: '',   //车贴编号
                 status: '1',   //状态
-                gender: '',    //性别
+                gender: '0',    //性别
                 rank: '',   //头衔
                 password: '',    //密码
                 phone: '',    //手机号
@@ -504,7 +506,6 @@ export default {
                 {prop: 'address', label: '住址', width: '130', align: ''},
                 {prop: 'remark', label: '备注', width: '150', align: ''},
                 {prop: 'cDate', label: '注册时间', width: '100', align: 'right'},
-                // {prop: 'creator', label: '创建人', width: '80', align: ''},
                 {prop: 'cDate', label: '创建时间', width: '100', align: 'right'},
                 {prop: 'updatePeople', label: '修改人', width: '80', align: ''},
                 {prop: 'updateTime', label: '修改时间', width: '100', align: 'right'},
@@ -516,9 +517,9 @@ export default {
                       { required: true, message: '请输入昵称', trigger: 'blur' },
                       { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
                 ],
-                password: [
+                /*password: [
                     { required: true, message: '请输入密码', trigger: 'change' }
-                ],
+                ],*/
                 /*phone: [
                     { required: true, message: '请输入手机号', trigger: 'blur' },
                     {pattern:  /^1[3|4|5|6|8|7|9][0-9]\d{8}$/, message: '请输入正确的手机号', trigger: 'blur' }
@@ -621,14 +622,15 @@ export default {
                             this.$refs['nickname'].resetField();
                             this.$refs['phone'].resetField();
                             this.$refs['password'].resetField();
-                           // this.form = {};
-
+                           
                             //将对象还原   shabisheji
                             Object.keys(this.form).forEach((key)=>{
                                 if(key == 'targetFish' || key == 'fishWay' || key == 'bait'){
                                     this.form[key] = []
                                 }else if(key == 'status'){
                                     this.form[key] = '1'
+                                }else if(key == 'gender'){
+                                    this.form[key] = '0'
                                 }else{
                                     this.form[key] = ''
                                 }
@@ -697,8 +699,9 @@ export default {
             this.$get('user/getUserInfo',{
                 id: this.circleId
             }).then(res=>{
+                
                 this.form = res.data;
-                this.form.password = '******';
+                // this.form.password = '******';
                 this.form.status = this.form.status + "";
                 this.form.gender = this.form.gender + "";
                 this.form.number = this.rowIndex;
@@ -706,6 +709,13 @@ export default {
                 this.form.fishWay = this.form.fishWay ? this.form.fishWay.split(',') : [];
                 this.form.bait = this.form.bait ? this.form.bait.split(',') : [];
                 this.imageUrl = res.data.iconUrl;
+
+
+                if(res.data.role == 1 || res.data.role == 0){
+                    this.isPas = false;
+                }else{
+                    this.isPas = true;
+                }
 
                 if(res.data.role){
                     this.getrankList(res.data.role)
@@ -796,13 +806,29 @@ export default {
         },
         //弹出框的确认按钮
         comfirm(formName){
+             if(!this.form.icon){
+                this.$message({
+                message: '请上传新圈子的图标！',
+                type: 'warning'
+                });
+
+                return;
+            }
             if(!this.circleId && this.form.phone == ''){
                 let reg = /^1[3|4|5|6|8|7|9][0-9]\d{8}$/;
                 if(!reg.test(this.form.phone)){
                     this.errMsg = '请输入正确的手机号';
                 }
                 return;
-            }           
+            }else{
+                this.errMsg = ''
+            }  
+             if(!this.circleId && this.form.password == ''){
+                this.errMsg1 = '请输入密码'
+                return;
+            }else{
+                this.errMsg1 = ''
+            }
             
             this.$refs[formName].validate((valid)=>{
                 if(valid){
@@ -824,8 +850,8 @@ export default {
                         forumId: this.form.forumId,
                         nickname: this.form.nickname,
                         motorcade: this.form.motorcade,
-                        status:  (this.form.status == '正常' || this.form.status == 1) ? 1 : 0,  //因为修改回显如果状态不改变，那么传给后台的会是’正常‘汉字，需要进行转换成1，否则就是正常的
-                        gender: (this.form.gender == '男' || this.form.gender == 1) ? 1 : 0,
+                        status:  this.form.status,  //因为修改回显如果状态不改变，那么传给后台的会是’正常‘汉字，需要进行转换成1，否则就是正常的
+                        gender: this.form.gender,
                         rank: this.form.rank,
                         password: this.form.password,
                         phone: this.form.phone,
@@ -929,13 +955,14 @@ export default {
      },
      //获取市列表
      chooseProvince(id){
+         console.log(id)
         //根据省份id获取城市
           this.provinceList.forEach((val)=>{
-            if(id == val.cId){
+            if(id == val.regionName){
                 this.cityList = val.childList;
-                 this.form.cityId = '';
-                this.form.areaId = '';
-                this.form.countryId = '';
+                 this.form.city = '';
+                this.form.area = '';
+                this.form.country = '';
             }
         })
      },
@@ -943,10 +970,10 @@ export default {
      chooseArea(id){
          //根据城市id获取县级
            this.cityList.forEach((val)=>{
-              if(id == val.cId){
+              if(id == val.regionName){
                 this.areaList = val.childList;
-                this.form.areaId = '';
-               this.form.countryId = '';
+                this.form.area = '';
+               this.form.country = '';
               }
           })
      },
@@ -954,9 +981,8 @@ export default {
      chooseCountry(id){
          //根据县级id获取乡镇列表
         this.areaList.forEach((val)=>{
-              if(id == val.cId){
+              if(id == val.regionName){
                 this.countryList = val.childList;
-             this.form.countryId = '';
               }
           })
      },
@@ -1103,6 +1129,7 @@ export default {
                 }
             }
         }
+        
     }
 }
 </script>

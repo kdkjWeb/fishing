@@ -412,8 +412,8 @@ export default {
                 position: '',   //排序号
                 ispass: '',    //审核状态
                 phone: '',   //钓场电话
-                type: '',   //圈子分类
-                ownertype: '',   //类型
+                type: '江河',   //圈子分类
+                ownertype: '官方',   //类型
                 needPay: '',   //是否收费
                 icon: '',
                 topicNum: '',   //帖子数
@@ -556,6 +556,10 @@ export default {
                                     this.form[key] = []
                                 }else if(key == 'status'){
                                     this.form[key] = '1'
+                                }else if(key == 'ownertype'){
+                                    this.form[key] = '官方'
+                                }else if(key == 'type'){
+                                    this.form[key] == '江河'
                                 }else{
                                     this.form[key] = ''
                                 }
@@ -717,14 +721,14 @@ export default {
         //弹出框的确认按钮
         comfirm(formName){
             //必须上传图标
-            /*if(!this.form.icon){
+            if(!this.form.icon){
                 this.$message({
                 message: '请上传钓场的图标！',
                 type: 'warning'
                 });
 
                 return;
-            }*/
+            }
 
 
                  this.$refs[formName].validate((valid)=>{
@@ -841,6 +845,7 @@ export default {
              category: 30
          }).then(res=>{
              this.codeNameList = res.data;
+             console.log(this.codeNameList)
          })
      },
      //获取鱼类分类
