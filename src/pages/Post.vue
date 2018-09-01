@@ -1222,6 +1222,7 @@
       //修改
       edit(){
         this.errMsg = '';
+
           this.imagesShow = true;
           this.topicContentArr = [];
         if(this.multipleSelection.length != 1){
