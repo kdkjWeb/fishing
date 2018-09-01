@@ -1221,7 +1221,7 @@
 
       //修改
       edit(){
-        this.errMsg = '';
+        // this.errMsg = '';
 
           this.imagesShow = true;
           this.topicContentArr = [];

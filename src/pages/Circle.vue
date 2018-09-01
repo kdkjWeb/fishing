@@ -651,10 +651,18 @@ export default {
 
             this.$refs[formName].validate((valid)=>{
                 if(valid){
-                    if(!Number.isInteger(parseInt(this.form.sort))&&this.form.sort!= ''){
-                            this.errMsg = '请输入数字';
-                            return;
-                        }
+                    // if(!Number.isInteger(parseInt(this.form.sort))&&this.form.sort!= ''){
+                    //         this.errMsg = '请输入数字';
+                    //         return;
+                    //     }
+                      //验证排序号
+                    if( (/^\d+$/.test(this.form.sort)) || !this.form.sort){
+                        this.errMsg = '';
+                    }else{
+                        this.errMsg = '请输入数字';
+                        return;
+                    }
+                    
                     let url = this.circleId ? 'circle/updateCircle' : 'circle/addCircle'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
                     let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
                     this.$post(url,{

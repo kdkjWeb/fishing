@@ -803,6 +803,7 @@ export default {
                 }
                 return;
             }           
+            
             this.$refs[formName].validate((valid)=>{
                 if(valid){
                     let url = this.circleId ? 'user/updateUserByManager' : 'user/addManager'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口

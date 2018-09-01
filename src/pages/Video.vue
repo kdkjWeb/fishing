@@ -676,7 +676,6 @@
                //验证排序号
               if( (/^\d+$/.test(this.form.sort)) || !this.form.sort){
                 this.errMsg = '';
-                this.form.sort = ''
                }else{
                 this.errMsg = '请输入数字';
                 return;
@@ -742,16 +741,7 @@
             topicId: id
           }).then(res=>{
             if(res.code == 0){
-              /*this.tableData.forEach((val,index)=>{
-                if(val.cId == id){
-                  this.tableData.splice(index,1)
-                  this.total -=1;
-                  this.$message({
-                    type: 'success',
-                    message: '删除成功!'
-                  });
-                }
-              })*/
+          
                this.$message({
                     type: 'success',
                     message: '删除成功!'

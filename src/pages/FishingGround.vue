@@ -729,12 +729,21 @@ export default {
 
                  this.$refs[formName].validate((valid)=>{
                 if(valid){
-                    console.log(this.form.position)
-                    if(!Number.isInteger(parseInt(this.form.position))&&this.form.position!= ''){
-                        console.log(1)
-                            this.errMsg = '请输入数字';
-                            return;
-                        }
+                    // console.log(this.form.position)
+                    // if(!Number.isInteger(parseInt(this.form.position))&&this.form.position!= ''){
+                    //     console.log(1)
+                    //         this.errMsg = '请输入数字';
+                    //         return;
+                    //     }
+
+                      //验证排序号
+                    if((/^\d+$/.test(this.form.position)) || !this.form.position){
+                        this.errMsg = '';
+                    }else{
+                        this.errMsg = '请输入数字';
+                        return;
+                    }
+
                     let url = this.circleId ? 'fishplace/updateFishplace' : 'fishplace/addFishplace'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
                     this.$post(url,{
                         cId: this.circleId ? this.circleId : null,
