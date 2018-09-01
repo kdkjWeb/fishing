@@ -451,7 +451,7 @@
           {prop: 'collects', label: '收藏', width: '60', align: 'right'},
           {prop: 'clickNum', label: '点赞', width: '60', align: 'right'},
           {prop: 'isVisibleCategoryId', label: '打赏', width: '60', align: 'right'},
-          {prop: 'publisherName', label: '创建人', width: '', align: ''},
+          {prop: 'publisher', label: '创建人', width: '', align: ''},
           {prop: 'publishTime', label: '发布时间', width: '160', align: 'right'},
           {prop: 'modifyTime', label: '修改时间', width: '160', align: 'right'},
           {prop: 'remark', label: '备注', width: '', align: ''},
@@ -528,8 +528,8 @@
             if(res.data.list) {
               res.data.list.forEach((val)=>{
                 val.status  = val.status ? '审核' : '未审';
-                val.isTop = val.isTop? '是':'';
-                val.isBest = val.isBest? '是':'';
+                val.isTop = val.isTop==1? '是':'';
+                val.isBest = val.isBest==1? '是':'';
                 switch (val.topicType){
                   case '1':
                       val.topicType = '标准';
@@ -672,14 +672,20 @@
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/videoTopic/updateVideoTopic' : 'videoTopic/addVideoTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           if(valid){
-             
-               //验证排序号
-              if( (/^\d+$/.test(this.form.sort)) || !this.form.sort){
-                this.errMsg = '';
-               }else{
-                this.errMsg = '请输入数字';
-                return;
-               }
+
+            //验证排序号
+            if( (/^\d+$/.test(this.form.sort)) || !this.form.sort){
+              this.errMsg = '';
+            }else{
+              this.errMsg = '请输入数字';
+              return;
+            }
+            console.log(this.form.topicContentList,this.form.topicContentList == [])
+            if(this.form.topicContentList == []){
+              this.$message('上传视频不能为空，请上传！');
+              return;
+            }
+
             this.$post(url,{
               cId: this.circleId ? this.circleId : null,
               title:this.form.title,  //标题、圈子
@@ -741,7 +747,7 @@
             topicId: id
           }).then(res=>{
             if(res.code == 0){
-          
+
                this.$message({
                     type: 'success',
                     message: '删除成功!'

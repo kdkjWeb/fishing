@@ -295,8 +295,7 @@
 
                 <el-row>
                   <el-col :span="8">
-                    <el-form-item :label="titleName">
-
+                    <el-form-item :label="titleName" prop="topicCircleArr">
                       <el-select v-model="topicCircleArr" multiple v-if="isShow" filterable>
                         <el-option
                           v-for="(item,index) in circleList"
@@ -676,6 +675,9 @@
               topicType:[
                 { required: true, message: '请选择类型', trigger: 'change' },
               ],
+//              topicCircleArr:[
+//              { required: true, message: '请选择圈子', trigger: 'change' },
+//            ],
               /*showSort: [{
                         type: 'number',
                         trigger: 'blur',
