@@ -211,7 +211,7 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="置顶：" >
-                      <el-select  v-model="form.isTop" placeholder="置顶">
+                      <el-select  v-model="form.isTop" placeholder="置顶" :disabled="disabledStatus">
                         <el-option label="是" value="1"></el-option>
                         <el-option label="否" value="0"></el-option>
                       </el-select>
@@ -219,7 +219,7 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="精华：" >
-                      <el-select v-model="form.isBest" placeholder="精华">
+                      <el-select v-model="form.isBest" placeholder="精华" :disabled="disabledStatus">
                         <el-option label="是" value="1"></el-option>
                         <el-option label="否" value="0"></el-option>
                       </el-select>
@@ -589,6 +589,7 @@
             isDesable: false,
             error:'',
             contentError:'',
+            disabledStatus:false,  //判断状态禁用精选
             allNum: {
               commentNum: 0,   //评论总数
               collects: 0,    //收藏总数
@@ -1136,9 +1137,7 @@
         }
 
 
-
-        console.log(this.form.topicCircleList)
-       /* this.$refs[form].validate((valid)=>{
+        this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
 
             if(valid){
@@ -1197,7 +1196,7 @@
                         message:res.msg,
                         type: 'success',
                       });
-                    }else{
+                    }else if(res.code == 500){
                       this.dialogVisible = true;
                         this.$message({
                           message: res.msg,
@@ -1208,7 +1207,7 @@
                     this.getPostList();
                 })
             }
-        })*/
+        })
       },
 
       //点击取消
@@ -1282,13 +1281,19 @@
         }
         this.dialogVisible = true;
         this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-        console.log(this.circleId)
+        console.log(this.multipleSelection[0].status);
+          if(this.multipleSelection[0].status == '审核'){
+                this.disabledStatus  = false;
+          }else{
+            this.disabledStatus  = true;
+          }
 
         this.$get('/basicTopic/queryByIdForRole',{
           topicId: this.circleId
         }).then(res=>{
           this.form = res.data;
           this.form.number = this.rowIndex;
+
           this.form.isGoBoat = this.form.isGoBoat ? this.form.isGoBoat + '' : '';
           this.form.status = this.form.status + '';
           this.form.isTop = this.form.isTop + '';

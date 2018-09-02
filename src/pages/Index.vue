@@ -119,7 +119,7 @@
                     </div>
                 </div>
             </div>
-            
+
         </div>
         <div class="hr1"></div>
         <p class="title">帖子统计</p>
@@ -347,17 +347,17 @@ export default {
             pageSize: 30,   //每页显示多少条
             total: 0,
              tableList: [   //表格的头部配置   //用户数1表头
-              {prop: 'userNum', label: '总注册用户', width: '90', align: 'right'},
+              {prop: 'userNum', label: '总注册用户', width: '120', align: 'right'},
               {prop: 'todayNum', label: '今日注册用户', width: '110', align: 'right'},
               {prop: 'topicUserNum', label: '发帖用户', width: '80', align: 'right'},
               {prop: 'bestUserNum', label: '精华用户', width: '80', align: 'right'},
               {prop: '', label: '', width: '', align: ''},
             ],
             tableData: [],  //用户数1数据
-                
-            
+
+
             tableList1: [   //表格的头部配置    //用户数2表头
-              {prop: 'userNum', label: '总注册用户', width: '90', align: 'right'},
+              {prop: 'userNum', label: '总注册用户', width: '120', align: 'right'},
               {prop: 'topicUserNum', label: '发帖用户', width: '80', align: 'right'},
               {prop: 'bestUserNum', label: '精华用户', width: '80', align: 'right'},
               {prop: '', label: '', width: '', align: ''},
@@ -384,8 +384,8 @@ export default {
               {prop: '', label: '', width: '', align: ''},
             ],
             tableData3: [],   //帖子数据
-               
-            
+
+
 
         tableList4: [   //表格的头部配置    //未审核
             {prop: 'uncheckTopics', label: '帖子', width: '120', align: 'right'},
@@ -395,8 +395,8 @@ export default {
             {prop: '', label: '', width: '', align: ''},
         ],
         tableData4: [],    //未审核数据
-       
-        
+
+
 
 
         tableList5: [   //表格的头部配置    //审核
@@ -408,11 +408,11 @@ export default {
             {prop: '', label: '', width: '', align: ''},
         ],
         tableData5: [],    //审核数据
-        
-        
 
 
-        
+
+
+
         tableList6: [   //表格的头部配置    //帖子统计最下面的表格
             {prop: 'comments', label: '回复数', width: '80', align: 'right'},
             {prop: 'likes', label: '点赞数', width: '80', align: 'right'},
@@ -423,7 +423,7 @@ export default {
             {prop: '', label: '', width: '', align: ''},
         ],
         tableData6: [],   //帖子统计最下面的数据
-         
+
         tableList7: [   //娱乐币统计
              {prop: 'getter', label: '昵称', width: '100', align: ''},
              {prop: 'cdate', label: '日期', width: '160', align: 'right'},
@@ -460,7 +460,7 @@ export default {
       },
 
     /**用户统计start */
-    
+
     //获取第一个用户数
     getFirstUserNum(){
         this.$get('/user/getUsersNum',{}).then(res=>{
@@ -509,8 +509,8 @@ export default {
                 });
                 return;
             }
-             
-             
+
+
            //  console.log(reg.test(this.formInline.minscore))
           //   console.log((!reg.test(this.formInline.minscore)&&this.formInline.minscore!= ''))
            this.getSeconedUserNum();
@@ -534,7 +534,7 @@ export default {
 
 
     /**帖子统计start */
-    
+
     //查询帖子总统计
     getPostNum(){
         this.$get('/basicTopic/queryTotalTopicCountForRole',{}).then(res=>{
@@ -603,7 +603,7 @@ export default {
 
 
     /***鱼乐币统计start */
-    
+
     //娱乐币统计条件查询
     getCoinList(pageSize,pageNum){
         this.$post('/scorecoin/getAllCoinList',{
@@ -659,7 +659,7 @@ export default {
             }
             console.log(href)
 
-            location.href = href; 
+            location.href = href;
     },
 
     /***娱乐币统计end */
@@ -673,7 +673,7 @@ export default {
 
 
 
-     
+
        //每页显示多少条数据
         handleSizeChange(val) {
             this.pageSize = val;
@@ -715,7 +715,7 @@ export default {
         //根据条件查询娱乐币统计
         this.getCoinList();
         //获取娱乐币总数
-        this.getAllCoin();    
+        this.getAllCoin();
     }
 }
 </script>
@@ -766,7 +766,7 @@ export default {
 }
 .userNum{
     /* width: 100%; */
-     margin-bottom: 20px; 
+     margin-bottom: 20px;
      overflow: hidden;
 }
 
