@@ -893,8 +893,7 @@ export default {
                              
                              //获取用户列表
                            this.getUserList()
-
-                           this.circleId = ''
+                           
                         }else if(res.code == 500){
                             this.$message({
                             message: res.msg,
