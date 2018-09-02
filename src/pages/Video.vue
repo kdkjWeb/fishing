@@ -170,7 +170,7 @@
                 <el-row>
                   <el-col :span="8">
                     <el-form-item label="浏览数：">
-                      <el-input v-model="form.viewNum" disabled></el-input>
+                      <el-input v-model="form.viewNum" ></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
@@ -181,8 +181,8 @@
 
                   <el-col :span="8">
 
-                    <el-form-item label="视频分类：" prop="videoCategoryId"  ref="videoCategoryId">
-                      <el-select v-model="form.videoCategoryId" placeholder="可见类型">
+                    <el-form-item label="视频分类：" prop="videoCategoryId"  ref="videoCategoryId" :error="videoError" class="videoStyle">
+                      <el-select v-model="form.videoCategoryId" placeholder="可见类型" multiple>
                         <el-option
                           v-for="(item,index) in videoList"
                           :label="item.codeName"
@@ -252,7 +252,7 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                    <el-form-item label="建立时间：">
+                    <el-form-item label="修改时间：">
                       <el-input v-model="form.modifyTime" disabled></el-input>
                     </el-form-item>
                   </el-col>
@@ -380,7 +380,7 @@
           clickNum: 0   //点赞总数
         },
         rowIndex: '',
-
+        videoError:'',
         //查询
         formInline:{
           status: '',
@@ -405,7 +405,7 @@
           viewNum:'',  //浏览数
           commentNum:'',  //评论数
           reward:'',   //打赏金额
-          videoCategoryId:'',  //视频分类
+          videoCategoryId:[],  //视频分类
           remark:'',  //备注
           modifierName: '',   //修改人
           publisherName: '',   //创建人
@@ -426,9 +426,9 @@
           title: [
             { required: true, message: '请输入标题名称', trigger: 'blur' },
           ],
-          videoCategoryId:[
-            {required: true, message: '请选择视频分类', trigger: 'change' },
-          ]
+//          videoCategoryId:[
+//            {required: true, message: '请选择视频分类', trigger: 'change' },
+//          ]
         },
         multipleSelection: [],   //存放勾选的数据
         multipleComment:[],
@@ -633,12 +633,26 @@
         }
         this.videoPath = '';
         this.dialogVisible = true;
-        this.form = {};
         this.videoShow = false;
         this.circleId = '';
         this.form.topicContentList = [];
         this.videoUploadPercent = 0;
 
+
+        this.$nextTick(()=>{
+
+//          this.$refs['topicType'].resetField();
+//          this.$refs['title'].resetField();
+
+          //将对象还原   shabisheji
+          Object.keys(this.form).forEach((key)=>{
+            if(key == 'fishType' || key == 'fishMethod' || key == 'baitType' || key == 'videoCategoryId'){
+              this.form[key] = []
+            }else{
+              this.form[key] = ''
+            }
+          })
+        })
       },
 
 
@@ -662,12 +676,25 @@
           this.$post('/sysCategory/queryByCategory',{
               category:31
           }).then(res=>{
-            this.videoList = res.data
+            this.videoList = res.data;
+            console.log(this.videoList)
           })
       },
 
       //点击确定   /basicTopic/addBasicTopic   /basicTopic/updateBasicTopic
       comfirm(form){
+
+        if(this.form.videoCategoryId.length == 0){
+              this.videoError = '请选择视频分类';
+              return;
+        }else{
+          this.videoError = '';
+        }
+
+        //p视频分类转字符串
+        if(typeof this.multipleSelection[0].videoCategoryId === 'string'){
+          this.form.videoCategoryId = this.form.videoCategoryId.join(',');
+        }
 
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/videoTopic/updateVideoTopic' : 'videoTopic/addVideoTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
@@ -680,7 +707,7 @@
               this.errMsg = '请输入数字';
               return;
             }
-            console.log(this.form.topicContentList,this.form.topicContentList == [])
+
             if(this.form.topicContentList == []){
               this.$message('上传视频不能为空，请上传！');
               return;
@@ -712,8 +739,6 @@
                   message: res.msg,
                   type: 'warning'
                 });
-                this.circleId = ''
-
               }
 
             })
@@ -795,6 +820,11 @@
        this.dialogVisible = true;
        this.videoShow = true;
        this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
+
+
+
+
+
        this.$get('videoTopic/queryByIdForRole',{
          topicId: this.circleId
        }).then(res=>{
@@ -809,6 +839,11 @@
           //  this.form.videoCategoryId = res.data.videoCategoryId + '';
            this.video = this.form.topicContentList[0];
            console.log(this.video)
+
+           if(typeof this.multipleSelection[0].videoCategoryId === 'string'){
+             this.form.videoCategoryId = this.form.videoCategoryId.split(',');
+           }
+
          }
        })
       },
@@ -1265,6 +1300,12 @@
 
   #post .el-table .success-row {
      background: #fff;
+  }
+
+  .videoStyle>.el-form-item__label:before {
+    content: '*';
+    color: #f56c6c;
+    margin-right: 4px;
   }
 </style>
 <style scoped>

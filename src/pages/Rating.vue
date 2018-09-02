@@ -261,7 +261,7 @@ export default {
             },
             form:{
                 number: '',   //编号
-                status: '',   //状态
+                status: '1',   //状态
                 creatTime:'',   //创建时间
                 cUser:'',     //创建人
                 modifyTime:'',  //修改时间
@@ -367,7 +367,9 @@ export default {
             this.disabled = true;
             this.form = {};
             this.imageUrl = '';
-            this.circleId = ''
+            this.circleId = '';
+
+            this.form.status = '1';
         },
 
       //标准时间格式转换

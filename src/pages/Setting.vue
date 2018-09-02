@@ -225,7 +225,7 @@ export default {
             form:{
               category:'',  //类别
               codeName:'',  //名称
-              status:'',    //状态
+              status:'1',    //状态
               sort:'',      //排序
               rewards:'',   //打赏渔乐币
               creator:'',   //创建人
@@ -334,11 +334,11 @@ export default {
       },
         //新增
         add(){
-
             this.imageUrl = '';
             this.dialogVisible = true;
             this.form = {};
-            this.circleId = ''
+            this.circleId = '';
+          this.form.status = '1';
         },
 
       //弹出框的确认按钮
@@ -473,7 +473,7 @@ export default {
                 }
             })
 
-            
+
         },
 
         //导出
@@ -592,7 +592,7 @@ export default {
         handleAvatarSuccess(res, file) {
          this.imageUrl = URL.createObjectURL(file.raw);
          this.form.icon = file.response.data;
-   
+
         },
         beforeAvatarUpload(file) {
           const isJPG = file.type === 'image/jpeg';
