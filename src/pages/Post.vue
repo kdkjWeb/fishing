@@ -293,7 +293,7 @@
                 <el-row>
                   <el-col :span="8">
                     <el-form-item :label="titleName" prop="topicCircleArr" class="topicCircle" :error="error">
-                      <el-select v-model="topicCircleArr" multiple v-if="isShow" filterable  :disabled="isDesable">
+                      <el-select  v-if="isShow"   v-model="topicCircleArr" multiple filterable  :disabled="isDesable">
                         <el-option
                           v-for="(item,index) in circleList"
                           :label="item.circleName"
@@ -302,7 +302,7 @@
                         </el-option>
                       </el-select>
 
-                      <el-select v-model="topicCircle"  v-else filterable :disabled="isDesable">
+                      <el-select  v-else="isShow" v-model="topicCircle"  filterable :disabled="isDesable">
                         <el-option
                           v-for="(data,index) in anglingSiteList"
                           :label="data.name"
@@ -795,7 +795,6 @@
 
       //通过类型判断发送圈子
       getType(){
-
         this.error = '';
         if(this.form.topicType == 5){
             this.isDesable = true;
@@ -803,18 +802,31 @@
           this.isDesable = false;
         }
 
+        if(this.form.topicType == 2 || this.form.topicType == 3){
+          console.log( this.topicCircleArr);
+          this.isShow = false;
+          this.topicCircleArr = [];
+          console.log( this.topicCircleArr);
+        }else{
+            console.log( this.topicCircle);
 
+          this.isShow = true;
+          this.topicCircle = '';
+          console.log( this.topicCircle);
+        }
 
-        this.topicCircleArr = [];
+//        this.topicCircleArr = [];
+//        this.topicCircle = '';
         this.form.topicCircleList = [];
-        this.getCircleList(this.topicType);
+        this.getCircleList();
+
       },
 
       //获取所有发送圈子  /basicTopic/queryById
       getCircleList(){
         if(this.form.topicType == 2 || this.form.topicType == 3){
             this.titleName = '钓场：';
-            this.isShow = false;
+
             this.$get('/fishplace/getSendFishPlaceList',{}).then(res=>{
               if(res.code == 0){
                 this.anglingSiteList = res.data;
@@ -822,12 +834,12 @@
             })
           }else{
               this.titleName = '发送圈子：';
-              this.isShow = true;
               this.$get('/circle/querySendCircle',{}).then(res=>{
                 if(res.code == 0){
                   this.circleList = res.data;
                 }
               })
+
           }
       },
 
@@ -940,13 +952,8 @@
                               }
                             })
                         })
-
                     }
                     this.total = res.data.total;
-
-
-
-
             }
         })
       },
@@ -1776,7 +1783,7 @@
         this.myHeaders.token = this.$store.state.token
       }
 
-    //获取所有发送圈子列表
+      //获取所有发送圈子列表
       this.getCircleList();
       //获取所有省份
       this.getProvinceList();
