@@ -348,11 +348,13 @@ export default {
                            arr[index].modifier = e.modifier ? e.modifier.nickname : '';
                            arr[index].status = e.status ? '正常' : '已关闭';
                             if(e.type == 1){
-                                arr[index].type = '钓友'
+                                arr[index].type = '钓友';
                             }else if(e.type == 2){
-                                arr[index].type = '渔具店'
-                            }else{
-                                arr[index].type = '农家乐'
+                                arr[index].type = '农家乐';
+                            }else if(e.type == 3){
+                                arr[index].type = '渔具店';
+                            }else {
+                              arr[index].type = '头衔';
                             }
                            this.tableData = JSON.parse(JSON.stringify(arr))
                         });

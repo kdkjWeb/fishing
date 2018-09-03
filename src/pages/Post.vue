@@ -477,7 +477,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="建立时间：" prop="remark">
+                <el-form-item label="发布时间：" prop="remark">
                     <el-input v-model="form.publishTime" disabled></el-input>
                 </el-form-item>
               </el-col>
@@ -500,7 +500,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="8">
-                <el-form-item label="建立时间：">
+                <el-form-item label="修改时间：">
                   <el-input v-model="form.modifyTime" disabled></el-input>
                 </el-form-item>
               </el-col>
@@ -929,12 +929,18 @@
                             // 每次dom数据更新以后重新计算总数
                             this.allNum.commentNum = this.allNum.collects = this.allNum.clickNum = 0;   //dom每次更新数据都清零
                             this.tableData.forEach((val,index)=>{
-
-                                this.allNum.commentNum +=val.commentNum;
-                                this.allNum.collects +=val.collects;
-                                this.allNum.clickNum +=val.clickNum;
+                              if(val.commentNum){
+                                this.allNum.commentNum += val.commentNum;
+                              }
+                              if(val.collects){
+                                this.allNum.collects += val.collects;
+                              }
+                              if(val.clickNum){
+                                this.allNum.clickNum += val.clickNum;
+                              }
                             })
                         })
+
                     }
                     this.total = res.data.total;
 
@@ -1110,30 +1116,32 @@
           })
         }
 
-//        if(this.form.topicType != 5){}
-
-        if(this.form.topicCircleList.length == 0){
+        if(this.form.topicType != 5){
+          if(this.form.topicCircleList.length == 0){
             this.error = '请选择发送圈子';
             return;
-        }else{
-          for(let i=0; i< this.form.topicCircleList.length; i++){
-            if(this.form.topicCircleList[i].cType == 0){
-              if(!this.form.topicCircleList[i].placeId){
-                this.error = '请选择发送圈子';
-                return;
+          }else{
+            for(let i=0; i< this.form.topicCircleList.length; i++){
+              if(this.form.topicCircleList[i].cType == 0){
+                if(!this.form.topicCircleList[i].placeId){
+                  this.error = '请选择发送圈子';
+                  return;
+                }else{
+                  this.error = '';
+                }
               }else{
-                this.error = '';
-              }
-            }else{
-              if(!this.form.topicCircleList[i].placeId){
-                this.error = '请选择钓场';
-                return;
-              }else{
-                this.error = '';
+                if(!this.form.topicCircleList[i].placeId){
+                  this.error = '请选择钓场';
+                  return;
+                }else{
+                  this.error = '';
+                }
               }
             }
           }
         }
+
+
 
 
         this.$refs[form].validate((valid)=>{

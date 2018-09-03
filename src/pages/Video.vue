@@ -631,6 +631,7 @@
         if(this.videoPath){
           this.$refs.upload.clearFiles();
         }
+
         this.videoPath = '';
         this.dialogVisible = true;
         this.videoShow = false;
@@ -677,7 +678,6 @@
               category:31
           }).then(res=>{
             this.videoList = res.data;
-            console.log(this.videoList)
           })
       },
 
@@ -692,10 +692,11 @@
         }
 
         //p视频分类转字符串
+        console.log(this.form.videoCategoryId)
         if(typeof this.multipleSelection[0].videoCategoryId === 'string'){
           this.form.videoCategoryId = this.form.videoCategoryId.join(',');
         }
-
+        console.log( this.form.videoCategoryId)
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/videoTopic/updateVideoTopic' : 'videoTopic/addVideoTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           if(valid){
@@ -838,12 +839,11 @@
            this.form.status = res.data.status + '';
           //  this.form.videoCategoryId = res.data.videoCategoryId + '';
            this.video = this.form.topicContentList[0];
-           console.log(this.video)
-
+           console.log(this.form.videoCategoryId )
            if(typeof this.multipleSelection[0].videoCategoryId === 'string'){
              this.form.videoCategoryId = this.form.videoCategoryId.split(',');
            }
-
+          console.log(this.form.videoCategoryId )
          }
        })
       },
@@ -963,7 +963,7 @@
         ]
 
         if(this.multipleSelection[0] != undefined){
-          this.$post('liked/getAllLList',{
+          this.$post('liked/getAllLListByTopic',{
             commentId: this.multipleSelection[0].cId,
             type:4
           }).then(res=>{

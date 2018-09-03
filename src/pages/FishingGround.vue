@@ -158,8 +158,8 @@
                         </el-row>
                          <el-row>
                        <el-col :span="12">
-                            <el-form-item label="是否免费：">
-                                <el-select v-model="form.needPay" placeholder="是否免费">
+                            <el-form-item label="是否禁钓：">
+                                <el-select v-model="form.needPay" placeholder="是否禁钓">
                                 <el-option label="是" value="1"></el-option>
                                 <el-option label="否" value="0"></el-option>
                                 </el-select>
