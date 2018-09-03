@@ -1119,7 +1119,6 @@
           for(let i=0; i< this.form.topicCircleList.length; i++){
             if(this.form.topicCircleList[i].cType == 0){
               if(!this.form.topicCircleList[i].placeId){
-                alert(1)
                 this.error = '请选择发送圈子';
                 return;
               }else{

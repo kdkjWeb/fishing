@@ -143,7 +143,7 @@
                 <el-row>
                   <el-col :span="12">
                      <el-form-item label="类型：" prop="type">
-                       <el-select v-model="form.type" placeholder="类型">
+                       <el-select v-model="form.type" placeholder="类型" @change="getType">
                          <el-option label="钓友" value="1"></el-option>
                          <el-option label="农家乐" value="2"></el-option>
                          <el-option label="渔具店" value="3"></el-option>
@@ -153,7 +153,7 @@
                   </el-col>
                   <el-col :span="12">
                      <el-form-item label="等级：" prop="level">
-                       <el-input v-model.number="form.level" min="0" max="100" placeholder="最高等级100"></el-input>
+                       <el-input v-model.number="form.level" min="0" max="100" placeholder="最高等级100" :disabled="disabledDeng"></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -243,6 +243,7 @@ export default {
                 },
             height:0,
             dialogVisible: false,   //弹出框是否显示
+          disabledDeng:false,
             imageUrl: '',  //上传图片显示
             multipleSelection: [],   //存放勾选的数据
             currentPage: 1, //当前第几页
@@ -319,6 +320,14 @@ export default {
           }
     },
 
+      getType(){
+        console.log(this.form.type)
+        if(this.form.type == 2 || this.form.type == 3){
+            this.disabledDeng = true;
+        }else{
+          this.disabledDeng = false;
+        }
+      },
         //获取所有等级列表
         getRatingList(pageSize,pageNum){
 
