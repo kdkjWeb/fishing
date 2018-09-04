@@ -293,6 +293,7 @@
                 <el-row>
                   <el-col :span="8">
                     <el-form-item :label="titleName" prop="topicCircleArr" class="topicCircle" :error="error">
+
                       <el-select  v-if="isShow"   v-model="topicCircleArr" multiple filterable  :disabled="isDesable">
                         <el-option
                           v-for="(item,index) in circleList"
@@ -302,7 +303,7 @@
                         </el-option>
                       </el-select>
 
-                      <el-select  v-else="isShow" v-model="topicCircle"  filterable :disabled="isDesable">
+                      <el-select  v-show="!isShow" v-model="topicCircle"  filterable :disabled="isDesable">
                         <el-option
                           v-for="(data,index) in anglingSiteList"
                           :label="data.name"
@@ -310,6 +311,7 @@
                           :key="index">
                         </el-option>
                       </el-select>
+
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
@@ -467,7 +469,7 @@
             <el-row>
               <el-col :span="8">
                 <el-form-item label="创建人：" >
-                  <el-select v-model="form.authorId"  filterable>
+                  <el-select v-model="form.authorId"  filterable :disabled="aduthorDisabled">
                     <el-option
                       v-for="(item,index) in userList"
                       :label="item.nickname"
@@ -668,6 +670,7 @@
             videoUploadPercent:null,
             videoPath:'',
             circleId:'',
+            aduthorDisabled:false,  //修改时禁用创建人
             rules:{
               title: [
                 { required: true, message: '请输入标题名称', trigger: 'blur' },
@@ -795,52 +798,48 @@
 
       //通过类型判断发送圈子
       getType(){
+        this.isDesable = false;
+        this.isShow = true;
+        this.topicCircle = '';
         this.error = '';
+
         if(this.form.topicType == 5){
             this.isDesable = true;
-        }else{
-          this.isDesable = false;
         }
 
         if(this.form.topicType == 2 || this.form.topicType == 3){
-          console.log( this.topicCircleArr);
+            alert(2);
           this.isShow = false;
           this.topicCircleArr = [];
-          console.log( this.topicCircleArr);
-        }else{
-            console.log( this.topicCircle);
-
-          this.isShow = true;
-          this.topicCircle = '';
-          console.log( this.topicCircle);
         }
 
-//        this.topicCircleArr = [];
-//        this.topicCircle = '';
-        this.form.topicCircleList = [];
+//        this.form.topicCircleList = [];
         this.getCircleList();
-
       },
 
       //获取所有发送圈子  /basicTopic/queryById
       getCircleList(){
+        this.anglingSiteList = [];
+        this.circleList = [];
         if(this.form.topicType == 2 || this.form.topicType == 3){
             this.titleName = '钓场：';
-
             this.$get('/fishplace/getSendFishPlaceList',{}).then(res=>{
               if(res.code == 0){
+                  alert(1);
                 this.anglingSiteList = res.data;
+                console.log(this.anglingSiteList);
               }
-            })
-          }else{
-              this.titleName = '发送圈子：';
-              this.$get('/circle/querySendCircle',{}).then(res=>{
+            });
+            return false;
+          }
+
+            this.titleName = '发送圈子：';
+            this.$get('/circle/querySendCircle',{}).then(res=>{
                 if(res.code == 0){
                   this.circleList = res.data;
+                  console.log(this.circleList);
                 }
               })
-
-          }
       },
 
       //获取所有省份 /province/queryAll
@@ -1028,7 +1027,7 @@
         this.dialogVisible = true;
         this.imagesShow = false;
         this.circleId = '';
-
+        this.aduthorDisabled = false;
         this.$nextTick(()=>{
 
             this.$refs['topicType'].resetField();
@@ -1043,7 +1042,7 @@
                 this.form[key] = ''
               }
           })
-        })
+        });
         this.topicCircleArr = [];
         this.topicContentArr=[
           {
@@ -1286,6 +1285,7 @@
           this.contentError = '';
           this.imagesShow = true;
           this.topicContentArr = [];
+          this.aduthorDisabled = true;
         if(this.multipleSelection.length != 1){
           this.$message({
             message: '请选择一条需要修改的数据！',
@@ -1665,8 +1665,14 @@
           type: 'warning'
         }).then(() => {
           this.topicContentArr.forEach((val,num)=>{
+              console.log(val)
             if(index == num){
-              this.topicContentArr.splice(index,1);
+                if(val.contentType == 2){
+                    this.$get('/common/deleteOssImage',{
+                      filename:val.
+                    })
+                }
+//              this.topicContentArr.splice(index,1);
             }
           })
           this.$message({

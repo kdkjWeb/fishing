@@ -439,6 +439,7 @@
         commentData:[],  //评论列表
         commentShow:true,
         disabled: false,
+        aduthorDisabled:false,   //修改创建人禁用
         tableList: [   //表格的头部配置
           {prop: 'title', label: '标题', width: '200', align: ''},
           {prop: 'status', label: '状态', width: '60', align: ''},
@@ -638,7 +639,7 @@
         this.circleId = '';
         this.form.topicContentList = [];
         this.videoUploadPercent = 0;
-
+        this.aduthorDisabled = false;
 
         this.$nextTick(()=>{
 
@@ -810,7 +811,7 @@
 
 //      //修改
       edit(){
-
+        this.aduthorDisabled = true;
        if(this.multipleSelection.length != 1){
          this.$message({
            message: '请选择一条需要修改的数据！',
