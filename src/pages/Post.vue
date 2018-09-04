@@ -132,7 +132,7 @@
           <el-form label-position="right" ref="form" :rules="rules"  label-width="110px" :model="form" size="mini">
 
             <el-row>
-              <div style="text-align: right;margin-bottom: 20px;">
+              <div style="text-align: right;margin-bottom: 20px;" v-if="isImg">
                 <el-button type="primary" size="mini" class="add" @click="addContent" v-if="addIsShow">+ 添加</el-button>
                 <el-button-group v-else>
                   <el-button type="primary" size="mini" @click="addwords">文字</el-button>
@@ -159,7 +159,7 @@
                   <el-col :span="24" v-if="item.contentType==2" >
                     <el-row>
                       <el-col :span="23">
-                        <div style="width: 600px;margin: 0 auto;">
+                        <div style="width: 600px;margin: 0 auto 20px;">
                           <img :src="item.contentUrl" style="width:100%;"/>
                         </div>
                       </el-col>
@@ -170,7 +170,7 @@
                   </el-col>
                 </div>
 
-                <div v-else>
+                <div  v-else>
                   <el-col :span="24" :offset="1"  v-if="item.contentType==2">
                     <span class="uploadTitle">上传图标：</span>
                     <el-upload
@@ -586,6 +586,7 @@
 
     data(){
           return{
+              imgFlag:false,
             height: '',
             errMsg: '',
             isDesable: false,
@@ -703,6 +704,7 @@
 
             ],
             imagesShow:false,
+            isImg:false,  //点击修改时，不显示添加内容按钮
             tableList: [   //表格的头部配置
               {prop: 'status', label: '状态', width: '50', align: ''},
               {prop: 'isTop', label: '置顶', width: '60', align: ''},
@@ -808,7 +810,6 @@
         }
 
         if(this.form.topicType == 2 || this.form.topicType == 3){
-            alert(2);
           this.isShow = false;
           this.topicCircleArr = [];
         }
@@ -825,9 +826,7 @@
             this.titleName = '钓场：';
             this.$get('/fishplace/getSendFishPlaceList',{}).then(res=>{
               if(res.code == 0){
-                  alert(1);
                 this.anglingSiteList = res.data;
-                console.log(this.anglingSiteList);
               }
             });
             return false;
@@ -837,7 +836,6 @@
             this.$get('/circle/querySendCircle',{}).then(res=>{
                 if(res.code == 0){
                   this.circleList = res.data;
-                  console.log(this.circleList);
                 }
               })
       },
@@ -1022,6 +1020,7 @@
 
       //新增
       add(){
+          this.isImg = true;
         this.imageUrl = '';
         this.videoPath = '';
         this.dialogVisible = true;
@@ -1029,11 +1028,8 @@
         this.circleId = '';
         this.aduthorDisabled = false;
         this.$nextTick(()=>{
-
             this.$refs['topicType'].resetField();
             this.$refs['title'].resetField();
-
-
           //将对象还原   shabisheji
           Object.keys(this.form).forEach((key)=>{
               if(key == 'fishType' || key == 'fishMethod' || key == 'baitType'){
@@ -1280,6 +1276,7 @@
 
       //修改
       edit(){
+          this.isImg = false;
          this.errMsg = '';
          this.error = '';
           this.contentError = '';
@@ -1665,14 +1662,13 @@
           type: 'warning'
         }).then(() => {
           this.topicContentArr.forEach((val,num)=>{
-              console.log(val)
             if(index == num){
                 if(val.contentType == 2){
                     this.$get('/common/deleteOssImage',{
-                      filename:val.
+                      filename:val.content
                     })
                 }
-//              this.topicContentArr.splice(index,1);
+              this.topicContentArr.splice(index,1);
             }
           })
           this.$message({
@@ -1695,14 +1691,25 @@
 
       //添加文字
       addwords(){
-          this.cont++;
         let flag = false;
-        for(let i=0; i<this.topicContentArr.length; i++){
+        this.cont++;
+        console.log(this.topicContentArr)
+        if(this.topicContentArr.length  == 0){
+            alert(1)
+          flag = true;
+        }else{
+          for(let i=0; i<this.topicContentArr.length; i++){
+//            if(this.topicContentArr[i].sort){
+//              this.cont = this.topicContentArr[i].sort++;
+//            }else{
+
+//            }
             if(this.topicContentArr[i].content){
-                flag  = true;
+              flag  = true;
             }else{
-                flag = false;
-                this.cont--;
+              flag = false;
+              this.cont--;
+            }
           }
         }
 
@@ -1720,15 +1727,24 @@
 
       //添加图片
       addImages(){
-          this.cont++;
-
         let flag = false;
-        for(let i=0; i<this.topicContentArr.length; i++){
-          if(this.topicContentArr[i].content){
-            flag  = true;
-          }else{
-            flag = false;
-            this.cont--;
+        this.cont++;
+        if(this.topicContentArr.length == 0){
+            flag = true;
+        }else{
+          for(let i=0; i<this.topicContentArr.length; i++){
+//            if(this.topicContentArr[i].sort){
+//              this.cont = this.topicContentArr[i].sort++;
+//            }else{
+
+//            }
+
+            if(this.topicContentArr[i].content){
+              flag  = true;
+            }else{
+              flag = false;
+              this.cont--;
+            }
           }
         }
 
@@ -1736,7 +1752,8 @@
           this.topicContentArr.push({
             contentType:2,
             content:'',
-            sort:this.cont
+            sort:this.cont,
+            isImg:false
           })
         }else{
           this.$message('您内容或图片不能为空，请填写或上传后再添加！');
