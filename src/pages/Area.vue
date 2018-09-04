@@ -201,6 +201,11 @@ export default {
                             type: 'success',
                             message: '添加区域成功!'
                         });
+                    }else{
+                         this.$message({
+                            type: 'warning',
+                            message: res.msg
+                        });
                     }
                 })
            }else if(this.btnIndex == 1){
@@ -215,6 +220,11 @@ export default {
                             type: 'success',
                             message: '添加区域成功!'
                         });
+                    }else{
+                        this.$message({
+                            type: 'warning',
+                            message: res.msg
+                        });
                     }
                 })
            }else if(this.btnIndex == 2){
@@ -228,6 +238,11 @@ export default {
                        this.$message({
                             type: 'success',
                             message: '修改区域成功!'
+                        });
+                   }else{
+                       this.$message({
+                            type: 'warning',
+                            message: res.msg
                         });
                    }
                })

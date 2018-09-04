@@ -229,7 +229,7 @@
 
 
                       <el-form-item label="创建人：" >
-                        <el-select v-model="form.publisher"  filterable>
+                        <el-select v-model="form.publisher"  filterable :disabled="pulisherDisabled">
                           <el-option
                             v-for="(item,index) in userList"
                             :label="item.nickname"
@@ -273,7 +273,7 @@
                   ref="upload"
                   class="avatar-uploader"
                   accept="image/jpeg,image/png"
-                  :action="`${this.$store.state.baseUrl}/common/uploadOssVideo`"
+                  :action="`${this.$store.state.baseUrl}common/uploadOssVideo`"
                   list-type="picture-card"
                   :show-file-list="false"
                   :on-success="handleVideoSuccess"
@@ -394,6 +394,7 @@
         titleName:'发送圈子：',
         dialogVisible:false,
         isShow:true,
+        pulisherDisabled:false,  //修改时禁用创建人
         videoList:[],  //视频分类
         form:{
           title:'',  //标题、圈子
@@ -439,7 +440,6 @@
         commentData:[],  //评论列表
         commentShow:true,
         disabled: false,
-        aduthorDisabled:false,   //修改创建人禁用
         tableList: [   //表格的头部配置
           {prop: 'title', label: '标题', width: '200', align: ''},
           {prop: 'status', label: '状态', width: '60', align: ''},
@@ -632,14 +632,13 @@
         if(this.videoPath){
           this.$refs.upload.clearFiles();
         }
-
+        this.pulisherDisabled = false;
         this.videoPath = '';
         this.dialogVisible = true;
         this.videoShow = false;
         this.circleId = '';
         this.form.topicContentList = [];
         this.videoUploadPercent = 0;
-        this.aduthorDisabled = false;
 
         this.$nextTick(()=>{
 
@@ -811,7 +810,7 @@
 
 //      //修改
       edit(){
-        this.aduthorDisabled = true;
+        this.pulisherDisabled = true;
        if(this.multipleSelection.length != 1){
          this.$message({
            message: '请选择一条需要修改的数据！',
@@ -1174,8 +1173,14 @@
       },
       //上传成功
       handleVideoSuccess(res, file){
+
         this.videoUploadPercent = 100;
         this.videoPath = URL.createObjectURL(file.raw);
+        console.log(res,file)
+        res.data = res.data.split(',') ;
+        console.log(res.data[0],res.data[1])
+        // this.video.thumbUrl = 
+
 
         if(res.code == 0){
             this.$message({
@@ -1185,8 +1190,9 @@
 
           this.form.topicContentList=[{
             contentType:3,
-            content:res.data,
-            sort:1
+            content:res.data[0],
+            sort:1,
+            thumb:res.data[1]
           }]
         }else if(res.code == 602){
            this.$message.error(res.msg);

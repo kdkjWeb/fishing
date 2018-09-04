@@ -172,8 +172,8 @@ export default {
     padding-right: 6px;
     vertical-align: middle;
 }
-.el-submenu ul.el-menu li.el-menu-item:last-child{
-    margin-bottom: 50px;
+.el-submenu:last-child{
+    margin-bottom: 100px;
 }
 </style>
 

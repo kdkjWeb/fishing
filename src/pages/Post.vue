@@ -145,7 +145,7 @@
                 <el-col :span="24" v-if="item.contentType==1" >
                   <el-row>
                     <el-col :span="23">
-                      <el-form-item label="内容：" class="content" :error="contentError">
+                      <el-form-item label="内容：" class="content" :error="contentError" >
                         <el-input type="textarea" v-model="topicContentArr[index].content" :value="item.content"></el-input>
                       </el-form-item>
                     </el-col>
@@ -294,7 +294,7 @@
                   <el-col :span="8">
                     <el-form-item :label="titleName" prop="topicCircleArr" class="topicCircle" :error="error">
 
-                      <el-select  v-if="isShow"   v-model="topicCircleArr" multiple filterable  :disabled="isDesable">
+                      <el-select  v-if="isShow"   v-model="topicCircleArr" multiple filterable  >
                         <el-option
                           v-for="(item,index) in circleList"
                           :label="item.circleName"
@@ -303,7 +303,7 @@
                         </el-option>
                       </el-select>
 
-                      <el-select  v-show="!isShow" v-model="topicCircle"  filterable :disabled="isDesable">
+                      <el-select  v-show="!isShow" v-model="topicCircle"  filterable >
                         <el-option
                           v-for="(data,index) in anglingSiteList"
                           :label="data.name"
@@ -385,6 +385,7 @@
                   <el-col :span="8">
                       <el-form-item label="上鱼时间：">
                         <el-date-picker
+                        :disabled="isDesable"
                           v-model="form.fishOnTime"
                           type="datetime"
                           placeholder="选择日期时间"
@@ -394,7 +395,6 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="县：">
-
                       <el-select v-model="form.areaId" placeholder="县" @change="getCountryList(form.areaId)" filterable>
                         <el-option
                           v-for="(item,index) in areaList"
@@ -409,7 +409,7 @@
                 <el-row>
                   <el-col :span="8">
                     <el-form-item label="是否坐船：">
-                      <el-select v-model="form.isGoBoat" placeholder="是否坐船">
+                      <el-select v-model="form.isGoBoat" placeholder="是否坐船" :disabled="isDesable">
                         <el-option label="是" value="1"></el-option>
                         <el-option label="否" value="0"></el-option>
                       </el-select>
@@ -672,6 +672,7 @@
             videoPath:'',
             circleId:'',
             aduthorDisabled:false,  //修改时禁用创建人
+            topicShow:true,  //判断类型是否是钓位和鱼情
             rules:{
               title: [
                 { required: true, message: '请输入标题名称', trigger: 'blur' },
@@ -712,6 +713,7 @@
               {prop: 'title', label: '标题', width: '300', align: ''},
               {prop: 'topicType', label: '类型', width: '80', align: ''},
               {prop: 'circleList', label: '发送圈子', width: '120', align: ''},
+              {prop: 'circleList2', label: '钓场', width: '120', align: ''},
               {prop: 'authorName', label: '创建人', width: '100', align: ''},
               {prop: 'showSort', label: '排序号', width: '70', align: ''},
               {prop: 'viewNum', label: '浏览', width: '60', align: 'right'},
@@ -766,7 +768,6 @@
       getUser(){
         this.$get('/user/getUserNameList',{}).then(res=>{
             if(res.code == 0){
-                console.log(res.data)
               this.userList = res.data
             }
         })
@@ -800,33 +801,39 @@
 
       //通过类型判断发送圈子
       getType(){
-        this.isDesable = false;
+        this.isDesable = true;
         this.isShow = true;
         this.topicCircle = '';
         this.error = '';
-
-        if(this.form.topicType == 5){
-            this.isDesable = true;
-        }
-
+        this.form.fishMethod = [];     //钓法
+        this.form.fishType = [];     //鱼类
+        this.form.baitType = [];  //饲料
+        this.form.isGoBoat = '';  //是否坐船
         if(this.form.topicType == 2 || this.form.topicType == 3){
           this.isShow = false;
           this.topicCircleArr = [];
+          this.isDesable = false;
         }
-
-//        this.form.topicCircleList = [];
+       this.form.topicCircleList = [];
         this.getCircleList();
       },
 
       //获取所有发送圈子  /basicTopic/queryById
       getCircleList(){
-        this.anglingSiteList = [];
-        this.circleList = [];
+        // this.anglingSiteList = [];
+        // this.circleList = [];
         if(this.form.topicType == 2 || this.form.topicType == 3){
             this.titleName = '钓场：';
             this.$get('/fishplace/getSendFishPlaceList',{}).then(res=>{
               if(res.code == 0){
                 this.anglingSiteList = res.data;
+
+                this.anglingSiteList.forEach((val)=>{
+                    console.log(val.cId == this.topicCircle)
+                    if(val.cId != this.topicCircle){
+                        this.topicCircle = '';
+                    }
+                })
               }
             });
             return false;
@@ -904,20 +911,31 @@
                             arr[index].status = e.status == 0 ? '未审' : '审核';
                             arr[index].isTop = e.isTop == 0 ? '' : '是';
                             arr[index].isBest = e.isBest == 0 ? '' : '是';
+                            console.log(e.circleList)
                             if(e.circleList != undefined){
                                let str = '';
                                 e.circleList.forEach((e)=>{
-                                  if(e.circleName){
-                                    str += e.circleName+'、';
-                                    arr[index].circleList = str.replace(/、$/gi,"");
+
+                                  if(e.showType == 0 && e.circleName){
+                                        // if(e.circleName){
+                                          str += e.circleName+'、';
+                                          arr[index].circleList = str.replace(/、$/gi,"");
+                                          arr[index].circleList2 = '';
+                                        // }
                                   }else{
-                                    arr[index].circleList = ''
+
+                                      // if(e.circleName){
+                                          str += e.circleName+'、';
+                                          arr[index].circleList2 = str.replace(/、$/gi,"");
+                                          arr[index].circleList = '';
+                                        // }
                                   }
+                                  
                                 })
 
-                            }else{
-
                             }
+
+                            
 
                             if(e.topicType == 1){
                               arr[index].topicType  = '标准'
@@ -1020,7 +1038,8 @@
 
       //新增
       add(){
-          this.isImg = true;
+        this.isDesable = false;
+        this.isImg = true;
         this.imageUrl = '';
         this.videoPath = '';
         this.dialogVisible = true;
@@ -1264,6 +1283,11 @@
                   });
                 }
               })
+            }else{
+                  this.$message({
+                      type: 'warning',
+                      message: res.msg
+                  });
             }
           })
         }).catch(() => {
@@ -1277,8 +1301,8 @@
       //修改
       edit(){
           this.isImg = false;
-         this.errMsg = '';
-         this.error = '';
+          this.errMsg = '';
+          this.error = '';
           this.contentError = '';
           this.imagesShow = true;
           this.topicContentArr = [];
@@ -1292,7 +1316,6 @@
         }
         this.dialogVisible = true;
         this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-        console.log(this.multipleSelection[0].status);
           if(this.multipleSelection[0].status == '审核'){
                 this.disabledStatus  = false;
           }else{
@@ -1314,25 +1337,27 @@
           this.form.baitType = this.form.baitType ? this.form.baitType.split(',') : [];
           this.form.fishMethod = this.form.fishMethod ? this.form.fishMethod.split(',') : [];
 
-          if(this.form.topicType == 5){
-                this.isDesable = true;
-            }else if(this.form.topicType == 2){
-              this.isShow = false;
-            }else{
-              this.isShow = true;
-              this.isDesable = false;
-            }
-
+          // if(this.form.topicType == 5){
+          //       this.isDesable = true;
+          //   }else if(this.form.topicType == 2){
+          //     this.isShow = false;
+          //   }else{
+          //     this.isShow = true;
+          //     this.isDesable = false;
+          //   }
           if(this.form.topicType == 2 || this.form.topicType == 3){
-            this.titleName = '钓场：';
-            this.topicCircle = this.form.circleList[0].cId
-            this.isShow = false;
             this.getCircleList();
+            this.titleName = '钓场：';
+            this.isShow = false;
+             this.isDesable = false;
+             this.topicCircle = this.form.circleList[0].cId
+             console.log(this.anglingSiteList)
           }else{
             this.topicCircleArr = [];
             this.titleName = '发送圈子：';
             this.isShow = true;
             this.getCircleList()
+            this.isDesable = true;
 
             if(this.form.circleList){
               this.form.circleList.forEach((val)=>{
@@ -1340,7 +1365,7 @@
               })
             }
           }
-          this.getCityList();
+          // this.getCityList();
         })
       },
 
@@ -1848,6 +1873,9 @@ background: #fff;
     content: '*';
     color: #f56c6c;
     margin-right: 4px;
+  }
+  .content{
+    margin-top:10px;
   }
 </style>
 
