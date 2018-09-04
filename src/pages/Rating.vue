@@ -148,6 +148,7 @@
                          <el-option label="农家乐" value="2"></el-option>
                          <el-option label="渔具店" value="3"></el-option>
                          <el-option label="头衔" value="4"></el-option>
+                         <el-option label="认证方式" value="9"></el-option>
                        </el-select>
                      </el-form-item>
                   </el-col>
@@ -415,7 +416,7 @@ export default {
         this.$refs[formName].validate((valid) => {
           let url = this.circleId ? '/levelRule/updateLevelRule' : '/levelRule/addLevelRule'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
-          let type  = (this.form.type == '钓友' || this.form.type == '1')? 1:(this.form.type == '农家乐' || this.form.type == '2')? 2 : 3
+        //   let type  = (this.form.type == '钓友' || this.form.type == '1')? 1:(this.form.type == '农家乐' || this.form.type == '2')? 2 : 3
 
 
           if (valid) {
@@ -426,7 +427,7 @@ export default {
               cUser:this.form.cUser,     //创建人
               modifyUser:this.form.modifyUser,  //修改人
               coin:this.form.coin,  //娱乐奖励金币
-              type: type,  //类型
+              type: this.form.type,  //类型
               score:this.form.score,  //升级分值
               name:this.form.name,  //等级名称
               userPacote:this.form.userPacote,  //用户分组

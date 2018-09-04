@@ -259,7 +259,13 @@
                                 </el-select>
                             </el-form-item>
                       </el-col>
-                   
+                      <el-col :span="8">
+                         <el-form-item label="认证方式：">
+                                <el-select v-model="form.checkWay" placeholder="请选择认证方式">
+                                <el-option :label="item.name" :value="item.name" v-for="item in checkList" :key="item.cId"></el-option>
+                                </el-select>
+                            </el-form-item>
+                      </el-col>
                     </el-row>
                     <el-row>
                       <el-col :span="8">
@@ -447,6 +453,7 @@ export default {
             fishMethodList: [],   //有什么钓法
             fishList: [],   //鱼类分类
             rankList: [],    //头衔
+            checkList: [],   //认证方式
             formInline: {   //圈子、详细地址、创建时间的表单
                 nickname: '',
                 phone: '',
@@ -474,6 +481,7 @@ export default {
                 showQq: '',   //qq显示
                 role: '',   //用户类型
                 level: '',   //等级
+                checkWay: '',  //认证方式
                 // targetFish: [],   //对象鱼
                 // fishWay: [],   //钓法
                 // bait: [],   //饵料
@@ -699,7 +707,7 @@ export default {
             this.$get('user/getUserInfo',{
                 id: this.circleId
             }).then(res=>{
-                
+                console.log(res.data)
                 this.form = res.data;
                 // this.form.password = '******';
                 this.form.status = this.form.status + "";
@@ -725,7 +733,6 @@ export default {
         },
         //获取头衔
         getrankList(rank){
-            console.log(rank)
             if(rank == 2){
                 rank = 4;
             }else if(rank == 3){
@@ -738,6 +745,17 @@ export default {
             }).then(res=>{
                 if(res.code == 0){
                     this.rankList = res.data;
+                }
+            })
+        },
+        //获取认证方式
+        getcheckList(){
+            this.$get('levelRule/queryByType',{
+                type: 9
+            }).then(res=>{
+                console.log(res.data)
+                if(res.code == 0){
+                    this.checkList = res.data;
                 }
             })
         },
@@ -863,6 +881,7 @@ export default {
                         showPhone: this.form.showPhone,
                         showQq: this.form.showQq,
                         role: role,
+                        checkWay: this.form.checkWay,
                         // level: this.form.level,
                         // targetFish: (this.form.targetFish.length > 0) ? this.form.targetFish.join(',') : '',
                         // fishWay: (this.form.fishWay.length > 0) ? this.form.fishWay.join(',') : '',
@@ -1100,6 +1119,8 @@ export default {
                 that.getBaitList();
                 //获取鱼有什么分类
                 that.getFishList();
+                //获取认证方式
+                that.getcheckList();
             }
         },
         form:{
