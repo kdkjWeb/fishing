@@ -100,7 +100,7 @@
                     <el-row>
                       <el-col :span="24">
                         <el-form-item label="类别：" prop="category">
-                            <el-select v-model="form.category" placeholder="类别">
+                            <el-select v-model="form.category" placeholder="类别" @change="getCategory" clearable>
                                 <el-option
                                   v-for="(data,index) in parentList"
                                   :label="data.codeName"
@@ -108,6 +108,15 @@
                                   :key="index"></el-option>
                             </el-select>
                         </el-form-item>
+                        <!--<el-form-item v-if="isLabel">-->
+                          <!--<el-select v-model="form.label" placeholder="标签的二级菜单">-->
+                            <!--<el-option-->
+                              <!--v-for="(data,index) in labelList"-->
+                              <!--:label="data.codeName"-->
+                              <!--:value="data.cId"-->
+                              <!--:key="index"></el-option>-->
+                          <!--</el-select>-->
+                        <!--</el-form-item>-->
                       </el-col>
                       <el-col :span="24">
                         <el-form-item label="名称：" prop="codeName">
@@ -222,6 +231,8 @@ export default {
               status: ''
             },
             parentList:[],  //所有类别
+            labelList:[],  //标签下的二级菜单
+            isLabel:false, //显示标签下的子菜单
             form:{
               category:'',  //类别
               codeName:'',  //名称
@@ -232,11 +243,12 @@ export default {
               creatTime:'',  //创建时间
               modifier:'',   //修改人
               modifyTime:'',  //修改时间
-              icon:''   //图标
+              icon:'',   //图标
+              label:''
             },
             tableList: [   //表格的头部配置
                 {prop: 'status', label: '状态', width: '80', align: ''},
-                {prop: 'category', label: '类别', width: '120', align: ''},
+                {prop: 'categoryName', label: '类别', width: '120', align: ''},
                 {prop: 'codeName', label: '名称', width: '80', align: ''},
                 {prop: 'sort', label: '排序', width: '80', align: 'right'},
                 {prop: 'rewards', label: '打赏渔乐', width: '80', align: 'right'},
@@ -269,7 +281,7 @@ export default {
           }
     },
 
-        //获取圈子列表
+        //获取列表
         getCircleList(pageSize,pageNum){
             this.$post('/sysCategory/queryByRecord',{
                 pageSize: pageSize ? pageSize : 30,
@@ -284,29 +296,29 @@ export default {
                         let arr = res.data.list;
                         arr.forEach((e,index) => {
                            arr[index].status = e.status ? '正常' : '已关闭';
-                           switch(arr[index].category){
-                             case 30:
-                                 arr[index].category = '钓场分类';
-                                 break;
-                             case 31:
-                                 arr[index].category = '视频分类';
-                                 break;
-                             case 32:
-                                 arr[index].category = '圈子分类';
-                                 break;
-                             case 33:
-                                 arr[index].category = '钓法';
-                                 break;
-                             case 34:
-                                 arr[index].category = '饵料';
-                                 break;
-                             case 35:
-                                 arr[index].category = '鱼类';
-                                 break;
-                             case 36:
-                                 arr[index].category = '用户标签';
-                                 break;
-                           }
+//                           switch(arr[index].category){
+//                             case 30:
+//                                 arr[index].category = '钓场分类';
+//                                 break;
+//                             case 31:
+//                                 arr[index].category = '视频分类';
+//                                 break;
+//                             case 32:
+//                                 arr[index].category = '圈子分类';
+//                                 break;
+//                             case 33:
+//                                 arr[index].category = '钓法';
+//                                 break;
+//                             case 34:
+//                                 arr[index].category = '饵料';
+//                                 break;
+//                             case 35:
+//                                 arr[index].category = '鱼类';
+//                                 break;
+//                             case 36:
+//                                 arr[index].category = '用户标签';
+//                                 break;
+//                           }
 
                           this.tableData = arr
                         });
@@ -332,6 +344,23 @@ export default {
                 }
             })
       },
+
+      getCategory(){
+//        this.isLabel = false;
+//        if(this.form.category == '36' || this.form.category == '标签'){
+//            alert(1)
+//
+//            this.isLabel = true;
+//          this.$post('/sysCategory/queryParent',{
+//            category: this.form.category
+//          }).then(res=>{
+//            if(res.code == 0){
+//              this.form.category = '标签';
+//              this.parentList  = res.data.list;
+//            }
+//          })
+//        }
+      },
         //新增
         add(){
             this.imageUrl = '';
@@ -339,6 +368,7 @@ export default {
             this.form = {};
             this.circleId = '';
           this.form.status = '1';
+          this.getParen()
         },
 
       //弹出框的确认按钮
@@ -469,6 +499,8 @@ export default {
                         this.form.category = res.data.category + '';
                         this.form.status = res.data.status + '';
                         this.imageUrl = this.form.iconUrl;
+
+                        console.log(this.form)
                         }
                 }
             })
