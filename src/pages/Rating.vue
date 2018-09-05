@@ -322,7 +322,7 @@ export default {
     },
 
       getType(){
-        this.form.name = '';
+//        this.form.name = '';
         if(this.form.type == 2 || this.form.type == 3){
             this.disabledDeng = true;
         }else{
@@ -420,7 +420,7 @@ export default {
           let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
         //   let type  = (this.form.type == '钓友' || this.form.type == '1')? 1:(this.form.type == '农家乐' || this.form.type == '2')? 2 : 3
 
-
+       this.form.type = Number(this.form.type)
           if (valid) {
             this.$post(url,{
               cId: this.circleId ? this.circleId : null,
@@ -505,7 +505,6 @@ export default {
         },
 //        修改
         edit(){
-
             if(this.multipleSelection.length != 1){
                 this.$message({
                 message: '请选择一条需要修改的数据！',

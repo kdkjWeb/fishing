@@ -47,12 +47,8 @@ exports.cssLoaders = function (options) {
     if (options.extract) {
       return ExtractTextPlugin.extract({
         use: loaders,
-<<<<<<< HEAD
         fallback: 'vue-style-loader',
         // publicPath: '../../'
-=======
-        fallback: 'vue-style-loader'
->>>>>>> 7692729571014c47533f956b5e1739778adca6bb
       })
     } else {
       return ['vue-style-loader'].concat(loaders)

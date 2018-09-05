@@ -9,9 +9,9 @@ import { Message, Loading } from 'element-ui';
 
 
 
-Axios.defaults.baseURL = 'http://192.168.20.158:8080/';
+// Axios.defaults.baseURL = 'http://192.168.20.158:8080/';
 
-// Axios.defaults.baseURL = 'http://www.scdiaoyu.cn/fish/';
+Axios.defaults.baseURL = 'http://www.scdiaoyu.cn/fish/';
 Axios.defaults.timeout = 50000;
 
 Axios.defaults.withCredentials = true;
@@ -23,13 +23,6 @@ Axios.interceptors.request.use(
         if(store.state.token){   //判断是否存在token,如果存在，则在每个header都加上token
             //   config.headers.Authorization = `token ${store.state.token}`;
            config.headers['token'] = store.state.token;   //请求头设置token
-        }else{
-            this.$message.error('登录过期，请重新登录！');
-            setTimeout(()=>{
-                this.$router.push({
-                    name: 'login'
-                })
-            },1500)
         }
         return config;
     },

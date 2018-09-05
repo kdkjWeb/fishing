@@ -1293,6 +1293,7 @@
                       type: 'warning',
                       message: res.msg
                   });
+                  this.getPostList();
             }
           })
         }).catch(() => {
