@@ -21,6 +21,13 @@ Axios.interceptors.request.use(
         if(store.state.token){   //判断是否存在token,如果存在，则在每个header都加上token
             //   config.headers.Authorization = `token ${store.state.token}`;
            config.headers['token'] = store.state.token;   //请求头设置token
+        }else{
+            this.$message.error('登录过期，请重新登录！');
+            setTimeout(()=>{
+                this.$router.push({
+                    name: 'login'
+                })
+            },1500)
         }
         return config;
     },

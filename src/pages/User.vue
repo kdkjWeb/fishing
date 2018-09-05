@@ -754,11 +754,13 @@ export default {
             this.$get('user/getUserInfo',{
                 id: this.circleId
             }).then(res=>{
+                console.log(this.form.trusted);
+
                 this.form = res.data;
-                // this.form.password = '******';
                 this.form.status = this.form.status + "";
                 this.form.gender = this.form.gender + "";
                 this.form.trusted = this.form.trusted + "";
+                console.log(this.form.trusted);
                 this.form.number = this.rowIndex;
                 this.form.targetFish = this.form.targetFish ? this.form.targetFish.split(',') : [];
                 this.form.fishWay = this.form.fishWay ? this.form.fishWay.split(',') : [];
@@ -897,7 +899,7 @@ export default {
                 this.errMsg1 = ''
             }
             var reg=new RegExp("^[0-9]{6}$");
-            if(!reg.test(this.form.invitedCode)){
+            if(!reg.test(this.form.invitedCode) && this.form.invitedCode != undefined){
                 this.errMsg2 = '请输入6位数字邀请码'
                 return
             }else{
