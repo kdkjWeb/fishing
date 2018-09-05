@@ -475,6 +475,7 @@
                       :label="item.nickname"
                       :value="item.cId"
                       :key="index"></el-option>
+
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -571,6 +572,7 @@
               :header-align="item.align"
               :show-overflow-tooltip="true"
             >
+
             </el-table-column>
           </el-table>
         </div>
@@ -827,14 +829,18 @@
             this.$get('/fishplace/getSendFishPlaceList',{}).then(res=>{
               if(res.code == 0){
                 this.anglingSiteList = res.data;
-
-                this.anglingSiteList.forEach((val)=>{
-                    console.log(val.cId == this.topicCircle)
-                    if(val.cId != this.topicCircle){
-                        this.topicCircle = '';
+                let id = '';
+                for(let i=0; i<this.anglingSiteList.length; i++){
+                    if(this.anglingSiteList[i].cId == this.topicCircle){
+                        id = this.anglingSiteList[i].cId;
+                        break;
+                    }else{
+                      id = '';
                     }
-                })
+                }
+                this.topicCircle = id;
               }
+
             });
             return false;
           }
@@ -911,7 +917,6 @@
                             arr[index].status = e.status == 0 ? '未审' : '审核';
                             arr[index].isTop = e.isTop == 0 ? '' : '是';
                             arr[index].isBest = e.isBest == 0 ? '' : '是';
-                            console.log(e.circleList)
                             if(e.circleList != undefined){
                                let str = '';
                                 e.circleList.forEach((e)=>{
@@ -930,12 +935,12 @@
                                           arr[index].circleList = '';
                                         // }
                                   }
-                                  
+
                                 })
 
                             }
 
-                            
+
 
                             if(e.topicType == 1){
                               arr[index].topicType  = '标准'
@@ -1137,7 +1142,7 @@
           })
         }
 
-        if(this.form.topicType != 5){
+        if(this.form.topicType != 5 || this.form.topicType != 2 || this.form.topicType != 3){
           if(this.form.topicCircleList.length == 0){
             this.error = '请选择发送圈子';
             return;
@@ -1151,12 +1156,12 @@
                   this.error = '';
                 }
               }else{
-                if(!this.form.topicCircleList[i].placeId){
-                  this.error = '请选择钓场';
-                  return;
-                }else{
-                  this.error = '';
-                }
+//                if(!this.form.topicCircleList[i].placeId){
+//                  this.error = '请选择钓场';
+//                  return;
+//                }else{
+//                  this.error = '';
+//                }
               }
             }
           }
@@ -1351,7 +1356,6 @@
             this.isShow = false;
              this.isDesable = false;
              this.topicCircle = this.form.circleList[0].cId
-             console.log(this.anglingSiteList)
           }else{
             this.topicCircleArr = [];
             this.titleName = '发送圈子：';
@@ -1718,7 +1722,6 @@
       addwords(){
         let flag = false;
         this.cont++;
-        console.log(this.topicContentArr)
         if(this.topicContentArr.length  == 0){
             alert(1)
           flag = true;

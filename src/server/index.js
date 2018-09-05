@@ -9,6 +9,7 @@ import { Message, Loading } from 'element-ui';
 
 
 Axios.defaults.baseURL = 'http://192.168.20.158:8080/';
+
 // Axios.defaults.baseURL = 'http://www.scdiaoyu.cn/fish/';
 Axios.defaults.timeout = 50000;
 
