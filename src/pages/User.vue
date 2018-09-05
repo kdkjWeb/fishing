@@ -172,6 +172,7 @@
                         :action="`${this.$store.state.baseUrl}common/uploadOssPic`"
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
+                        :on-error="upError"
                         name="picture"
                         :headers="myHeaders"   
                         auto-upload
@@ -284,7 +285,16 @@
                             <el-input v-model="form.level" :disabled="disabled1"></el-input>
                         </el-form-item>
                       </el-col>
+                      <el-col :span="8">
+                          <el-form-item label="是否免审：">
+                                <el-select v-model="form.trusted" placeholder="是否免审">
+                                <el-option label="免审" value="1"></el-option>
+                                <el-option label="审核" value="0"></el-option>
+                                </el-select>
+                            </el-form-item>
+                      </el-col>
                     </el-row>
+                    
                      <!-- <el-row>
                       <el-col :span="8">
                           <el-form-item label="对象鱼：">
@@ -398,6 +408,34 @@
                       </el-col>
                     </el-row>
                     <el-row>
+                      <el-col :span="8">
+                          <el-form-item label="邀请码：" :error="errMsg2">
+                            <el-input v-model="form.invitedCode" placeholder="请输入邀请码" :disabled="disabled2"></el-input>
+                          </el-form-item>
+                      </el-col>
+                    </el-row>
+                    <el-row v-if="circleId">
+                        <el-col :span="8">
+                            <el-form-item label="用户横幅：">
+                                <el-upload
+                                class="avatar-uploader"
+                                accept="image/jpeg,image/png"
+                                :action="`${this.$store.state.baseUrl}common/uploadOssPic`"
+                                :show-file-list="false"
+                                :on-success="handleAvatarSuccess1"
+                                :on-error="upError1"
+                                name="picture"
+                                :headers="myHeaders"   
+                                auto-upload
+                                :before-upload="beforeAvatarUpload1">
+                                <img v-if="imageUrl1" :src="imageUrl1" class="avatar">
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div>
+                                </el-upload>  
+                            </el-form-item>        
+                    </el-col>
+                    </el-row>
+                    <el-row>
                       <el-col :span="24">
                           <el-form-item label="简介：">
                                       <el-input type="textarea" v-model="form.description"></el-input>
@@ -427,6 +465,7 @@ export default {
         return{
             errMsg: '',
             errMsg1: '',
+            errMsg2: '',
             disablesAdd: false,
             isPas: true,
             height: null,
@@ -436,6 +475,7 @@ export default {
             disabled2: true,   //是否禁止填写
             dialogVisible: false,   //弹出框是否显示
             imageUrl: '',  //上传图片显示
+            imageUrl1: '',
             multipleSelection: [],   //存放勾选的数据
             currentPage: 1, //当前第几页
             pageSize: 30,   //每页显示多少条
@@ -464,6 +504,7 @@ export default {
             form:{
                 number: '',   //编号
                 icon: '',   //图标
+                bannerIcon: '',
                 forumId: '',   //论坛id
                 nickname: '',    //昵称
                 motorcade: '',   //车贴编号
@@ -482,6 +523,8 @@ export default {
                 role: '',   //用户类型
                 level: '',   //等级
                 checkWay: '',  //认证方式
+                trusted: '0',   //是否免审
+                invitedCode: '',    //邀请码
                 // targetFish: [],   //对象鱼
                 // fishWay: [],   //钓法
                 // bait: [],   //饵料
@@ -620,6 +663,7 @@ export default {
             this.disabled = true;
             this.disabled1 = false;
             this.disabled3 = true;
+            this.disabled2 = true;
             //点击新增清空表单
                 for(var i in this.form){
                 if(i == 'status'){  //遇到默认项跳过，执行下面的循环
@@ -639,11 +683,14 @@ export default {
                                     this.form[key] = '1'
                                 }else if(key == 'gender'){
                                     this.form[key] = '0'
+                                }else if(key == 'trusted'){
+                                    this.form[key] = '0'
                                 }else{
                                     this.form[key] = ''
                                 }
                             })
                             this.imageUrl = '';
+                            this.imageUrl1 = '';
                         });
 
                     
@@ -707,17 +754,17 @@ export default {
             this.$get('user/getUserInfo',{
                 id: this.circleId
             }).then(res=>{
-                console.log(res.data)
                 this.form = res.data;
                 // this.form.password = '******';
                 this.form.status = this.form.status + "";
                 this.form.gender = this.form.gender + "";
+                this.form.trusted = this.form.trusted + "";
                 this.form.number = this.rowIndex;
                 this.form.targetFish = this.form.targetFish ? this.form.targetFish.split(',') : [];
                 this.form.fishWay = this.form.fishWay ? this.form.fishWay.split(',') : [];
                 this.form.bait = this.form.bait ? this.form.bait.split(',') : [];
                 this.imageUrl = res.data.iconUrl;
-
+                this.imageUrl1 = res.data.bannerIconUrl;
 
                 if(res.data.role == 1 || res.data.role == 0){
                     this.isPas = false;
@@ -728,6 +775,8 @@ export default {
                 if(res.data.role){
                     this.getrankList(res.data.role)
                 }
+
+              
             })
 
         },
@@ -847,6 +896,13 @@ export default {
             }else{
                 this.errMsg1 = ''
             }
+            var reg=new RegExp("^[0-9]{6}$");
+            if(!reg.test(this.form.invitedCode)){
+                this.errMsg2 = '请输入6位数字邀请码'
+                return
+            }else{
+                this.errMsg2 = ''
+            }
             
             this.$refs[formName].validate((valid)=>{
                 if(valid){
@@ -882,6 +938,8 @@ export default {
                         showQq: this.form.showQq,
                         role: role,
                         checkWay: this.form.checkWay,
+                        trusted: this.form.trusted,
+                        invitedCode: this.form.invitedCode,
                         // level: this.form.level,
                         // targetFish: (this.form.targetFish.length > 0) ? this.form.targetFish.join(',') : '',
                         // fishWay: (this.form.fishWay.length > 0) ? this.form.fishWay.join(',') : '',
@@ -899,7 +957,8 @@ export default {
                         updateTime: this.form.updateTime,
                         description: this.form.description,
                         remark: this.form.remark,
-                        icon: this.form.icon
+                        icon: this.form.icon,
+                        bannerIcon: this.form.bannerIcon
                     }).then(res=>{
                         if(res.code == 0){
                             //隐藏dialog框
@@ -1078,6 +1137,46 @@ export default {
       },
       //上传图片失败
       upError(err){
+        if(err){
+             this.$message.error('上传图标失败');
+        }
+      },
+
+
+
+
+
+
+
+      handleAvatarSuccess1(res, file) {
+        this.imageUrl1 = URL.createObjectURL(file.raw);
+        console.log(this.imageUrl1)
+        this.form.bannerIcon = file.response.data;
+        console.log(this.form.bannerIcon)
+        if(res.code == 602){
+            this.$message.error(res.msg);
+            setTimeout(()=>{
+                this.$router.push({
+                    name: 'login'
+                })
+            },1500)
+            }
+      },
+      beforeAvatarUpload1(file) {
+        const isJPG = file.type === 'image/jpeg';
+        const isPNG = file.type === 'image/png';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG && !isPNG) {
+          this.$message.error('请选择我们支持的格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传图片大小不能超过 2MB!');
+        }
+        return (isJPG || isPNG) && isLt2M
+      },
+      //上传图片失败
+      upError1(err){
         if(err){
              this.$message.error('上传图标失败');
         }

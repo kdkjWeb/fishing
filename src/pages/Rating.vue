@@ -322,7 +322,7 @@ export default {
     },
 
       getType(){
-        console.log(this.form.type)
+        this.form.name = '';
         if(this.form.type == 2 || this.form.type == 3){
             this.disabledDeng = true;
         }else{
@@ -354,8 +354,10 @@ export default {
                                 arr[index].type = '农家乐';
                             }else if(e.type == 3){
                                 arr[index].type = '渔具店';
-                            }else {
-                              arr[index].type = '头衔';
+                            }else if(e.type == 4){
+                                arr[index].type = '头衔';
+                            }else if(e.type == 9){
+                                arr[index].type = '认证方式';
                             }
                            this.tableData = JSON.parse(JSON.stringify(arr))
                         });
@@ -518,12 +520,38 @@ export default {
 
             // 修改圈子数据回显
 
-          if(this.circleId){
+          /*if(this.circleId){
             this.form = data;
             // this.form.userType = this.form.type;
             this.form.number = this.rowIndex;
             this.imageUrl = this.form.iconUrl;
-          }
+          }*/
+
+        this.$get('/levelRule/queryById',{
+            levelRuleId: this.circleId
+        }).then(res=>{
+            console.log(res)
+            if(res.code == 0){
+                this.form = res.data;
+                this.form.number = this.rowIndex;
+                if(res.data.type == 1){
+                    this.form.type = '钓友';
+                }else if(res.data.type == 2){
+                    this.form.type = '农家乐';
+                }else if(res.data.type == 3){
+                    this.form.type = '渔具店';
+                }else if(res.data.type == '4'){
+                    this.form.type = '头衔';
+                }else if(res.data.type == '9'){
+                    this.form.type = '认证方式';
+                }
+                this.form.creator = res.data.creator ? res.data.creator.nickname : '';
+                this.form.modifier = res.data.modifier ? res.data.modifier.nickname : '';
+                //   this.imageUrl = this.form.iconUrl;
+            }
+        })
+
+
 
 
         },
