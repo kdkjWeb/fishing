@@ -664,6 +664,7 @@ export default {
             this.disabled1 = false;
             this.disabled3 = true;
             this.disabled2 = true;
+            this.isPas = false;
             //点击新增清空表单
                 for(var i in this.form){
                 if(i == 'status'){  //遇到默认项跳过，执行下面的循环
