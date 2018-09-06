@@ -416,11 +416,10 @@ export default {
         }
 
         this.$refs[formName].validate((valid) => {
-          let url = this.circleId ? '/levelRule/updateLevelRule' : '/levelRule/addLevelRule'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
+          let url = this.circleId ? '/levelRule/updateLevelRule' : '/levelRule/addLevelRule';    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           let status = (this.form.status == '正常' ||this.form.status == '1') ? 1 : 0;
-        //   let type  = (this.form.type == '钓友' || this.form.type == '1')? 1:(this.form.type == '农家乐' || this.form.type == '2')? 2 : 3
 
-       this.form.type = Number(this.form.type);
+
           if (valid) {
             this.$post(url,{
               cId: this.circleId ? this.circleId : null,
@@ -429,7 +428,7 @@ export default {
               cUser:this.form.cUser,     //创建人
               modifyUser:this.form.modifyUser,  //修改人
               coin:this.form.coin,  //娱乐奖励金币
-              type: this.form.type,  //类型
+              type: parseInt(this.form.type),  //类型
               score:this.form.score,  //升级分值
               name:this.form.name,  //等级名称
               userPacote:this.form.userPacote,  //用户分组
@@ -519,34 +518,20 @@ export default {
 
             // 修改圈子数据回显
 
-          /*if(this.circleId){
-            this.form = data;
-            // this.form.userType = this.form.type;
-            this.form.number = this.rowIndex;
-            this.imageUrl = this.form.iconUrl;
-          }*/
+
 
         this.$get('/levelRule/queryById',{
             levelRuleId: this.circleId
         }).then(res=>{
-            console.log(res)
             if(res.code == 0){
+                console.log(res)
                 this.form = res.data;
                 this.form.number = this.rowIndex;
-                if(res.data.type == 1){
-                    this.form.type = '钓友';
-                }else if(res.data.type == 2){
-                    this.form.type = '农家乐';
-                }else if(res.data.type == 3){
-                    this.form.type = '渔具店';
-                }else if(res.data.type == '4'){
-                    this.form.type = '头衔';
-                }else if(res.data.type == '9'){
-                    this.form.type = '认证方式';
-                }
+                this.form.type = this.form.type + '';
+                this.form.status = this.form.status + '';
                 this.form.creator = res.data.creator ? res.data.creator.nickname : '';
                 this.form.modifier = res.data.modifier ? res.data.modifier.nickname : '';
-                //   this.imageUrl = this.form.iconUrl;
+               this.imageUrl = this.form.iconUrl;
             }
         })
 
