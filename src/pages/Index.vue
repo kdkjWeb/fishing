@@ -479,7 +479,7 @@ export default {
     getSeconedUserNum(){
         this.$get('/user/getUsersNum',{
             startdt: this.formInline.date ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
-            enddt: this.formInline.date ?  `${this.dataTransform(this.formInline.date[0])} 23:59:59`: null,
+            enddt: this.formInline.date ?  `${this.dataTransform(this.formInline.date[1])} 23:59:59`: null,
             minscore: this.formInline.minscore ? this.formInline.minscore : null,
             maxscore: this.formInline.maxscore ? this.formInline.maxscore : null,
             mincoin: this.formInline.mincoin ? this.formInline.mincoin : null,
@@ -522,7 +522,7 @@ export default {
       getAreaNum(){
           this.$get('/user/getCityUserNum',{
             startdt: this.formInline.date ? `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
-            enddt: this.formInline.date ?  `${this.dataTransform(this.formInline.date[0])} 23:59:59`: null,
+            enddt: this.formInline.date ?  `${this.dataTransform(this.formInline.date[1])} 23:59:59`: null,
           }).then(res=>{
               if(res.code == 0){
                   this.tableData2 = res.data;
@@ -548,7 +548,7 @@ export default {
     getPostList(){
         this.$post('/basicTopic/queryTopicCountByDateForRole',{
             beginTime: this.formInline1.date ? `${this.dataTransform(this.formInline1.date[0])} 00:00:00` : null,
-            endTime: this.formInline1.date ?  `${this.dataTransform(this.formInline1.date[0])} 23:59:59`: null,
+            endTime: this.formInline1.date ?  `${this.dataTransform(this.formInline1.date[1])} 23:59:59`: null,
         }).then(res=>{
             this.checkedTopicNum = res.data[0].checkedTopicNum;   //已审核总帖子
             this.uncheckTopicNum = res.data[0].uncheckTopicNum;   //未审核总帖子
@@ -610,7 +610,7 @@ export default {
                 pageSize: pageSize ? pageSize : 30,
                 pageNum: pageNum ? pageNum : 1,
                 cdate: this.formInline2.date ? `${this.dataTransform(this.formInline2.date[0])} 00:00:00` : null,
-                enddate: this.formInline2.date ?  `${this.dataTransform(this.formInline2.date[0])} 23:59:59`: null,
+                enddate: this.formInline2.date ?  `${this.dataTransform(this.formInline2.date[1])} 23:59:59`: null,
             }).then(res=>{
                 if(res.code == 0){
                     this.tableData7 = res.data.list;

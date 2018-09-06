@@ -441,7 +441,7 @@ export default {
                 baits: []   //允许饵料
             },
             tableList: [   //表格的头部配置
-                {prop: 'name', label: '钓场', width: '90', align: '',align1: 'left'},
+                {prop: 'name', label: '钓场', width: '180', align: '',align1: 'left'},
                 {prop: 'ispass', label: '审核状态', width: '90', align: ''},
                 {prop: 'ownertype', label: '类型', width: '60', align: ''},
                 {prop: 'type', label: '钓场分类', width: '80', align: ''},

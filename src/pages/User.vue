@@ -430,7 +430,7 @@
                                 :before-upload="beforeAvatarUpload1">
                                 <img v-if="imageUrl1" :src="imageUrl1" class="avatar">
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                                <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div>
+                                <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M,图片比例：4.4:1</div>
                                 </el-upload>
                             </el-form-item>
                     </el-col>
@@ -899,8 +899,10 @@ export default {
             }else{
                 this.errMsg1 = ''
             }
+            console.log(!this.circleId)
+          console.log(this.form.invitedCode !='')
             var reg=new RegExp("^[0-9]{6}$");
-            if(!reg.test(this.form.invitedCode) && this.form.invitedCode != undefined){
+            if(!reg.test(this.form.invitedCode) && this.form.invitedCode && this.circleId){
                 this.errMsg2 = '请输入6位数字邀请码'
                 return
             }else{

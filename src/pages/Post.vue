@@ -1146,15 +1146,15 @@
                 }
           })
         }
-
-        if(this.form.topicType != 5 || this.form.topicType != 2 || this.form.topicType != 3){
-            console.log(this.form.topicCircleList)
-//          if(this.form.topicCircleList.length == 0){
-//            this.error = '请选择发送圈子';
-//            return;
-//          }else{
+        if(this.form.topicType == 5 || this.form.topicType == 2 || this.form.topicType == 3){
+          this.error = ''
+        }else{
+          if(this.form.topicCircleList.length == 0){
+            this.error = '请选择发送圈子';
+            return;
+          }else{
             for(let i=0; i< this.form.topicCircleList.length; i++){
-                console.log(this.form.topicCircleList[i].cType)
+              console.log(this.form.topicCircleList[i].cType)
               if(this.form.topicCircleList[i].cType == 0){
                 if(!this.form.topicCircleList[i].placeId){
                   this.error = '请选择发送圈子';
@@ -1172,7 +1172,7 @@
 //                  this.error = '';
 //                }
               }
-//            }
+            }
           }
         }
 
