@@ -920,22 +920,28 @@
                             if(e.circleList != undefined){
                                let str = '';
                                 e.circleList.forEach((e)=>{
+                                  if(e.showType == 0){
+                                      if(e.circleName){
+                                        str += e.circleName+'、';
+                                        arr[index].circleList = str.replace(/、$/gi,"");
+                                      }else{
+                                        arr[index].circleList = '';
+                                      }
 
-                                  if(e.showType == 0 && e.circleName){
-                                        // if(e.circleName){
-                                          str += e.circleName+'、';
-                                          arr[index].circleList = str.replace(/、$/gi,"");
-                                          arr[index].circleList2 = '';
-                                        // }
-                                  }else{
+                                  }else if(e.showType == 1){
 
-                                      // if(e.circleName){
-                                          str += e.circleName+'、';
-                                          arr[index].circleList2 = str.replace(/、$/gi,"");
-                                          arr[index].circleList = '';
-                                        // }
+                                      if(arr[index].circleList != '钓位' && arr[index].circleList != '鱼情'){
+                                        arr[index].circleList = ''
+                                      }
+                                      if(arr[index].circleList == 'undefined'){
+                                          alert('unde')
+                                        arr[index].circleList = '';
+                                      }
+
+                                      if(e.circleName){
+                                        arr[index].circleList2 = e.circleName;
+                                      }
                                   }
-
                                 })
 
                             }
@@ -1051,6 +1057,7 @@
         this.imagesShow = false;
         this.circleId = '';
         this.aduthorDisabled = false;
+        this.topicCircle = '';
         this.$nextTick(()=>{
             this.$refs['topicType'].resetField();
             this.$refs['title'].resetField();
@@ -1102,52 +1109,52 @@
         return (isJPG || isPNG) && isLt2M;
       },
 
-
-
-
       //标准时间格式转换
       dataTransform(date){
-        if(!this.circleId){
-          if(date){
+        if(!this.circleId) {
+          if (date) {
             var y = date.getFullYear();
             var m = date.getMonth() + 1;
             m = m < 10 ? ('0' + m) : m;
             var d = date.getDate();
             d = d < 10 ? ('0' + d) : d;
             return y + '-' + m + '-' + d;
-          }else{
+          } else {
             return null;
           }
         }
-
-
       },
 
       //点击确定   /basicTopic/addBasicTopic   /basicTopic/updateBasicTopic
       comfirm(form){
 
         this.form.topicCircleList = [];
-
         if(this.form.topicType == 2 || this.form.topicType == 3){
+          if(this.topicCircle){
             this.form.topicCircleList=[{
               cType: 1,
               placeId:this.topicCircle
             }]
+          }
         } else{
             this.topicCircleArr.forEach((val)=>{
-            let obj = {};
-            obj.cType = 0;
-            obj.placeId = val;
-            this.form.topicCircleList.push(obj)
+                if(val){
+                  let obj = {};
+                  obj.cType = 0;
+                  obj.placeId = val;
+                  this.form.topicCircleList.push(obj)
+                }
           })
         }
 
         if(this.form.topicType != 5 || this.form.topicType != 2 || this.form.topicType != 3){
-          if(this.form.topicCircleList.length == 0){
-            this.error = '请选择发送圈子';
-            return;
-          }else{
+            console.log(this.form.topicCircleList)
+//          if(this.form.topicCircleList.length == 0){
+//            this.error = '请选择发送圈子';
+//            return;
+//          }else{
             for(let i=0; i< this.form.topicCircleList.length; i++){
+                console.log(this.form.topicCircleList[i].cType)
               if(this.form.topicCircleList[i].cType == 0){
                 if(!this.form.topicCircleList[i].placeId){
                   this.error = '请选择发送圈子';
@@ -1156,6 +1163,8 @@
                   this.error = '';
                 }
               }else{
+
+                this.error = '';
 //                if(!this.form.topicCircleList[i].placeId){
 //                  this.error = '请选择钓场';
 //                  return;
@@ -1163,12 +1172,9 @@
 //                  this.error = '';
 //                }
               }
-            }
+//            }
           }
         }
-
-
-
 
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口

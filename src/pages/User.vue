@@ -120,7 +120,7 @@
 
                 <el-row>
                     <el-col :span="16">
-                      
+
                         <el-row>
                         <el-col :span="12">
                             <el-form-item label="编号：">
@@ -174,17 +174,17 @@
                         :on-success="handleAvatarSuccess"
                         :on-error="upError"
                         name="picture"
-                        :headers="myHeaders"   
+                        :headers="myHeaders"
                         auto-upload
                         :before-upload="beforeAvatarUpload">
                         <img v-if="imageUrl" :src="imageUrl" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div>
-                        </el-upload>             
+                        </el-upload>
                     </el-col>
                     </el-row>
 
-                   
+
 
                     <el-row>
                       <el-col :span="8">
@@ -294,7 +294,7 @@
                             </el-form-item>
                       </el-col>
                     </el-row>
-                    
+
                      <!-- <el-row>
                       <el-col :span="8">
                           <el-form-item label="对象鱼：">
@@ -415,7 +415,7 @@
                       </el-col>
                     </el-row>
                     <el-row v-if="circleId">
-                        <el-col :span="8">
+                        <el-col :span="9">
                             <el-form-item label="用户横幅：">
                                 <el-upload
                                 class="avatar-uploader"
@@ -425,14 +425,14 @@
                                 :on-success="handleAvatarSuccess1"
                                 :on-error="upError1"
                                 name="picture"
-                                :headers="myHeaders"   
+                                :headers="myHeaders"
                                 auto-upload
                                 :before-upload="beforeAvatarUpload1">
                                 <img v-if="imageUrl1" :src="imageUrl1" class="avatar">
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div>
-                                </el-upload>  
-                            </el-form-item>        
+                                </el-upload>
+                            </el-form-item>
                     </el-col>
                     </el-row>
                     <el-row>
@@ -560,7 +560,7 @@ export default {
                 {prop: 'cDate', label: '创建时间', width: '100', align: 'right'},
                 {prop: 'updatePeople', label: '修改人', width: '80', align: ''},
                 {prop: 'updateTime', label: '修改时间', width: '100', align: 'right'},
-                
+
             ],
             tableData: [],    //表格的数据
             rules: {
@@ -586,7 +586,7 @@ export default {
                 disabledDate(time) {
                     return time.getTime() > Date.now() - 8.64e6
                 }
-                }, 
+                },
         }
     },
     methods:{
@@ -624,7 +624,7 @@ export default {
                            arr[index].status = e.status == 0? '禁用' : '正常'
                            if(e.gender != undefined){
                                arr[index].gender = e.gender == 0 ? '女' : '男'
-                           } 
+                           }
 
                            if(e.role == 0){
                                arr[index].role = '超级管理'
@@ -641,13 +641,13 @@ export default {
                              this.total = res.data.total;
                         })
 
-                      
+
                         this.$nextTick(()=>{
                             this.checked();//每次更新了数据，触发这个函数即可。
                         })
                     }
 
-                    
+
                 }
             })
         },
@@ -670,12 +670,12 @@ export default {
                 if(i == 'status'){  //遇到默认项跳过，执行下面的循环
                     continue;
                 }else if(this.form[i] != ''){
-                  
+
                     this.$nextTick(() => {
                             this.$refs['nickname'].resetField();
                             this.$refs['phone'].resetField();
                             this.$refs['password'].resetField();
-                           
+
                             //将对象还原   shabisheji
                             Object.keys(this.form).forEach((key)=>{
                                 if(key == 'targetFish' || key == 'fishWay' || key == 'bait'){
@@ -694,7 +694,7 @@ export default {
                             this.imageUrl1 = '';
                         });
 
-                    
+
                 }
             }
         },
@@ -734,7 +734,7 @@ export default {
                 this.$message({
                     type: 'info',
                     message: '已取消删除'
-                });          
+                });
                 });
         },
         //修改
@@ -779,7 +779,7 @@ export default {
                     this.getrankList(res.data.role)
                 }
 
-              
+
             })
 
         },
@@ -852,7 +852,7 @@ export default {
                     }
                 }
             }
-        
+
             //虽然是多选框，但是产品设计每次只能选着一个
             if(this.multipleSelection.length == 1){
                 for(var i= 0; i<this.tableData.length; i++){
@@ -892,7 +892,7 @@ export default {
                 return;
             }else{
                 this.errMsg = ''
-            }  
+            }
              if(!this.circleId && this.form.password == ''){
                 this.errMsg1 = '请输入密码'
                 return;
@@ -906,7 +906,7 @@ export default {
             }else{
                 this.errMsg2 = ''
             }
-            
+
             this.$refs[formName].validate((valid)=>{
                 if(valid){
                     let url = this.circleId ? 'user/updateUserByManager' : 'user/addManager'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
@@ -971,10 +971,10 @@ export default {
                             message: res.msg,
                             type: 'success'
                             });
-                             
+
                              //获取用户列表
                            this.getUserList()
-                           
+
                         }else if(res.code == 500){
                             this.$message({
                             message: res.msg,
@@ -995,7 +995,7 @@ export default {
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
             this.$refs.multipleTable.toggleRowSelection(this.tableData[0],true);
-            
+
             if(this.currentPage == 1){
                 this.rowIndex = 1;
             }
@@ -1024,7 +1024,7 @@ export default {
      index(index){
          return (this.currentPage - 1)*this.pageSize + index + 1;
      },
- 
+
      //获取省份列表
      getProvince(){
          this.$get('/region/queryTrees',{}).then(res=>{
@@ -1231,7 +1231,7 @@ export default {
                     this.provinceList.forEach((val)=>{
                         if(value.provinceId == val.cId){
                             this.cityList = val.childList;
-                    
+
                         }
                     })
                 };
@@ -1251,7 +1251,7 @@ export default {
                 }
             }
         }
-        
+
     }
 }
 </script>
