@@ -215,7 +215,7 @@
                   <el-col :span="8">
                     <el-form-item label="置顶：" >
                       <el-select  v-model="form.isTop" placeholder="置顶" :disabled="disabledStatus">
-                        <el-option label="是全局置顶" value="2"></el-option>
+                        <el-option label="全局置顶" value="2"></el-option>
                         <el-option label="是" value="1"></el-option>
                         <el-option label="否" value="0"></el-option>
                       </el-select>
@@ -853,16 +853,15 @@
             this.$get('/circle/querySendCircle',{}).then(res=>{
                 if(res.code == 0){
                   this.circleList = res.data;
-
-                  console.log(this.circleList )
-                  if(this.circleList){
+                  this.topicCircleArr= [];
                     for(let i=0; i<this.circleList.length; i++){
-                      for(let j=0; j<this.form.circleList.length; j++){
-                        if(this.circleList[i].cId == this.form.circleList[j].cId){
-                          this.topicCircleArr.push(this.form.circleList[j].cId);
+                        if(this.form.circleList){
+                          for(let j=0; j<this.form.circleList.length; j++){
+                            if(this.circleList[i].cId == this.form.circleList[j].cId){
+                              this.topicCircleArr.push(this.form.circleList[j].cId);
+                            }
+                          }
                         }
-                      }
-                    }
                   }
 
                 }
@@ -931,7 +930,7 @@
                         let arr = res.data.list;
                         arr.forEach((e,index)=>{
                             arr[index].status = e.status == 0 ? '未审' : '审核';
-                            arr[index].isTop = e.isTop == 0 ? '' : '是';
+                            arr[index].isTop = e.isTop == 0 ? '' : (e.isTop == 1?  '是': '全局置顶');
                             arr[index].isBest = e.isBest == 0 ? '' : '是';
                             if(e.circleList != undefined){
                                let str = '';
