@@ -899,8 +899,7 @@ export default {
             }else{
                 this.errMsg1 = ''
             }
-            console.log(!this.circleId)
-          console.log(this.form.invitedCode !='')
+
             var reg=new RegExp("^[0-9]{6}$");
             if(!reg.test(this.form.invitedCode) && this.form.invitedCode && this.circleId){
                 this.errMsg2 = '请输入6位数字邀请码'
