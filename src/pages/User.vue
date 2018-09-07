@@ -413,9 +413,12 @@
                             <el-input v-model="form.invitedCode" placeholder="请输入邀请码" :disabled="disabled2"></el-input>
                           </el-form-item>
                       </el-col>
+                      <!-- <el-col :span="3" :offset="1">
+                          <el-button size="mini" type="primary"  :disabled="disabled2" @click="invitationCode">生成邀请码</el-button>
+                      </el-col> -->
                     </el-row>
                     <el-row v-if="circleId">
-                        <el-col :span="9">
+                        <el-col :span="12">
                             <el-form-item label="用户横幅：">
                                 <el-upload
                                 class="avatar-uploader"
@@ -463,6 +466,7 @@
 export default {
     data(){
         return{
+            num:'',
             errMsg: '',
             errMsg1: '',
             errMsg2: '',
@@ -524,7 +528,7 @@ export default {
                 level: '',   //等级
                 checkWay: '',  //认证方式
                 trusted: '0',   //是否免审
-                invitedCode: '',    //邀请码
+                invitedCode: '5435',    //邀请码
                 // targetFish: [],   //对象鱼
                 // fishWay: [],   //钓法
                 // bait: [],   //饵料
@@ -590,6 +594,17 @@ export default {
         }
     },
     methods:{
+        //生成邀请码
+        /*invitationCode(){
+          
+             for(var i=0; i<4; i++){
+                 this.num+=Math.floor(Math.random()*10);
+             }
+        
+            this.form.invitedCode = this.num;
+           
+            
+        },*/
           //根据不同状态添加样式
       tableRowClassName({row, rowIndex}) {
           if(row.status === '正常'){
@@ -755,13 +770,10 @@ export default {
             this.$get('user/getUserInfo',{
                 id: this.circleId
             }).then(res=>{
-                console.log(this.form.trusted);
-
                 this.form = res.data;
                 this.form.status = this.form.status + "";
                 this.form.gender = this.form.gender + "";
                 this.form.trusted = this.form.trusted + "";
-                console.log(this.form.trusted);
                 this.form.number = this.rowIndex;
                 this.form.targetFish = this.form.targetFish ? this.form.targetFish.split(',') : [];
                 this.form.fishWay = this.form.fishWay ? this.form.fishWay.split(',') : [];
@@ -805,7 +817,6 @@ export default {
             this.$get('levelRule/queryByType',{
                 type: 9
             }).then(res=>{
-                console.log(res.data)
                 if(res.code == 0){
                     this.checkList = res.data;
                 }
@@ -878,7 +889,7 @@ export default {
         comfirm(formName){
              if(!this.form.icon){
                 this.$message({
-                message: '请上传新圈子的图标！',
+                message: '请上传新的用户图标！',
                 type: 'warning'
                 });
 
@@ -900,9 +911,9 @@ export default {
                 this.errMsg1 = ''
             }
 
-            var reg=new RegExp("^[0-9]{6}$");
+            var reg=new RegExp("^[0-9]{4}$");
             if(!reg.test(this.form.invitedCode) && this.form.invitedCode && this.circleId){
-                this.errMsg2 = '请输入6位数字邀请码'
+                this.errMsg2 = '请输入4位数字邀请码'
                 return
             }else{
                 this.errMsg2 = ''
@@ -1310,7 +1321,7 @@ display: block;
 }
 
 .user .el-upload__tip{
-    text-align: right;
+    text-align: left;
 }
 
 
