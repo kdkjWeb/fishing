@@ -16,8 +16,8 @@
                         </el-form-item>
                          <el-form-item label="点赞类型：">
                             <el-select clearable v-model="formInline.type" placeholder="点赞类型">
-                            <el-option label="帖子" value="1"></el-option>
-                            <el-option label="评论" value="3"></el-option>
+                            <el-option label="帖子" value="3"></el-option>
+                            <el-option label="评论" value="1"></el-option>
                             <el-option label="视频" value="4"></el-option>
                             </el-select>
                         </el-form-item>
@@ -82,7 +82,7 @@
         </div>
         <!-- end表格 -->
 
-        
+
         <!-- start分页 -->
         <div class="page">
             <el-pagination
@@ -146,17 +146,17 @@ export default {
                         let arr = res.data.list;
                         arr.forEach((e,index)=>{
                             if(e.type == 1){
-                                arr[index].type = '帖子'
-                            }else if(e.type == 3){
                                 arr[index].type = '评论'
+                            }else if(e.type == 3){
+                                arr[index].type = '帖子'
                             }else{
                                 arr[index].type = '视频'
-                            } 
+                            }
                         })
                         this.tableData = JSON.parse(JSON.stringify(arr));
                         this.total = res.data.total;
                     }
-                    
+
 
 
                       this.$nextTick(function(){
@@ -201,8 +201,8 @@ export default {
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
-             
-        
+
+
             // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
             if(this.multipleSelection.length == 2){
                      for(var i= 0; i<this.tableData.length; i++){
@@ -230,7 +230,7 @@ export default {
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
             this.$refs.multipleTable.toggleRowSelection(this.tableData[0],true);
-            
+
             if(this.currentPage == 1){
                 this.rowIndex = 1;
             }
@@ -268,7 +268,7 @@ export default {
             // var h = date.getHours();
             // var minute = date.getMinutes();
             // minute = minute < 10 ? ('0' + minute) : minute;
-            // var second = date.getSeconds();	
+            // var second = date.getSeconds();
             // second = second < 10 ? ('0' + second) : second;
             // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
 
