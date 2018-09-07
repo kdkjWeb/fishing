@@ -93,6 +93,9 @@
             </el-table-column>
           </el-table>
           <div class="aboutNum">
+            <!--commentNum: 0,   //评论总数-->
+            <!--collects: 0,    //收藏总数-->
+            <!--clickNum: 0   //点赞总数-->
             <div> <span>合计：{{total}}</span><span>{{allNum.clickNum}}</span><span>{{allNum.collects}}</span><span>{{allNum.commentNum}}</span></div>
           </div>
         </div>
@@ -212,6 +215,7 @@
                   <el-col :span="8">
                     <el-form-item label="置顶：" >
                       <el-select  v-model="form.isTop" placeholder="置顶" :disabled="disabledStatus">
+                        <el-option label="是全局置顶" value="2"></el-option>
                         <el-option label="是" value="1"></el-option>
                         <el-option label="否" value="0"></el-option>
                       </el-select>
@@ -849,6 +853,18 @@
             this.$get('/circle/querySendCircle',{}).then(res=>{
                 if(res.code == 0){
                   this.circleList = res.data;
+
+                  console.log(this.circleList )
+                  if(this.circleList){
+                    for(let i=0; i<this.circleList.length; i++){
+                      for(let j=0; j<this.form.circleList.length; j++){
+                        if(this.circleList[i].cId == this.form.circleList[j].cId){
+                          this.topicCircleArr.push(this.form.circleList[j].cId);
+                        }
+                      }
+                    }
+                  }
+
                 }
               })
       },
@@ -1367,14 +1383,16 @@
             this.topicCircleArr = [];
             this.titleName = '发送圈子：';
             this.isShow = true;
-            this.getCircleList()
             this.isDesable = true;
 
-            if(this.form.circleList){
-              this.form.circleList.forEach((val)=>{
-                this.topicCircleArr.push(val.cId);
-              })
-            }
+//            if(this.form.circleList){
+//              this.form.circleList.forEach((val)=>{
+//
+//                this.topicCircleArr.push(val.cId);
+//              })
+//            }
+
+            this.getCircleList()
           }
           // this.getCityList();
         })
@@ -1987,7 +2005,7 @@ background: #fff;
   padding-right: 15px;
 }
 .aboutNum{
-  width: 1160px;
+  width: 1279px;
   height: 30px;
   line-height: 30px;
   margin-top: 10px;

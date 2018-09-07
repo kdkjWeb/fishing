@@ -239,7 +239,7 @@
                     </el-row>
                     <el-row>
                       <el-col :span="8">
-                           <el-form-item label="纬度：">
+                           <el-form-item label="经度：">
                                 <el-input v-model="form.longitude"></el-input>
                             </el-form-item>
                       </el-col>
@@ -253,7 +253,7 @@
                     </el-row>
                     <el-row>
                       <el-col :span="8">
-                          <el-form-item label="经度：">
+                          <el-form-item label="纬度：">
                                 <el-input v-model="form.latitude"></el-input>
                         </el-form-item>
                       </el-col>
@@ -462,7 +462,7 @@ export default {
                       { required: true, message: '请输入钓场名称', trigger: 'blur' },
                       { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
                 ],
-                phone: [
+            /*    phone: [
                     { required: true, message: '电话号码不能为空', trigger: 'blur'},
                     { type: 'number', message: '电话号码必须为数字值', trigger: 'blur'}
                 ],
@@ -474,10 +474,10 @@ export default {
                 ],
                 baits: [
                     { required: true, message: '允许饵料不能为空', trigger: 'change'},
-                ],
-                location: [
-                    { required: true, message: '详细地址不能为空', trigger: 'blur' },
-                ],
+                ],*/
+//                location: [
+//                    { required: true, message: '详细地址不能为空', trigger: 'blur' },
+//                ],
                 type: [
                     { required: true, message: '请选择圈子分类', trigger: 'change' }
                 ]
