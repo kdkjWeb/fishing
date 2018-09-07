@@ -410,12 +410,12 @@
                     <el-row>
                       <el-col :span="8">
                           <el-form-item label="邀请码：" :error="errMsg2">
-                            <el-input v-model="form.invitedCode" placeholder="请输入邀请码" :disabled="disabled2"></el-input>
+                            <el-input v-model="num" placeholder="请输入邀请码" :disabled="disabled2"></el-input>
                           </el-form-item>
                       </el-col>
-                      <!-- <el-col :span="3" :offset="1">
+                      <el-col :span="3" :offset="1">
                           <el-button size="mini" type="primary"  :disabled="disabled2" @click="invitationCode">生成邀请码</el-button>
-                      </el-col> -->
+                      </el-col>
                     </el-row>
                     <el-row v-if="circleId">
                         <el-col :span="12">
@@ -528,7 +528,7 @@ export default {
                 level: '',   //等级
                 checkWay: '',  //认证方式
                 trusted: '0',   //是否免审
-                invitedCode: '5435',    //邀请码
+                // invitedCode: '',    //邀请码
                 // targetFish: [],   //对象鱼
                 // fishWay: [],   //钓法
                 // bait: [],   //饵料
@@ -595,16 +595,16 @@ export default {
     },
     methods:{
         //生成邀请码
-        /*invitationCode(){
-          
+        invitationCode(){
+          let code = '';
              for(var i=0; i<4; i++){
-                 this.num+=Math.floor(Math.random()*10);
+                 code+=Math.floor(Math.random()*10);
              }
         
-            this.form.invitedCode = this.num;
+            this.num = code;
            
             
-        },*/
+        },
           //根据不同状态添加样式
       tableRowClassName({row, rowIndex}) {
           if(row.status === '正常'){
@@ -780,6 +780,7 @@ export default {
                 this.form.bait = this.form.bait ? this.form.bait.split(',') : [];
                 this.imageUrl = res.data.iconUrl;
                 this.imageUrl1 = res.data.bannerIconUrl;
+                this.num = this.form.invitedCode;
 
                 if(res.data.role == 1 || res.data.role == 0){
                     this.isPas = false;
@@ -912,7 +913,7 @@ export default {
             }
 
             var reg=new RegExp("^[0-9]{4}$");
-            if(!reg.test(this.form.invitedCode) && this.form.invitedCode && this.circleId){
+            if(!reg.test(this.num) && this.num && this.circleId){
                 this.errMsg2 = '请输入4位数字邀请码'
                 return
             }else{
@@ -954,7 +955,7 @@ export default {
                         role: role,
                         checkWay: this.form.checkWay,
                         trusted: this.form.trusted,
-                        invitedCode: this.form.invitedCode,
+                        invitedCode: this.num,
                         // level: this.form.level,
                         // targetFish: (this.form.targetFish.length > 0) ? this.form.targetFish.join(',') : '',
                         // fishWay: (this.form.fishWay.length > 0) ? this.form.fishWay.join(',') : '',
