@@ -4,12 +4,22 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
+
 //引入elementui
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
+Vue.config.productionTip = false;
 
-Vue.config.productionTip = false
+import VueAMap from 'vue-amap'
+//地图
+Vue.use(VueAMap);
+VueAMap.initAMapApiLoader({
+  key: 'ca208937a063f6cb5e5b4acb3f44c505',
+  plugin: ['AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType']
+});
+
+
 
 // import '@/assets/reset.css'    //重置样式公共文件
 

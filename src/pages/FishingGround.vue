@@ -54,7 +54,7 @@
                 </el-table-column>
                 <el-table-column
                 type="index"
-                width="50"
+                width="100"
                 header-align="center"
                 align="right"
                 :index="index"
@@ -257,12 +257,22 @@
                                 <el-input v-model="form.latitude"></el-input>
                         </el-form-item>
                       </el-col>
+
                       <el-col :span="16">
                            <el-form-item label="禁止饵料：">
                                 <el-select v-model="form.forbiddenBaits" multiple placeholder="禁止饵料">
                                 <el-option v-for="item in baitList" :label="item.codeName"  :value="item.codeName" :key="item.cId"></el-option>
                                 </el-select>
                             </el-form-item>
+                      </el-col>
+
+                      <el-col :span="24">
+                        <div style="width:100%;height: 300px;margin-bottom:20px;">
+                          <el-amap ref="map" vid="amapDemo"  :center="center" :zoom="zoom" :plugin="plugin" :events="events">
+                            <el-amap-circle-marker v-for="marker in markers" :center="marker.center" :radius="marker.radius" :fill-color="marker.fillColor" :fill-opacity="marker.fillOpacity" :events="marker.events"></el-amap-circle-marker>
+                          </el-amap>
+                        </div>
+
                       </el-col>
                     </el-row>
 
@@ -374,8 +384,10 @@
 </template>
 
 <script>
+  import ElCol from "element-ui/packages/col/src/col";
 export default {
-    data(){
+  components: {ElCol},
+  data(){
         return{
             errMsg: '',
             disabled: false,   //是否禁止填写
@@ -481,7 +493,47 @@ export default {
                 type: [
                     { required: true, message: '请选择圈子分类', trigger: 'change' }
                 ]
+            },
+          zoom: 15,
+          center: [103.821773, 30.761916],
+          markers: [
+            {
+              center: [103.821773, 30.761916],
+              radius: 10,
+              fillOpacity: 1,
+              fillColor: 'rgba(0,0,255,1)',
             }
+          ],
+          events: {
+            init: (o) => {
+              console.log(o.getCenter())
+              console.log(this.$refs.map.$$getInstance())
+              o.getCity(result => {
+                console.log(result)
+              })
+            },
+            'moveend': () => {
+            },
+            'zoomchange': () => {
+            },
+            'click': (e) => {
+              this.form.longitude = e.lnglat.getLng(),
+              this.form.latitude = e.lnglat.getLat();
+              this.markers[0].center = [this.form.longitude,this.form.latitude];
+            }
+          },
+          plugin: ['ToolBar', {
+            pName: 'MapType',
+            defaultType: 0,
+            events: {
+              init(o) {
+                console.log(o);
+              }
+            }
+          }]
+
+
+
         }
     },
     methods:{
@@ -533,9 +585,9 @@ export default {
             this.dialogVisible = true;
              //新增有些字段禁止填写
             this.disabled = true;
-
-
-                 //点击新增清空表单
+            this.center = [103.821773, 30.761916];
+            this.markers[0].center = [103.821773, 30.761916];
+          //点击新增清空表单
                 for(var i in this.form){
                 if(i == 'status'){  //遇到默认项跳过，执行下面的循环
                     continue;
@@ -566,13 +618,8 @@ export default {
                             })
                             this.imageUrl = '';
                         });
-
-
                 }
                 }
-
-
-
             this.circleId = '';
         },
         //删除
@@ -646,6 +693,12 @@ export default {
                 this.form.number = this.rowIndex;
                 this.imageUrl = this.form.iconUrl;
 
+                //地图回显
+                if(this.form.longitude && this.form.latitude){
+                  this.center = [this.form.longitude,this.form.latitude]
+                  this.markers[0].center = [this.form.longitude,this.form.latitude];
+                }
+
             })
 
         },
@@ -681,6 +734,7 @@ export default {
 
            location.href = href;
         },
+
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
@@ -706,11 +760,13 @@ export default {
             }
 
         },
+
         //每页显示多少条数据
         handleSizeChange(val) {
             this.pageSize = val;
             this.getGroundList(val,this.currentPage);
         },
+
         //当前第几页
         handleCurrentChange(val) {
             this.currentPage = val;
@@ -980,9 +1036,13 @@ export default {
         if(this.$store.state.token){
             this.myHeaders.token = this.$store.state.token
         }
+
+      var map = new AMap.Map('container');
     },
     created(){
          this.height = window.innerHeight - 240;
+
+
     },
     watch: {
         dialogVisible: function(val){
@@ -1053,9 +1113,6 @@ export default {
 .fishingGround .el-select{
     width: 100%;
 }
-
-
-
 .fishingGround .avatar-uploader .el-upload {
 border: 1px dashed #d9d9d9;
 border-radius: 6px;
@@ -1086,6 +1143,8 @@ display: block;
 .fishingGround .el-textarea__inner{
     font-family: "Microsoft YaHei";
 }
+
+#container {width:100%; height: 300px; }
 </style>
 
 <style scoped>

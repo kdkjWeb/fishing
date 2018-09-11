@@ -4,17 +4,11 @@ import store from './../store/store'
 import { Message, Loading } from 'element-ui';
 
 
-
-
-
-
-
-// Axios.defaults.baseURL = 'http://192.168.20.3:8080/';
-Axios.defaults.baseURL = 'http://www.scdiaoyu.cn/fish/';
+Axios.defaults.baseURL = 'http://192.168.20.158:8080/';
+// Axios.defaults.baseURL = 'http://www.scdiaoyu.cn/fish/';
 Axios.defaults.timeout = 50000;
 
 Axios.defaults.withCredentials = true;
-
 
 // http request 拦截器
 Axios.interceptors.request.use(
@@ -52,8 +46,6 @@ Axios.interceptors.response.use(
     }
 )
 
-
-
 /*axiosConfig.interceptors.response.use(
     response => {
         return response;
@@ -72,11 +64,6 @@ Axios.interceptors.response.use(
         }
         return Promise.reject(error.response.data)   // 返回接口返回的错误信息
     });*/
-
-
-
-
-
 /***
  * 公用的server方法
  */

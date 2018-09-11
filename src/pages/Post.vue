@@ -1768,11 +1768,6 @@
           flag = true;
         }else{
           for(let i=0; i<this.topicContentArr.length; i++){
-//            if(this.topicContentArr[i].sort){
-//              this.cont = this.topicContentArr[i].sort++;
-//            }else{
-
-//            }
             if(this.topicContentArr[i].content){
               flag  = true;
             }else{
@@ -1802,12 +1797,6 @@
             flag = true;
         }else{
           for(let i=0; i<this.topicContentArr.length; i++){
-//            if(this.topicContentArr[i].sort){
-//              this.cont = this.topicContentArr[i].sort++;
-//            }else{
-
-//            }
-
             if(this.topicContentArr[i].content){
               flag  = true;
             }else{
@@ -1893,7 +1882,6 @@
       //获取所有农家乐 user/getUserListByRole
       this.getAgritainment();
     }
-
   }
 </script>
 
