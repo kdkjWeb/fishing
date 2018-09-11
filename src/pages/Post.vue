@@ -420,7 +420,7 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="纬度：">
+                    <el-form-item label="经度：">
                       <el-input v-model="form.latitude" ></el-input>
                     </el-form-item>
                   </el-col>
@@ -440,7 +440,13 @@
                 <el-row>
                   <el-col :span="8">
                     <el-form-item label="农家乐：">
-                      <el-input v-model="form.farmhouseQqId" ></el-input>
+                      <el-select v-model="form.farmhouseQqId" placeholder="请选择" filterable>
+                        <el-option
+                          v-for="(item,index) in  agritalinmentList"
+                          :label="item.nickname"
+                          :value="item.forumId"
+                          :key="index"></el-option>
+                      </el-select>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
@@ -449,7 +455,7 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="经度：">
+                    <el-form-item label="纬度：">
                       <el-input v-model="form.longitude" ></el-input>
                     </el-form-item>
                   </el-col>
@@ -682,6 +688,7 @@
             rules:{
               title: [
                 { required: true, message: '请输入标题名称', trigger: 'blur' },
+                {min:2,max:60, message:'最少2个字符，最多60个字符',trigger:'blur'}
               ],
               topicType:[
                 { required: true, message: '请选择类型', trigger: 'change' },
@@ -710,6 +717,7 @@
             imagesArr:[
 
             ],
+            agritalinmentList:[],  //农家乐
             imagesShow:false,
             isImg:false,  //点击修改时，不显示添加内容按钮
             tableList: [   //表格的头部配置
@@ -901,6 +909,15 @@
               this.countryList = val.childList;
             }
         })
+      },
+
+      //获取所有农家乐 user/getUserListByRole
+      getAgritainment(){
+          this.$get('user/getUserListByRole',{
+            role:3
+          }).then(res=>{
+            this.agritalinmentList = res.data;
+          })
       },
 
       //设置表格索引序号
@@ -1866,13 +1883,15 @@
       this.check();
 
       //获取用户  /user/getMoreUserInfo
-        this.getUser()
+        this.getUser();
       //获取钓法  /sysCategory/queryByCategory
       this.getCategory();
       //获取鱼类  /sysCategory/queryByCategory
       this.getFishList();
       //获取饵料类型  /sysCategory/queryByCategory
-      this.getTypeList()
+      this.getTypeList();
+      //获取所有农家乐 user/getUserListByRole
+      this.getAgritainment();
     }
 
   }

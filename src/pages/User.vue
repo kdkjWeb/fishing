@@ -196,14 +196,14 @@
                       </el-col>
                       <el-col :span="8">
                           <el-form-item label="密码：" prop="password" ref="password" :error="errMsg1">
-                            <el-input  type="password" v-model="form.password" :disabled="isPas"></el-input>
+                            <el-input  type="password" v-model="form.password" ></el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
                      <el-row>
                       <el-col :span="8">
                           <el-form-item label="手机号：" prop="phone" ref="phone" :error="errMsg">
-                            <el-input v-model="form.phone" :disabled="disabled1"></el-input>
+                            <el-input v-model="form.phone"></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="8">
@@ -431,7 +431,7 @@
                                 :headers="myHeaders"
                                 auto-upload
                                 :before-upload="beforeAvatarUpload1">
-                                <img v-if="imageUrl1" :src="imageUrl1" class="avatar">
+                                <img v-if="imageUrl1" :src="imageUrl1" class="avatar" style="width:300px;">
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M,图片比例：4.4:1</div>
                                 </el-upload>
@@ -600,10 +600,10 @@ export default {
              for(var i=0; i<4; i++){
                  code+=Math.floor(Math.random()*10);
              }
-        
+
             this.num = code;
-           
-            
+
+
         },
           //根据不同状态添加样式
       tableRowClassName({row, rowIndex}) {

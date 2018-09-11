@@ -283,6 +283,7 @@ export default {
 
         //获取列表
         getCircleList(pageSize,pageNum){
+          console.log(this.formInline.status)
             this.$post('/sysCategory/queryByRecord',{
                 pageSize: pageSize ? pageSize : 30,
                 pageNum: pageNum ? pageNum : 1,

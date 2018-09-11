@@ -86,7 +86,11 @@ export default {
                     icon: 'icon-weizhi',
                     index: 'area',
                     title: '区域'
-                },{
+                }, {
+                  icon: 'icon-tixian',
+                  index: 'putForward',
+                  title: '提现'
+               },{
                     icon: 'icon-iconyijianfankui',
                     index: 'feedback',
                     title: '意见反馈'

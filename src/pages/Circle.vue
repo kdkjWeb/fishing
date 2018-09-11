@@ -228,16 +228,18 @@
                     <el-row>
                       <el-col :span="16">
                            <el-row>
+                             <el-col :span="12">
+                               <el-form-item label="经度：" prop="latitude">
+                                 <el-input v-model="form.latitude"></el-input>
+                               </el-form-item>
+                             </el-col>
+
                             <el-col :span="12">
                                 <el-form-item label="纬度：" prop="longitude">
                                     <el-input v-model="form.longitude"></el-input>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="12">
-                                <el-form-item label="经度：" prop="latitude">
-                                      <el-input v-model="form.latitude"></el-input>
-                                </el-form-item>
-                            </el-col>
+
                            </el-row>
                       </el-col>
                     </el-row>

@@ -128,6 +128,10 @@ export default new Router({
           path: '/Feedback',
           name: 'Feedback',
           component: resolve=>require(['@/pages/Feedback.vue'],resolve)
+        },{
+          path: '/putForward',
+          name: 'putForward',
+          component: resolve=>require(['@/pages/putForward.vue'],resolve)
         }
       ]
     }

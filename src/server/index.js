@@ -9,8 +9,8 @@ import { Message, Loading } from 'element-ui';
 
 
 
-Axios.defaults.baseURL = 'http://192.168.20.158:8080/';
-// Axios.defaults.baseURL = 'http://www.scdiaoyu.cn/fish/';
+// Axios.defaults.baseURL = 'http://192.168.20.3:8080/';
+Axios.defaults.baseURL = 'http://www.scdiaoyu.cn/fish/';
 Axios.defaults.timeout = 50000;
 
 Axios.defaults.withCredentials = true;
@@ -29,8 +29,6 @@ Axios.interceptors.request.use(
         return Promise.reject(err);
     }
 );
-
-
 
 // http response 拦截器
 Axios.interceptors.response.use(
@@ -97,6 +95,7 @@ export default{
         }
       return new Promise((resolve,reject)=>{
           Axios.get(url,{
+
               params: data
           }).then((res)=>{
                  //如果动画为true，返回之后需要关闭动画

@@ -635,9 +635,7 @@ export default {
                 id: this.circleId
             }).then(res=>{
                 this.form = res.data;
-                this.form.phone = parseInt(this.form.phone);
-
-
+                this.form.phone = this.form.phone?parseInt(this.form.phone):'';
                 this.form.fishType = this.form.fishType ? this.form.fishType.split(',') : [];
                 this.form.fishingType = this.form.fishingType ? this.form.fishingType.split(',') : [];
                 this.form.baits = this.form.baits ? this.form.baits.split(',') : [];
@@ -718,6 +716,7 @@ export default {
             this.currentPage = val;
             this.getGroundList(this.pageSize,val)
         },
+
         //弹出框的确认按钮
         comfirm(formName){
             //必须上传图标
@@ -726,12 +725,10 @@ export default {
                 message: '请上传钓场的图标！',
                 type: 'warning'
                 });
-
                 return;
             }
 
-
-                 this.$refs[formName].validate((valid)=>{
+          this.$refs[formName].validate((valid)=>{
                 if(valid){
                     // console.log(this.form.position)
                     // if(!Number.isInteger(parseInt(this.form.position))&&this.form.position!= ''){
@@ -801,10 +798,12 @@ export default {
                 }
             })
         },
+
         //弹出框的取消按钮
         cancel(){
             this.dialogVisible = false;
         },
+
         //默认选中第一行
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
@@ -814,6 +813,7 @@ export default {
                 this.rowIndex = 1;
             }
       },
+
       //标准时间格式转换
       dataTransform(date){
         if(date){
@@ -827,6 +827,7 @@ export default {
             return null;
         }
       },
+
       //设置表头的背景颜色
       getRowClass({ row, column, rowIndex, columnIndex }) {
             if (rowIndex == 0) {
@@ -835,10 +836,12 @@ export default {
                 return ''
             }
         },
+
      //设置表格索引序号
      index(index){
          return (this.currentPage - 1)*this.pageSize + index + 1;
      },
+
      //获取圈子分类列表
      getCodeName(){
          this.$post('sysCategory/queryByCategory',{
@@ -848,6 +851,7 @@ export default {
              console.log(this.codeNameList)
          })
      },
+
      //获取鱼类分类
      getFishList(){
          this.$post('sysCategory/queryByCategory',{
@@ -856,6 +860,7 @@ export default {
             this.fishList = res.data;
          })
      },
+
      //获取有什么钓法
      getFishMethodList(){
          this.$post('sysCategory/queryByCategory',{
@@ -864,6 +869,7 @@ export default {
             this.fishMethodList = res.data;
          })
      },
+
      //获取有什么饵料
      getBaitList(){
          this.$post('sysCategory/queryByCategory',{
@@ -873,10 +879,11 @@ export default {
          })
      },
 
-
      //获取省份列表
      getProvince(){
-         this.$get('/region/queryTrees',{}).then(res=>{
+         this.$get('/region/queryTrees',{
+
+         }).then(res=>{
               if(res.code == 0){
                 this.provinceList = res.data;
               }
@@ -894,6 +901,7 @@ export default {
             }
         })
      },
+
      //获取县级列表
      chooseArea(id){
          //根据城市id获取县级
@@ -905,6 +913,7 @@ export default {
               }
           })
      },
+
      //获取乡镇
      chooseCountry(id){
          //根据县级id获取乡镇列表
@@ -915,6 +924,7 @@ export default {
               }
           })
      },
+
      //获取管理人列表
     getMangerList(){
         this.$post('user/getUserList',{
