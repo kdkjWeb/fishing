@@ -184,8 +184,6 @@
                     </el-col>
                     </el-row>
 
-
-
                     <el-row>
                       <el-col :span="8">
                           <el-form-item label="用户组：">
@@ -570,7 +568,7 @@ export default {
             rules: {
                 nickname: [
                       { required: true, message: '请输入昵称', trigger: 'blur' },
-                      { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+                      { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
                 ],
                 /*password: [
                     { required: true, message: '请输入密码', trigger: 'change' }

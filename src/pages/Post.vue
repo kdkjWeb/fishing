@@ -133,7 +133,13 @@
         <!--</span>-->
         <div class="dialog_content">
           <el-form label-position="right" ref="form" :rules="rules"  label-width="110px" :model="form" size="mini">
-
+            <el-row>
+              <el-col :span="24" style="margin-top:10px;">
+                <el-form-item label="标题：" prop="title" ref="title">
+                  <el-input v-model="form.title"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
             <el-row>
               <div style="text-align: right;margin-bottom: 20px;" v-if="isImg">
                 <el-button type="primary" size="mini" class="add" @click="addContent" v-if="addIsShow">+ 添加</el-button>
@@ -198,13 +204,7 @@
 
             <el-row>
               <el-col :span="24">
-                <el-row>
-                  <el-col :span="24">
-                    <el-form-item label="标题：" prop="title" ref="title">
-                      <el-input v-model="form.title"></el-input>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
+
 
                 <el-row>
                   <el-col :span="8">
