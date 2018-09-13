@@ -108,7 +108,7 @@ export default {
                 {prop: 'getter', label: '收入方', width: '100', align: ''},
                 {prop: 'payer', label: '支付方', width: '100', align: ''},
                 {prop: 'num', label: '支付金额', width: '80', align: 'right'},
-                {prop: 'num', label: '支付类型', width: '80', align: ''},
+                {prop: 'type', label: '支付类型', width: '160', align: ''},
                 {prop: 'cdate', label: '支付时间', width: '160', align: 'right'},
                 {prop: '', label: '', width: '', align: ''}
             ],

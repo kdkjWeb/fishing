@@ -18,6 +18,7 @@
                             <el-select clearable v-model="formInline.postStatus" placeholder="帖子状态">
                             <el-option label="审核" value="1"></el-option>
                             <el-option label="待审" value="0"></el-option>
+                              <el-option label="已删除" value="-2"></el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="评论状态：">
@@ -94,7 +95,7 @@
         </div>
         <!-- end表格 -->
 
-        
+
         <!-- start分页 -->
         <div class="page">
             <el-pagination
@@ -122,7 +123,7 @@ export default {
                 viewCount: 0,    //总点赞数
             },
             height: null,
-            formInline: {   
+            formInline: {
                 title: '',   //标题
                 content: '',   //内容
                 people: '',    //评论人
@@ -164,6 +165,7 @@ export default {
     },
         //获取所有点赞列表
         getAllCmtsList(pageSize,pageNum){
+
             this.$post('comments/getAllCmtsList',{
                 pageSize: pageSize ? pageSize : 30,
                 pageNum: pageNum ? pageNum : 1,
@@ -184,7 +186,7 @@ export default {
                         let arr = res.data.list;
                         arr.forEach((e,index)=>{
                             arr[index].status = e.status == 1 ? '正常' : '禁用';
-                            arr[index].cityName = e.cityName == 1 ? '审核' : '待审';
+                            arr[index].cityName = e.cityName == 1 ? '审核' : e.cityName == 0 ? '待审':'已删除';
                             if(e.countryId == 0){
                                 arr[index].countryId = '超级管理员'
                             }else if(e.countryId == 1){
@@ -199,7 +201,7 @@ export default {
                         })
                         this.tableData = JSON.parse(JSON.stringify(arr));
                         this.total = res.data.total;
-                                 
+
                          this.$nextTick(function(){
                             this.checked();//每次更新了数据，触发这个函数即可。
 
@@ -224,7 +226,7 @@ export default {
                     }
 
 
-                      
+
                 }
             })
         },
@@ -298,7 +300,7 @@ export default {
                 });
                 });
         },
-        
+
         //审核、取消审核
         offComments(){
             let id = this.multipleSelection[0].cId;   //保存选中的数据的cId
@@ -333,8 +335,8 @@ export default {
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
-             
-        
+
+
             // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
             if(this.multipleSelection.length == 2){
                      for(var i= 0; i<this.tableData.length; i++){

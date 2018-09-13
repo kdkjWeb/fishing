@@ -927,6 +927,7 @@
 
       //获取所有帖子列表 /basicTopic/queryCommon
       getPostList(pageSize,pageNum){
+
         this.$post('/basicTopic/queryCommenToWeb',{
           pageSize: pageSize? pageSize : 30,
           pageNum: pageNum ? pageNum : 1,

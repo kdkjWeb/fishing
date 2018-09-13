@@ -269,7 +269,7 @@
                       <el-col :span="24">
                         <div style="width:100%;height: 300px;margin-bottom:20px;">
                           <el-amap ref="map" vid="amapDemo"  :center="center" :zoom="zoom" :plugin="plugin" :events="events">
-                            <el-amap-circle-marker v-for="marker in markers" :center="marker.center" :radius="marker.radius" :fill-color="marker.fillColor" :fill-opacity="marker.fillOpacity" :events="marker.events"></el-amap-circle-marker>
+                            <el-amap-circle-marker v-for="marker,index in markers" :key="index" :center="marker.center" :radius="marker.radius" :fill-color="marker.fillColor" :fill-opacity="marker.fillOpacity" :events="marker.events"></el-amap-circle-marker>
                           </el-amap>
                         </div>
 

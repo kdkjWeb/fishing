@@ -129,7 +129,6 @@
   export default {
     data(){
       return{
-
         formInline: {
           topicType: '',
           status: '',
@@ -236,19 +235,6 @@
           });
         }
 
-//        Axios.get(href,{
-//            header:{
-//                token:this.$store.state.token
-//            },
-//          params:{
-//            pageSize:0,
-//            pageNum:1
-//          }
-//        }).then(res=>{
-//          location.href = href + '?' + 'pageSize' + '=' +0 + '&pageNum' + '=' +1;
-//          Axios.defaults.headers['token'] = this.$store.state.token;
-//        })
-
          location.href = href;
       },
 
@@ -272,6 +258,7 @@
                     type: 'success',
                     message: '支付成功!'
                   });
+                  this.getPutForward();
                 })
           }).catch(() => {
             this.$message({
@@ -326,6 +313,7 @@
           this.rowIndex = 1;
         }
       },
+
       //标准时间格式转换
       dataTransform(date){
         if(date){
@@ -339,6 +327,7 @@
           return null;
         }
       },
+
       //设置表头的背景颜色
       getRowClass({ row, column, rowIndex, columnIndex }) {
         if (rowIndex == 0) {
@@ -347,6 +336,7 @@
           return ''
         }
       },
+
       //设置表格索引序号
       index(index){
         return (this.currentPage - 1)*this.pageSize + index + 1;

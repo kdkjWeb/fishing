@@ -390,7 +390,7 @@ export default {
                 {prop: 'kind', label: '类型', width: '60', align: '',align1: 'left'},
                 {prop: 'codeName', label: '圈子分类', width: '80', align: '',align1: 'left'},
                 {prop: 'sort', label: '排序号', width: '70', align: 'right',align1: 'right'},
-                {prop: 'commentCount', label: '帖子数', width: '60', align: 'right',align1: 'right'},
+                {prop: 'commentCount', label: '帖子数', width: '80', align: 'right',align1: 'right'},
                 {prop: 'viewCount', label: '阅读', width: '60', align: 'right',align1: 'right'},
                 {prop: 'memberCount', label: '成员', width: '60', align: 'right',align1: 'right'},
                 {prop: 'location', label: '详细地址', width: '180', align: '',align1: 'left'},

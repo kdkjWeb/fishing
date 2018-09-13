@@ -692,11 +692,9 @@
         }
 
         //p视频分类转字符串
-        console.log(this.form.videoCategoryId)
         if(typeof this.multipleSelection[0].videoCategoryId === 'string'){
           this.form.videoCategoryId = this.form.videoCategoryId.join(',');
         }
-        console.log( this.form.videoCategoryId)
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/videoTopic/updateVideoTopic' : 'videoTopic/addVideoTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           if(valid){
@@ -830,7 +828,6 @@
          topicId: this.circleId
        }).then(res=>{
          if(res.code == 0){
-           console.log(res)
            this.form = res.data;
            this.form.title = res.data.title;
            this.form.number = this.rowIndex;
@@ -839,11 +836,9 @@
            this.form.status = res.data.status + '';
           //  this.form.videoCategoryId = res.data.videoCategoryId + '';
            this.video = this.form.topicContentList[0];
-           console.log(this.form.videoCategoryId )
            if(typeof this.multipleSelection[0].videoCategoryId === 'string'){
              this.form.videoCategoryId = this.form.videoCategoryId.split(',');
            }
-          console.log(this.form.videoCategoryId )
          }
        })
       },
@@ -1176,10 +1171,8 @@
 
         this.videoUploadPercent = 100;
         this.videoPath = URL.createObjectURL(file.raw);
-        console.log(res,file)
         res.data = res.data.split(',') ;
-        console.log(res.data[0],res.data[1])
-        // this.video.thumbUrl = 
+        // this.video.thumbUrl =
 
 
         if(res.code == 0){
