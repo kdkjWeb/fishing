@@ -624,6 +624,11 @@ export default {
         this.$get('/scorecoin/getAllCoins').then(res=>{
             if(res.code == 0){
                 this.allCoin = res.data;
+            }else{
+              this.$message({
+                type: 'warning',
+                message: res.msg
+              });
             }
         })
     },

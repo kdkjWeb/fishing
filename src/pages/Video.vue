@@ -9,6 +9,17 @@
               <el-form-item label="标题：" >
                 <el-input clearable placeholder="标题" v-model="formInline.title"></el-input>
               </el-form-item>
+              <el-form-item label="视频分类：">
+                <el-select  placeholder="视频分类" clearable  v-model="formInline.videoTypeId">
+                  <el-option
+                    v-for="item,index in videoList"
+                    :label="item.codeName"
+                    :value="item.cId"
+                    :key="index">
+
+                  </el-option>
+                </el-select>
+              </el-form-item>
               <el-form-item label="作者：">
                 <el-input clearable  placeholder="作者" v-model="formInline.publisherName"></el-input>
               </el-form-item>
@@ -259,11 +270,13 @@
                 </el-row>
               </el-col>
             </el-row>
-
+            <!--<img src="../" alt="">-->
             <el-row>
               <el-col :span="16" v-if="videoShow">
                 <div class="video" v-if="video!=undefined">
-                  <video :src="video.contentUrl" :poster="video.thumbUrl?video.thumbUrl:'../../static/images/header.jpg'" width="300" height="240" controls></video>
+                  <video  :poster="video.thumbUrl?video.thumbUrl:'../../static/images/header.jpg'" width="300" height="240" controls ref="videoa" preload="auto" >
+                    <source :src="video.contentUrl"  type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'/>
+                  </video>
                 </div>
               </el-col>
 
@@ -388,6 +401,7 @@
           remark:'',
           publisherName:'',
           date:'',
+          videoTypeId:''
         },
         //增加
         topicCircle:'',
@@ -396,6 +410,7 @@
         isShow:true,
         pulisherDisabled:false,  //修改时禁用创建人
         videoList:[],  //视频分类
+        videoTypeArr:[],
         form:{
           title:'',  //标题、圈子
           isTop:'',  //是否置顶
@@ -445,7 +460,7 @@
           {prop: 'status', label: '状态', width: '60', align: ''},
           {prop: 'isTop', label: '置顶', width: '50', align: ''},
           {prop: 'isBest', label: '精华', width: '50', align: ''},
-          {prop: 'topicType', label: '类型', width: '50', align: ''},
+          {prop: 'videoType', label: '视频分类', width: '150', align: ''},
           {prop: 'sort', label: '排序号', width: '80', align: 'right'},
           {prop: 'viewNum', label: '浏览', width: '60', align: 'right'},
           {prop: 'commentNum', label: '评论', width: '60', align: 'right'},
@@ -484,7 +499,6 @@
           }
     },
 
-
       handleExceed(files, fileList) {
         this.$message.warning(`当前限制选择 1个文件`);
       },
@@ -507,6 +521,11 @@
         this.$get('/user/getUserNameList',{}).then(res=>{
           if(res.code == 0){
             this.userList = res.data
+          }else{
+            this.$message({
+              type: 'warning',
+              message: res.msg
+            });
           }
         })
       },
@@ -519,6 +538,7 @@
           status: this.formInline.status? this.formInline.status:null,
           title:this.formInline.title? this.formInline.title:null,
           remark:this.formInline.remark? this.formInline.remark:null,
+          videoCategoryId:this.formInline.videoTypeId? this.formInline.videoTypeId:null,
           publisherName:this.formInline.publisherName? this.formInline.publisherName:null,
           publishTime: this.formInline.date?  `${this.dataTransform(this.formInline.date[0])} 00:00:00` : null,
           publishTime2: this.formInline.date?  `${this.dataTransform(this.formInline.date[1])} 23:59:59` : null,
@@ -560,6 +580,11 @@
               })
             }
             this.total = res.data.total;
+          }else{
+            this.$message({
+              type: 'warning',
+              message: res.msg
+            });
           }
         })
       },
@@ -618,8 +643,6 @@
         this.currentPage = val;
         this.getRatingList(this.pageSize,val)
       },
-
-
 
       //查询
       search(){
@@ -683,7 +706,7 @@
 
       //点击确定   /basicTopic/addBasicTopic   /basicTopic/updateBasicTopic
       comfirm(form){
-
+        console.log(this.form.videoCategoryId)
         if(this.form.videoCategoryId.length == 0){
               this.videoError = '请选择视频分类';
               return;
@@ -692,9 +715,14 @@
         }
 
         //p视频分类转字符串
-        if(typeof this.multipleSelection[0].videoCategoryId === 'string'){
+        if(this.circleId){
+          if(typeof this.multipleSelection[0].videoCategoryId === 'string'){
+            this.form.videoCategoryId = this.form.videoCategoryId.join(',');
+          }
+        }else{
           this.form.videoCategoryId = this.form.videoCategoryId.join(',');
         }
+
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/videoTopic/updateVideoTopic' : 'videoTopic/addVideoTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
           if(valid){
@@ -808,6 +836,7 @@
 
 //      //修改
       edit(){
+        this.video = {};
         this.pulisherDisabled = true;
        if(this.multipleSelection.length != 1){
          this.$message({
@@ -820,11 +849,7 @@
        this.videoShow = true;
        this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
 
-
-
-
-
-       this.$get('videoTopic/queryByIdForRole',{
+       this.$get('videoTopic/queryByIdForRole?t=' + new Date().getTime(),{
          topicId: this.circleId
        }).then(res=>{
          if(res.code == 0){
@@ -836,9 +861,16 @@
            this.form.status = res.data.status + '';
           //  this.form.videoCategoryId = res.data.videoCategoryId + '';
            this.video = this.form.topicContentList[0];
+
            if(typeof this.multipleSelection[0].videoCategoryId === 'string'){
              this.form.videoCategoryId = this.form.videoCategoryId.split(',');
            }
+           this.$refs.videoa.load();
+         }else{
+           this.$message({
+             type: 'warning',
+             message: res.msg
+           });
          }
        })
       },
@@ -897,49 +929,58 @@
               pid:this.multipleSelection[0].cId,
               type:3
             }).then(res=>{
-              res.data.forEach((val)=>{
-                //判读审核、取消审核按钮哪一个可以点
-                val.status = val.status==1? '正常':'禁用';
-                val.userId = val.commentUser.nickname;
 
-                switch(val.type){
-                  case 1:
-                    val.type = '帖子评论';
-                    break;
-                  case 2:
-                    val.type = '店铺评论';
-                    break;
-                  case 11:
-                    val.type = '帖子评论的回复';
-                    break;
-                  case 21:
-                    val.type = '店铺评论的回复';
-                    break;
-                };
+                if(res.code == 0){
+                  res.data.forEach((val)=>{
+                    //判读审核、取消审核按钮哪一个可以点
+                    val.status = val.status==1? '正常':'禁用';
+                    val.userId = val.commentUser.nickname;
 
-                switch(val.commentUser.role){
-                  case 0:
-                    val.commentUser.role = '超级管理员';
-                    break;
-                  case 1:
-                    val.commentUser.role = '管理员';
-                    break;
-                  case 2:
-                    val.commentUser.role = '钓友';
-                    break;
-                  case 3:
-                    val.commentUser.role = '农家乐';
-                    break;
-                  default:
-                    val.commentUser.role = '渔具店';
-                    break;
-                };
-              })
-              this.commentData = res.data;
+                    switch(val.type){
+                      case 1:
+                        val.type = '帖子评论';
+                        break;
+                      case 2:
+                        val.type = '店铺评论';
+                        break;
+                      case 11:
+                        val.type = '帖子评论的回复';
+                        break;
+                      case 21:
+                        val.type = '店铺评论的回复';
+                        break;
+                    };
 
-              this.$nextTick(function(){
-                this.check();//每次更新了数据，触发这个函数即可。
-              })
+                    switch(val.commentUser.role){
+                      case 0:
+                        val.commentUser.role = '超级管理员';
+                        break;
+                      case 1:
+                        val.commentUser.role = '管理员';
+                        break;
+                      case 2:
+                        val.commentUser.role = '钓友';
+                        break;
+                      case 3:
+                        val.commentUser.role = '农家乐';
+                        break;
+                      default:
+                        val.commentUser.role = '渔具店';
+                        break;
+                    };
+                  })
+                  this.commentData = res.data;
+
+                  this.$nextTick(function(){
+                    this.check();//每次更新了数据，触发这个函数即可。
+                  })
+                }else{
+                  this.$message({
+                    type: 'warning',
+                    message: res.msg
+                  });
+                }
+
 
             })
         }
@@ -987,6 +1028,11 @@
               this.$nextTick(function(){
                 this.check();//每次更新了数据，触发这个函数即可。
               })
+            }else{
+                this.$message({
+                  type: 'warning',
+                  message: res.msg
+                })
             }
           })
         }
@@ -1009,29 +1055,37 @@
             topicId:this.multipleSelection[0].cId,
             type:'打赏'
           }).then(res=>{
-            res.data.list.forEach((val)=> {
-              switch (val.role) {
-                case 0:
-                  val.role = '超级管理员';
-                  break;
-                case 1:
-                  val.role = '管理员';
-                  break;
-                case 2:
-                  val.role = '钓友';
-                  break;
-                case 3:
-                  val.role = '农家乐';
-                  break;
-                default:
-                  val.role = '渔具店';
-                  break;
-              }
-            })
-            this.commentData = res.data.list;
-            this.$nextTick(function(){
-              this.check();//每次更新了数据，触发这个函数即可。
-            })
+
+           if(res.code == 0){
+             res.data.list.forEach((val)=> {
+               switch (val.role) {
+                 case 0:
+                   val.role = '超级管理员';
+                   break;
+                 case 1:
+                   val.role = '管理员';
+                   break;
+                 case 2:
+                   val.role = '钓友';
+                   break;
+                 case 3:
+                   val.role = '农家乐';
+                   break;
+                 default:
+                   val.role = '渔具店';
+                   break;
+               }
+             })
+             this.commentData = res.data.list;
+             this.$nextTick(function(){
+               this.check();//每次更新了数据，触发这个函数即可。
+             })
+           }else{
+               this.$message({
+                 type: 'warning',
+                 message: res.msg
+               })
+           }
 
           })
         }
@@ -1101,6 +1155,11 @@
                 message: '审核状态更改成功！'
               });
 
+            }else{
+              this.$message({
+                type: 'warning',
+                message: res.msg
+              })
             }
           })
         }).catch(() => {
@@ -1138,6 +1197,11 @@
                   })
                 }
               })
+            }else{
+              this.$message({
+                type: 'warning',
+                message: res.msg
+              })
             }
           })
         }).catch(() => {
@@ -1147,7 +1211,6 @@
           });
         });
       },
-
 
       //上传视频
       beforeUploadVideo(file) {
@@ -1169,9 +1232,23 @@
       //上传成功
       handleVideoSuccess(res, file){
 
+          console.log(res,file)
+
+
+        if(!file) return;
+
+          console.log(1)
+        var reader = new FileReader();
+          console.log(reader);
+        reader.onload = function(){
+            alert(1);
+          var canvas = document.createElement('canvas');  //创建画布
+        }
+
         this.videoUploadPercent = 100;
         this.videoPath = URL.createObjectURL(file.raw);
         res.data = res.data.split(',') ;
+        console.log(res.data)
         // this.video.thumbUrl =
 
 
@@ -1194,6 +1271,11 @@
                     name: 'login'
                 })
             },1500)
+        }else{
+            this.$message({
+              type: 'warning',
+              message: res.msg
+            })
         }
 
       },
@@ -1344,7 +1426,7 @@
     text-align: right;
   }
   .aboutNum{
-    width: 810px;
+    width: 909px;
     height: 30px;
     line-height: 30px;
     margin-top: 10px;

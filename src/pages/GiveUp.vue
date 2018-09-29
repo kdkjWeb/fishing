@@ -162,6 +162,11 @@ export default {
                       this.$nextTick(function(){
                             this.checked();//每次更新了数据，触发这个函数即可。
                         })
+                }else{
+                  this.$message({
+                    type: 'warning',
+                    message: res.msg
+                  });
                 }
             })
         },

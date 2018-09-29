@@ -114,10 +114,11 @@ export default {
                         },{
                             index: 'BeenFishGround',
                             title: '去过钓场'
-                        },{
-                            index: 'SignIn',
-                            title: '签到'
                         },
+//                        {
+//                            index: 'SignIn',
+//                            title: '签到'
+//                        },
                         /*{
                             index: 'SignUser',
                             title: '签到用户'

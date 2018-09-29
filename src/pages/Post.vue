@@ -154,7 +154,7 @@
                 <el-col :span="24" v-if="item.contentType==1" >
                   <el-row>
                     <el-col :span="23">
-                      <el-form-item label="内容：" class="content" :error="contentError" >
+                      <el-form-item label="内容：" class="content"  >
                         <el-input type="textarea" v-model="topicContentArr[index].content" :value="item.content"></el-input>
                       </el-form-item>
                     </el-col>
@@ -181,22 +181,30 @@
 
                 <div  v-else>
                   <el-col :span="24" :offset="1"  v-if="item.contentType==2">
-                    <span class="uploadTitle">上传图标：</span>
-                    <el-upload
-                      class="avatar-uploader"
-                      accept="image/jpeg,image/png"
-                      :action="$store.state.imagesUrl"
-                      list-type="picture-card"
-                      :show-file-list="true"
-                      :on-success="handleAvatarSuccess"
-                      :headers="myHeaders"
-                      name="picture"
-                      :limit="1"
-                      :on-exceed="handleExceed"
-                      :before-upload="beforeAvatarUpload">
-                      <i  class="el-icon-plus avatar-uploader-icon"></i>
-                      <div slot="tip" class="el-upload__tip">只支持jpg/png类型</div>
-                    </el-upload>
+                    <!--<el-row>-->
+                       <!--<el-col :span="22">-->
+                         <span class="uploadTitle">上传图标：</span>
+                         <el-upload
+                           class="avatar-uploader"
+                           accept="image/jpeg,image/png"
+                           :action="$store.state.imagesUrl"
+                           list-type="picture-card"
+                           :show-file-list="true"
+                           :on-success="handleAvatarSuccess"
+                           :on-remove="handleRemove"
+                           :headers="myHeaders"
+                           name="picture"
+                           :limit="1"
+                           :on-exceed="handleExceed"
+                           :before-upload="beforeAvatarUpload">
+                           <i  class="el-icon-plus avatar-uploader-icon"></i>
+                           <div slot="tip" class="el-upload__tip">只支持jpg/png类型</div>
+                         </el-upload>
+                       <!--</el-col>-->
+                      <!--<el-col :span="1" style="text-align: right;font-size: 18px;">-->
+                        <!--<i class="el-icon-delete" @click="deleteCom(index)" style="cursor:pointer"></i>-->
+                      <!--</el-col>-->
+                    <!--</el-row>-->
                   </el-col>
                 </div>
               </div>
@@ -284,13 +292,16 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="可见类型：">
-                      <el-select v-model="form.isVisibleCategoryId" placeholder="可见类型">
-                        <el-option label="打赏" value="2"></el-option>
-                        <el-option label="自己" value="1"></el-option>
-                        <el-option label="全网" value="0"></el-option>
-                      </el-select>
+                    <el-form-item label="可见类型：" :error="VisibleEorr">
+                      <el-input v-model="form.isVisibleCategoryId"  placeholder="请填写数字" @blur="Visible"></el-input>
+                      <!--<el-select v-model="form.isVisibleCategoryId" placeholder="可见类型">-->
+                        <!--<el-option label="打赏" value="2"></el-option>-->
+                        <!--<el-option label="自己" value="1"></el-option>-->
+                        <!--<el-option label="全网" value="0"></el-option>-->
+                      <!--</el-select>-->
+                      <span style="color:#66b1ff">-1自己，0全网，0以上打赏</span>
                     </el-form-item>
+
                   </el-col>
                 </el-row>
 
@@ -340,7 +351,7 @@
                   <el-col :span="8">
                     <el-form-item label="钓法：">
 
-                      <el-select v-model="form.fishMethod" filterable multiple :disabled="isDesable">
+                      <el-select v-model="form.fishMethod" filterable multiple >
                         <el-option
                           v-for="(item,index) in categoryList"
                           :label="item.codeName"
@@ -351,7 +362,7 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="鱼类：">
-                      <el-select v-model="form.fishType" filterable multiple :disabled="isDesable">
+                      <el-select v-model="form.fishType" filterable multiple >
                         <el-option
                           v-for="(item,index) in fishArr"
                           :label="item.codeName"
@@ -377,7 +388,7 @@
                 <el-row>
                   <el-col :span="8">
                     <el-form-item label="饵料类型：">
-                      <el-select v-model="form.baitType" filterable multiple :disabled="isDesable">
+                      <el-select v-model="form.baitType" filterable multiple >
                         <el-option
                           v-for="(item,index) in typeArr"
                           :label="item.codeName"
@@ -485,7 +496,6 @@
                       :label="item.nickname"
                       :value="item.cId"
                       :key="index"></el-option>
-
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -494,17 +504,6 @@
                     <el-input v-model="form.publishTime" disabled></el-input>
                 </el-form-item>
               </el-col>
-              <!-- <el-col :span="8">
-                <el-form-item label="创建人：" >
-                  <el-select v-model="form.authorId"  filterable>
-                    <el-option
-                      v-for="(item,index) in userList"
-                      :label="item.nickname"
-                      :value="item.cId"
-                      :key="index"></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col> -->
             </el-row>
             <el-row>
               <el-col :span="8">
@@ -518,9 +517,6 @@
                 </el-form-item>
               </el-col>
             </el-row>
-
-
-
 
           </el-form>
 
@@ -593,9 +589,10 @@
 </template>
 
 <script>
+  import ElCol from "element-ui/packages/col/src/col";
 
   export default {
-
+    components: {ElCol},
     data(){
           return{
               imgFlag:false,
@@ -603,7 +600,7 @@
             errMsg: '',
             isDesable: false,
             error:'',
-            contentError:'',
+
             disabledStatus:false,  //判断状态禁用精选
             allNum: {
               commentNum: 0,   //评论总数
@@ -645,7 +642,7 @@
               commentNum:'',  //评论数
               collects:'',   //收藏数
               reward:'',   //打赏金币
-              isVisibleCategoryId:'',  //是否可见
+              isVisibleCategoryId:0,  //是否可见
               topicCircleList:[],    //发送圈子
               fishMethod: [],      //钓法
               fishType: [],      //鱼类
@@ -718,6 +715,7 @@
 
             ],
             agritalinmentList:[],  //农家乐
+            VisibleEorr:'',  //可以类型
             imagesShow:false,
             isImg:false,  //点击修改时，不显示添加内容按钮
             tableList: [   //表格的头部配置
@@ -765,7 +763,32 @@
               return '';
           }
     },
-
+      //删除图片
+      handleRemove(file, fileList){
+        this.topicContentArr.forEach((val,num)=>{
+          if(val.contentType == 2){
+               if(file.response.data == val.content){
+                 this.$get('/common/deleteOssImage',{
+                   filename:val.content
+                 }).then(res=>{
+                   if(res.code == 0){
+                     this.$message({
+                       type: 'success',
+                       message: '删除成功!'
+                     });
+                     val.content = '';
+                   }else{
+                     this.$message({
+                       type: 'warning',
+                       message: res.msg
+                     });
+                   }
+                 })
+               }
+          }
+        })
+      },
+      //限制图片只能传一张
       handleExceed(files, fileList) {
         this.$message.warning(`当前限制选择 1个文件，如果还想添加图片，请点击图片按钮添加`);
       },
@@ -776,6 +799,17 @@
         } else {
           return ''
         }
+      },
+
+      //判断可见类型
+      Visible(){
+          if(/^[+]{0,1}(\d+)$/.test(this.form.isVisibleCategoryId) || this.form.isVisibleCategoryId == -1 || !this.form.isVisibleCategoryId){
+            this.form.isVisibleCategoryId = parseInt(this.form.isVisibleCategoryId);
+            this.VisibleEorr = '';
+          }else{
+            this.VisibleEorr = '请输入大于等于-1的整数';
+          }
+
       },
 
       //获取用户  /user/getMoreUserInfo
@@ -855,25 +889,25 @@
 
             });
             return false;
-          }
-
+          }else{
             this.titleName = '发送圈子：';
             this.$get('/circle/querySendCircle',{}).then(res=>{
-                if(res.code == 0){
-                  this.circleList = res.data;
-                  this.topicCircleArr= [];
-                    for(let i=0; i<this.circleList.length; i++){
-                        if(this.form.circleList){
-                          for(let j=0; j<this.form.circleList.length; j++){
-                            if(this.circleList[i].cId == this.form.circleList[j].cId){
-                              this.topicCircleArr.push(this.form.circleList[j].cId);
-                            }
-                          }
-                        }
+              if(res.code == 0){
+                this.circleList = res.data;
+                this.topicCircleArr= [];
+                for(let i=0; i<this.circleList.length; i++){
+                  if(this.form.circleList){
+                    for(let j=0; j<this.form.circleList.length; j++){
+                      if(this.circleList[i].cId == this.form.circleList[j].cId){
+                        this.topicCircleArr.push(this.form.circleList[j].cId);
+                      }
+                    }
                   }
-
                 }
-              })
+              }
+            })
+        }
+
       },
 
       //获取所有省份 /province/queryAll
@@ -916,7 +950,15 @@
           this.$get('user/getUserListByRole',{
             role:3
           }).then(res=>{
-            this.agritalinmentList = res.data;
+              if(res.code == 0){
+                this.agritalinmentList = res.data;
+              }else{
+                  this.$message({
+                    type: 'warning',
+                    message: res.msg
+                  })
+              }
+
           })
       },
 
@@ -927,7 +969,6 @@
 
       //获取所有帖子列表 /basicTopic/queryCommon
       getPostList(pageSize,pageNum){
-
         this.$post('/basicTopic/queryCommenToWeb',{
           pageSize: pageSize? pageSize : 30,
           pageNum: pageNum ? pageNum : 1,
@@ -950,6 +991,7 @@
                             arr[index].status = e.status == 0 ? '未审' : '审核';
                             arr[index].isTop = e.isTop == 0 ? '' : (e.isTop == 1?  '是': '全局置顶');
                             arr[index].isBest = e.isBest == 0 ? '' : '是';
+
                             if(e.circleList != undefined){
                                let str = '';
                                 e.circleList.forEach((e)=>{
@@ -963,11 +1005,10 @@
 
                                   }else if(e.showType == 1){
 
-                                      if(arr[index].circleList != '钓位' && arr[index].circleList != '鱼情'){
-                                        arr[index].circleList = ''
-                                      }
+//                                      if(arr[index].circleList != '钓位' && arr[index].circleList != '鱼情'){
+//                                        arr[index].circleList = ''
+//                                      }
                                       if(arr[index].circleList == 'undefined'){
-                                          alert('unde')
                                         arr[index].circleList = '';
                                       }
 
@@ -1073,7 +1114,6 @@
         this.getPostList(this.pageSize,val);
       },
 
-
       //查询
       search(){
         this.getPostList();
@@ -1082,6 +1122,7 @@
 
       //新增
       add(){
+        this.cont = 0;
         this.isDesable = false;
         this.isImg = true;
         this.imageUrl = '';
@@ -1098,6 +1139,8 @@
           Object.keys(this.form).forEach((key)=>{
               if(key == 'fishType' || key == 'fishMethod' || key == 'baitType'){
                   this.form[key] = []
+              }else if(key == 'isVisibleCategoryId'){
+                this.form[key] = 0;
               }else{
                 this.form[key] = ''
               }
@@ -1108,17 +1151,28 @@
           {
             contentType:1,
             content:'',
-            sort:0
+            sort:0,
+            imageUrl:''
           }
         ]
+
+        console.log(this.topicContentArr)
       },
 
       /**start上传图片 */
       handleAvatarSuccess(res, file) {
-        if(this.topicContentArr[this.topicContentArr.length - 1].contentType == 2){
-          this.topicContentArr[this.topicContentArr.length - 1].imageUrl = URL.createObjectURL(file.raw);
-          this.topicContentArr[this.topicContentArr.length - 1].content = file.response.data;
-        }
+        this.topicContentArr.forEach((val)=>{
+              if(val.contentType == 2){
+                console.log(val)
+                  if(val.sort && !val.content){
+                    this.topicContentArr[val.sort].content = file.response.data;
+                    this.topicContentArr[val.sort].imageUrl = URL.createObjectURL(file.raw);
+                  }
+
+
+              }
+        })
+
          if(res.code == 602){
             this.$message.error(res.msg);
             setTimeout(()=>{
@@ -1187,7 +1241,6 @@
             return;
           }else{
             for(let i=0; i< this.form.topicCircleList.length; i++){
-              console.log(this.form.topicCircleList[i].cType)
               if(this.form.topicCircleList[i].cType == 0){
                 if(!this.form.topicCircleList[i].placeId){
                   this.error = '请选择发送圈子';
@@ -1211,7 +1264,7 @@
 
         this.$refs[form].validate((valid)=>{
           let url = this.circleId ? '/basicTopic/updateBasicTopic' : '/basicTopic/addBasicTopicByRole'    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
-
+          let contentFlag = true;  //判断内容是否为空，
             if(valid){
               //验证排序号
               if( (/^\d+$/.test(this.form.showSort)) || !this.form.showSort){
@@ -1221,20 +1274,38 @@
                 return;
                }
 
-
-
-
+               //判断内容
               this.topicContentArr.forEach((val)=>{
-                if(!val.content){
-                  this.contentError = '请输入内容';
-                  return;
+
+                if(val.contentType == 2){
+//                  if(!val.content){
+//                    contentFlag = false;
+//                    this.$message({
+//                      type: 'warning',
+//                      message: '所有上传图标不能为空，请上传图片！'
+//                    });
+//                  }
                 }else{
-                    this.contentError = '';
+                  if(!val.content){
+                    contentFlag = false;
+                    this.$message({
+                      type: 'warning',
+                      message: '所有内容都不能为空，请输入内容！'
+                    });
+                  }else{
+                    if(val.content.length < 15){
+                      contentFlag = false;
+                      this.$message({
+                        type: 'warning',
+                        message: '内容最少输入15个字符或以上！'
+                      });
+                    }
+                  }
                 }
               })
 
-
-              this.$post(url,{
+              if(contentFlag){
+                this.$post(url,{
                   cId: this.circleId ? this.circleId : null,
                   title: this.form.title,  //标题、圈子
                   isTop:this.form.isTop,  //是否置顶
@@ -1262,22 +1333,24 @@
                   topicContentList:this.topicContentArr,  //内容
                   viewNum: this.form.viewNum
                 }).then(res=>{
-                    if(res.code == 0){
-                      this.dialogVisible = false;
-                      this.$message({
-                        message:res.msg,
-                        type: 'success',
-                      });
-                    }else if(res.code == 500){
-                      this.dialogVisible = true;
-                        this.$message({
-                          message: res.msg,
-                          type: 'warning'
-                        });
+                  if(res.code == 0){
+                    this.dialogVisible = false;
+                    this.$message({
+                      message:res.msg,
+                      type: 'success',
+                    });
+                  }else if(res.code == 500){
+                    this.dialogVisible = true;
+                    this.$message({
+                      message: res.msg,
+                      type: 'warning'
+                    });
 
-                    }
-                    this.getPostList();
+                  }
+                  this.getPostList();
                 })
+              }
+
             }
         })
       },
@@ -1348,7 +1421,7 @@
           this.isImg = false;
           this.errMsg = '';
           this.error = '';
-          this.contentError = '';
+
           this.imagesShow = true;
           this.topicContentArr = [];
           this.aduthorDisabled = true;
@@ -1370,37 +1443,38 @@
         this.$get('/basicTopic/queryByIdForRole',{
           topicId: this.circleId
         }).then(res=>{
-          this.form = res.data;
-          this.form.number = this.rowIndex;
+            if(res.code == 0){
+              this.form = res.data;
+              this.form.number = this.rowIndex;
 
-          this.form.isGoBoat = this.form.isGoBoat ? this.form.isGoBoat + '' : '';
-          this.form.status = this.form.status + '';
-          this.form.isTop = this.form.isTop + '';
-          this.form.isBest = this.form.isBest + '';
-          this.topicContentArr = this.form.topicContentList;
-          this.form.fishType = this.form.fishType ? this.form.fishType.split(',') : [];
-          this.form.baitType = this.form.baitType ? this.form.baitType.split(',') : [];
-          this.form.fishMethod = this.form.fishMethod ? this.form.fishMethod.split(',') : [];
+              this.form.isGoBoat = this.form.isGoBoat ? this.form.isGoBoat + '' : '';
+              this.form.status = this.form.status + '';
+              this.form.isTop = this.form.isTop + '';
+              this.form.isBest = this.form.isBest + '';
+              this.topicContentArr = this.form.topicContentList;
+              this.form.fishType = this.form.fishType ? this.form.fishType.split(',') : [];
+              this.form.baitType = this.form.baitType ? this.form.baitType.split(',') : [];
+              this.form.fishMethod = this.form.fishMethod ? this.form.fishMethod.split(',') : [];
 
-          // if(this.form.topicType == 5){
-          //       this.isDesable = true;
-          //   }else if(this.form.topicType == 2){
-          //     this.isShow = false;
-          //   }else{
-          //     this.isShow = true;
-          //     this.isDesable = false;
-          //   }
-          if(this.form.topicType == 2 || this.form.topicType == 3){
-            this.getCircleList();
-            this.titleName = '钓场：';
-            this.isShow = false;
-             this.isDesable = false;
-             this.topicCircle = this.form.circleList[0].cId
-          }else{
-            this.topicCircleArr = [];
-            this.titleName = '发送圈子：';
-            this.isShow = true;
-            this.isDesable = true;
+              // if(this.form.topicType == 5){
+              //       this.isDesable = true;
+              //   }else if(this.form.topicType == 2){
+              //     this.isShow = false;
+              //   }else{
+              //     this.isShow = true;
+              //     this.isDesable = false;
+              //   }
+              if(this.form.topicType == 2 || this.form.topicType == 3){
+                this.getCircleList();
+                this.titleName = '钓场：';
+                this.isShow = false;
+                this.isDesable = false;
+                this.topicCircle = this.form.circleList[0].cId
+              }else{
+                this.topicCircleArr = [];
+                this.titleName = '发送圈子：';
+                this.isShow = true;
+                this.isDesable = true;
 
 //            if(this.form.circleList){
 //              this.form.circleList.forEach((val)=>{
@@ -1409,9 +1483,15 @@
 //              })
 //            }
 
-            this.getCircleList()
-          }
-          // this.getCityList();
+                this.getCircleList()
+              }
+            }else{
+                this.$message({
+                  type: 'warning',
+                  message: res.msg
+                })
+            }
+
         })
       },
 
@@ -1727,33 +1807,63 @@
 
       //删除内容
       deleteImage(index){
-        this.$confirm('此操作将永久删除, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.topicContentArr.forEach((val,num)=>{
-            if(index == num){
-                if(val.contentType == 2){
-                    this.$get('/common/deleteOssImage',{
-                      filename:val.content
-                    })
-                }
-              this.topicContentArr.splice(index,1);
-            }
-          })
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
+       if(this.topicContentArr.length>1){
+         this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+           confirmButtonText: '确定',
+           cancelButtonText: '取消',
+           type: 'warning'
+         }).then(() => {
+           this.topicContentArr.forEach((val,num)=>{
+             if(index == num){
+               if(val.contentType == 2 && val.content){
+                 this.$get('/common/deleteOssImage',{
+                   filename:val.content
+                 }).then(res=>{
+                   if(res.code == 0){
+                     this.$message({
+                       type: 'success',
+                       message: '删除成功!'
+                     });
+
+                   }else{
+                     this.$message({
+                       type: 'warning',
+                       message: res.msg
+                     });
+                   }
+                 })
+               }
+               this.topicContentArr.splice(index,1);
+               this.cont--;
+             }
+           })
+
+         }).catch(() => {
+           this.$message({
+             type: 'info',
+             message: '已取消删除'
+           });
+         });
+       }else{
+         this.$message({
+           type: 'warning',
+           message: '至少保留一个'
+         });
+       }
 
       },
+
+//      //删除组件
+//      deleteCom(sort){
+//        this.topicContentArr = JSON.parse(JSON.stringify(this.topicContentArr));
+//        for(let i=0; i<this.topicContentArr.length; i++){
+//            if(i === sort){
+//              this.topicContentArr.splice(1,1);
+//                      this.cont--;
+//                    break;
+//            }
+//        }
+//      },
 
       //点击添加 文字、图片
       addContent(){
@@ -1765,49 +1875,66 @@
         let flag = false;
         this.cont++;
         if(this.topicContentArr.length  == 0){
-            alert(1)
           flag = true;
         }else{
-          for(let i=0; i<this.topicContentArr.length; i++){
-            if(this.topicContentArr[i].content){
-              flag  = true;
-            }else{
-              flag = false;
-              this.cont--;
-            }
-          }
-        }
+         /* for(let i=0; i<this.topicContentArr.length; i++){
+           if(this.topicContentArr[i].content){
+           flag  = true;
+           }else{
+           flag = false;
+           this.cont--;
+           }
+           }*/
 
-        if(flag){
           this.topicContentArr.push({
             contentType:1,
             content:'',
             imageUrl:'',
             sort:this.cont
           });
-        }else{
-          this.$message('您内容或图片不能为空，请填写或上传后再添加！');
         }
+
+//        if(flag){
+//          this.topicContentArr.push({
+//            contentType:1,
+//            content:'',
+//            imageUrl:'',
+//            sort:this.cont
+//          });
+//        }else{
+//          this.$message('您内容或图片不能为空，请填写或上传后再添加！');
+//        }
       },
 
       //添加图片
       addImages(){
+
         let flag = false;
         this.cont++;
         if(this.topicContentArr.length == 0){
             flag = true;
         }else{
-          for(let i=0; i<this.topicContentArr.length; i++){
+          /*for(let i=0; i<this.topicContentArr.length; i++){
             if(this.topicContentArr[i].content){
               flag  = true;
             }else{
               flag = false;
               this.cont--;
             }
-          }
+          }*/
+
+          this.topicContentArr.push({
+            contentType:2,
+            content:'',
+            sort:this.cont,
+            isImg:false,
+            imageUrl:''
+          })
+
+          console.log(this.topicContentArr);
         }
 
-        if(flag){
+/*        if(flag){
           this.topicContentArr.push({
             contentType:2,
             content:'',
@@ -1816,7 +1943,7 @@
           })
         }else{
           this.$message('您内容或图片不能为空，请填写或上传后再添加！');
-        }
+        }*/
       },
 
     },
@@ -2012,7 +2139,7 @@ background: #fff;
   padding-right: 15px;
 }
 .aboutNum{
-  width: 1279px;
+  width: 1281px;
   height: 30px;
   line-height: 30px;
   margin-top: 10px;

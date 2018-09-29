@@ -5,6 +5,9 @@
             <el-row>
                 <el-col :span="14">
                     <el-form :inline="true" :model="formInline" class="demo-form-inline" size="mini">
+                      <el-form-item label="类别：">
+                        <el-input clearable v-model="formInline.category" placeholder="类别"></el-input>
+                      </el-form-item>
                         <el-form-item label="名称：">
                             <el-input clearable v-model="formInline.name" placeholder="名称"></el-input>
                         </el-form-item>
@@ -228,7 +231,8 @@ export default {
 
             formInline: {   //圈子、详细地址、创建时间的表单
               name: '',
-              status: ''
+              status: '',
+              category:''
             },
             parentList:[],  //所有类别
             labelList:[],  //标签下的二级菜单
@@ -249,7 +253,7 @@ export default {
             tableList: [   //表格的头部配置
                 {prop: 'status', label: '状态', width: '80', align: ''},
                 {prop: 'categoryName', label: '类别', width: '120', align: ''},
-                {prop: 'codeName', label: '名称', width: '80', align: ''},
+                {prop: 'codeName', label: '名称', width: '160', align: ''},
                 {prop: 'sort', label: '排序', width: '80', align: 'right'},
                 {prop: 'rewards', label: '打赏渔乐', width: '80', align: 'right'},
                 {prop: 'creator', label: '创建人', width: '100', align: ''},
@@ -289,6 +293,7 @@ export default {
                 pageNum: pageNum ? pageNum : 1,
                 codeName: this.formInline.name ? this.formInline.name : null,
                 status: this.formInline.status ? this.formInline.status : null,
+                categoryName:this.formInline.category? this.formInline.category:null
             }).then(res=>{
                 if(res.code == 0){
                     if(res.data.list.length <= 0){   //如果后面没返回数据就直接赋值
@@ -328,6 +333,11 @@ export default {
                         })
                     }
                   this.total = res.data.total;
+                }else{
+                  this.$message({
+                    type: 'warning',
+                    message: res.msg
+                  });
                 }
             })
         },
@@ -342,6 +352,11 @@ export default {
             this.$post('/sysCategory/queryParent',{}).then(res=>{
                 if(res.code == 0){
                   this.parentList = res.data.list;
+                }else{
+                  this.$message({
+                    type: 'warning',
+                    message: res.msg
+                  });
                 }
             })
       },
@@ -430,6 +445,11 @@ export default {
                   type: 'success',
                 });
                 this.getCircleList();
+              }else{
+                this.$message({
+                  type: 'warning',
+                  message: res.msg
+                });
               }
 
             })
@@ -467,6 +487,11 @@ export default {
                                     });
                                 }
                             })
+                        }else{
+                          this.$message({
+                            type: 'warning',
+                            message: res.msg
+                          });
                         }
                     })
                 }).catch(() => {
@@ -503,6 +528,11 @@ export default {
 
                         console.log(this.form)
                         }
+                }else{
+                  this.$message({
+                    type: 'warning',
+                    message: res.msg
+                  });
                 }
             })
 

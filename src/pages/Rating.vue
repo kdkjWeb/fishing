@@ -116,8 +116,8 @@
                       <el-col :span="24">
                          <el-form-item label="状态：">
                             <el-select v-model="form.status" placeholder="状态">
-                            <el-option label="正常" value="1"></el-option>
-                            <el-option label="已关闭" value="0"></el-option>
+                              <el-option label="正常" value="1"></el-option>
+                              <el-option label="已关闭" value="0"></el-option>
                             </el-select>
                         </el-form-item>
                       </el-col>
@@ -142,7 +142,7 @@
                 </el-row>
                 <el-row>
                   <el-col :span="12">
-                     <el-form-item label="类型：" prop="type">
+                     <el-form-item label="类型：" prop="type" ref="type">
                        <el-select v-model="form.type" placeholder="类型" @change="getType">
                          <el-option label="钓友" value="1"></el-option>
                          <el-option label="农家乐" value="2"></el-option>
@@ -366,6 +366,11 @@ export default {
                         })
                     }
                     this.total = res.data.total;
+                }else{
+                  this.$message({
+                    type: 'warning',
+                    message: res.msg
+                  });
                 }
             })
         },
@@ -379,11 +384,35 @@ export default {
         add(){
             this.dialogVisible = true;
             this.disabled = true;
-            this.form = {};
             this.imageUrl = '';
             this.circleId = '';
 
-            this.form.status = '1';
+          //点击新增清空表单
+          for(var i in this.form){
+            if(i == 'status'){  //遇到默认项跳过，执行下面的循环
+              continue;
+            }else if(this.form[i] != ''){
+              this.$nextTick(() => {
+
+                this.$refs['type'].resetField();
+
+                Object.keys(this.form).forEach((key)=>{
+                  if(key == 'status'){
+                    this.form[key] = '1';
+                  }else if(key == 'level'){
+                    this.form[key] = null;
+                  }else{
+                    this.form[key] = '';
+                  }
+
+                })
+              });
+
+
+            }
+          }
+
+//            this.form.status = '1';
         },
 
       //标准时间格式转换
@@ -407,13 +436,13 @@ export default {
 
       //弹出框的确认按钮  /levelRule/addLevelRule
       comfirm(formName){
-        if(!this.form.icon){
-          this.$message({
-            message: '请上传等级的图标！',
-            type: 'warning'
-          });
-          return;
-        }
+//        if(!this.form.icon){
+//          this.$message({
+//            message: '请上传等级的图标！',
+//            type: 'warning'
+//          });
+//          return;
+//        }
 
         this.$refs[formName].validate((valid) => {
           let url = this.circleId ? '/levelRule/updateLevelRule' : '/levelRule/addLevelRule';    //如果this.circleId存在，那就是调修改接口，否则就是新增接口
@@ -493,6 +522,11 @@ export default {
                                     });
                                 }
                             })
+                        }else {
+                          this.$message({
+                            type: 'warning',
+                            message: res.msg
+                          });
                         }
                     })
                 }).catch(() => {
@@ -532,6 +566,11 @@ export default {
                 this.form.creator = res.data.creator ? res.data.creator.nickname : '';
                 this.form.modifier = res.data.modifier ? res.data.modifier.nickname : '';
                this.imageUrl = this.form.iconUrl;
+            }else{
+              this.$message({
+                type: 'warning',
+                message: res.msg
+              });
             }
         })
 

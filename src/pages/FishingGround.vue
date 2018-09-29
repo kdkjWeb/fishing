@@ -187,7 +187,8 @@
                         :headers="myHeaders"
                         auto-upload
                         :before-upload="beforeAvatarUpload">
-                        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+
+                          <img v-if="imageUrl" :src="imageUrl"  class="avatar"  :onerror="errorImg">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div>
                         </el-upload>
@@ -240,7 +241,7 @@
                     <el-row>
                       <el-col :span="8">
                            <el-form-item label="经度：">
-                                <el-input v-model="form.longitude"></el-input>
+                                <el-input v-model="form.longitude" disabled></el-input>
                             </el-form-item>
                       </el-col>
                       <el-col :span="16">
@@ -254,7 +255,7 @@
                     <el-row>
                       <el-col :span="8">
                           <el-form-item label="纬度：">
-                                <el-input v-model="form.latitude"></el-input>
+                                <el-input v-model="form.latitude" disabled></el-input>
                         </el-form-item>
                       </el-col>
 
@@ -272,37 +273,51 @@
                             <el-amap-circle-marker v-for="marker,index in markers" :key="index" :center="marker.center" :radius="marker.radius" :fill-color="marker.fillColor" :fill-opacity="marker.fillOpacity" :events="marker.events"></el-amap-circle-marker>
                           </el-amap>
                         </div>
-
+                       <!-- <div class="toolbar">
+                            <span v-if="loaded">
+                              location: lng = {{ form.longitude }} lat = {{ form.latitude }}
+                            </span>
+                          <span v-else>正在定位</span>
+                        </div>-->
+                        <!--<div @click="req_post()">查询周边</div>-->
                       </el-col>
                     </el-row>
 
                     <el-row>
                       <el-col :span="6">
+
                         <el-form-item label="省：" prop="provinceId">
-                            <el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince(form.provinceId)">
-                            <el-option :label="item.regionName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>
-                            </el-select>
+                            <!--<el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince(form.provinceId)">-->
+                            <!--<el-option :label="item.regionName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>-->
+                            <!--</el-select>-->
+
+                          <el-input  v-model="form.provinceName"  disabled></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :span="6">
                         <el-form-item label="市：" prop="cityId">
-                                <el-select v-model="form.cityId" placeholder="请选择市"  @change="chooseArea(form.cityId)">
-                                <el-option :label="item.regionName" :value="item.cId" v-for="item in cityList" :key="item.cId"></el-option>
-                                </el-select>
+                                <!--<el-select v-model="form.cityId" placeholder="请选择市"  @change="chooseArea(form.cityId)">-->
+                                <!--<el-option :label="item.regionName" :value="item.cId" v-for="item in cityList" :key="item.cId"></el-option>-->
+                                <!--</el-select>-->
+                          <el-input v-model="form.cityName"  disabled></el-input>
                             </el-form-item>
+
                       </el-col>
                       <el-col :span="6">
                         <el-form-item label="县：" prop="areaId">
-                            <el-select v-model="form.areaId" placeholder="请选择区县" @change="chooseCountry(form.areaId)">
-                            <el-option :label="item.regionName" :value="item.cId" v-for="item in areaList" :key="item.cId"></el-option>
-                            </el-select>
+                            <!--<el-select v-model="form.areaId" placeholder="请选择区县" @change="chooseCountry(form.areaId)">-->
+                            <!--<el-option :label="item.regionName" :value="item.cId" v-for="item in areaList" :key="item.cId"></el-option>-->
+                            <!--</el-select>-->
+                          <el-input v-model="form.areaName"  disabled></el-input>
                         </el-form-item>
+
                       </el-col>
                       <el-col :span="6">
                           <el-form-item label="乡：">
-                            <el-select v-model="form.countryId" placeholder="请选择乡镇">
-                                <el-option :label="item.regionName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>
-                            </el-select>
+                            <!--<el-select v-model="form.countryId" placeholder="请选择乡镇">-->
+                                <!--<el-option :label="item.regionName" :value="item.cId" v-for="item in countryList" :key="item.cId"></el-option>-->
+                            <!--</el-select>-->
+                            <el-input v-model="form.countryName"   disabled></el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
@@ -357,7 +372,7 @@
                       </el-col>
                       <el-col :span="24">
                           <el-form-item label="地址：" prop="location" ref="location">
-                                      <el-input v-model="form.location"></el-input>
+                                      <el-input v-model="form.location" disabled></el-input>
                           </el-form-item>
                       </el-col>
                       <el-col :span="24">
@@ -385,10 +400,13 @@
 
 <script>
   import ElCol from "element-ui/packages/col/src/col";
+  import Axios from 'axios'
 export default {
   components: {ElCol},
   data(){
         return{
+          loaded: false,
+            errorImg:'this.src="' + require('@/assets/images/errorImg.png') + '"',  //图片加载不出来显示
             errMsg: '',
             disabled: false,   //是否禁止填写
             myHeaders: {     //上传图片携带token
@@ -407,16 +425,17 @@ export default {
             fishList: [],   //鱼类分类
             fishMethodList: [],   //有什么钓法
             baitList: [],   //饵料列表
-            provinceList: [],  //省份
-            cityList: [],   //市
-            areaList: [],    //县级
-            countryList: [],   //乡镇
+//            provinceList: [],  //省份
+//            cityList: [],   //市
+//            areaList: [],    //县级
+//            countryList: [],   //乡镇
             managerList: [],   //管理人列表
             formInline: {   //圈子、详细地址、创建时间的表单
             name: '',
             location: '',
             cdate: ''
             },
+
             form:{
                 name: '',  //钓场名称
                 number: '',   //编号
@@ -431,10 +450,10 @@ export default {
                 topicNum: '',   //帖子数
                 longitude: '',   //经度
                 latitude: '',   //维度
-                provinceId: '',  //省份
-                cityId: '',   //市
-                areaId: '',   //县
-                countryId: '',  //乡
+              provinceName: '',  //省份
+              cityName: '',   //市
+              areaName: '',   //县
+              countryName: '',  //乡
                 manager: '',   //管理人
                 location: '',   //详细地址
                 payDetails: '',   //收费详情
@@ -495,10 +514,10 @@ export default {
                 ]
             },
           zoom: 15,
-          center: [103.821773, 30.761916],
+          center: [106.5507300000, 29.5647100000],
           markers: [
             {
-              center: [103.821773, 30.761916],
+              center: [106.5507300000, 29.5647100000],
               radius: 10,
               fillOpacity: 1,
               fillColor: 'rgba(0,0,255,1)',
@@ -506,20 +525,67 @@ export default {
           ],
           events: {
             init: (o) => {
-              console.log(o.getCenter())
-              console.log(this.$refs.map.$$getInstance())
-              o.getCity(result => {
-                console.log(result)
-              })
+              console.log(this.$refs.map.$$getInstance());
+              console.log(o.getCenter());
+//              o.getCity(result => {
+//                console.log(result)
+//              })
+
             },
             'moveend': () => {
             },
             'zoomchange': () => {
             },
             'click': (e) => {
-              this.form.longitude = e.lnglat.getLng(),
+              this.form.longitude = e.lnglat.getLng();
               this.form.latitude = e.lnglat.getLat();
               this.markers[0].center = [this.form.longitude,this.form.latitude];
+
+
+              let lacation = this.form.longitude + ',' + this.form.latitude;
+              let _this = this;
+              var url='https://restapi.amap.com/v3/geocode/regeo?output=JSON&location='+lacation+'&key=73f3ff8d01e2fc2b04d6a2c04abe28e9';
+              $.ajax({
+                type:"post",    //请求方式
+                async:true,    //是否异步
+                url:url,
+                dataType:"jsonp",    //跨域json请求一定是jsonp
+                jsonp: "callback",    //跨域请求的参数名，默认是callback
+                jsonpCallback:"successCallback",    //自定义跨域参数值，回调函数名也是一样，默认为jQuery自动生成的字符串
+                //data:{"query":"civilnews"},    //请求参数
+
+                beforeSend: function() {
+                  //请求前的处理
+                },
+
+                success: function(data) {
+
+                  _this.form.provinceName = data.regeocode.addressComponent.province;
+
+                  if(data.regeocode.addressComponent.city.length > 0){
+                    _this.form.cityName = data.regeocode.addressComponent.city;
+                  }else{
+                    _this.form.cityName = data.regeocode.addressComponent.province;
+                  }
+
+                  _this.form.areaName = data.regeocode.addressComponent.district;
+                 _this.form.countryName = data.regeocode.addressComponent.township;
+                  _this.form.location = data.regeocode.formatted_address;
+
+                  //请求成功处理，和本地回调完全一样
+                  console.log(_this.form)
+                },
+
+                complete: function() {
+                  //请求完成的处理
+                },
+
+                error: function() {
+                  //请求出错处理
+                  alert("error");
+                }
+              });
+
             }
           },
           plugin: ['ToolBar', {
@@ -527,16 +593,46 @@ export default {
             defaultType: 0,
             events: {
               init(o) {
-                console.log(o);
+                // o 是高德地图定位插件实例
+                o.getCurrentPosition((status, result) => {
+                  console.log(result)
+                  if (result && result.position) {
+                    self.lng = result.position.lng;
+                    self.lat = result.position.lat;
+                    self.center = [self.lng, self.lat];
+                    self.loaded = true;
+                    self.$nextTick();
+                  }
+                });
               }
             }
           }]
-
-
-
         }
     },
     methods:{
+
+      req_post() {
+        const that=this;
+        const registerUrl="http://restapi.amap.com/v3/batch?key=ca208937a063f6cb5e5b4acb3f44c505";
+        const newUserInfo={
+          "ops": [
+            {
+              "url": "/v3/place/around?offset=10&page=1&key=ca208937a063f6cb5e5b4acb3f44c505&location="+this.form.longitude+","+this.form.latitude+"&output=json&radius=100000&types=080000"
+            }
+          ]
+        };
+
+        Axios.post(registerUrl, newUserInfo, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }).then(function (response) {
+            console.log(response['data'][0]['body']['pois'])
+        }).catch(function (error) {
+            console.log(error);
+        });
+
+      },
         //获取钓场列表
         getGroundList(pageSize,pageNum){
             this.$post('fishplace/managerGetList',{
@@ -693,6 +789,8 @@ export default {
                 this.form.number = this.rowIndex;
                 this.imageUrl = this.form.iconUrl;
 
+
+
                 //地图回显
                 if(this.form.longitude && this.form.latitude){
                   this.center = [this.form.longitude,this.form.latitude]
@@ -775,14 +873,14 @@ export default {
 
         //弹出框的确认按钮
         comfirm(formName){
-            //必须上传图标
-            if(!this.form.icon){
-                this.$message({
-                message: '请上传钓场的图标！',
-                type: 'warning'
-                });
-                return;
-            }
+//            //必须上传图标
+//            if(!this.form.icon){
+//                this.$message({
+//                message: '请上传钓场的图标！',
+//                type: 'warning'
+//                });
+//                return;
+//            }
 
           this.$refs[formName].validate((valid)=>{
                 if(valid){
@@ -818,10 +916,10 @@ export default {
                         baits: this.form.baits.join(','),
                         longitude: this.form.longitude,
                         latitude: this.form.latitude,
-                        provinceId: this.form.provinceId,
-                        cityId: this.form.cityId,
-                        areaId: this.form.areaId,
-                        countryId: this.form.countryId,
+                        provinceName: this.form.provinceName,
+                        cityName: this.form.cityName,
+                        areaName: this.form.areaName,
+                        countryName: this.form.countryName,
                         manager: this.form.manager,
                         payDetails: this.form.payDetails,
                         location: this.form.location,
@@ -904,7 +1002,6 @@ export default {
              category: 30
          }).then(res=>{
              this.codeNameList = res.data;
-             console.log(this.codeNameList)
          })
      },
 
@@ -935,7 +1032,7 @@ export default {
          })
      },
 
-     //获取省份列表
+ /*    //获取省份列表
      getProvince(){
          this.$get('/region/queryTrees',{
 
@@ -946,12 +1043,14 @@ export default {
           })
      },
      //获取市列表
-     chooseProvince(id){
+     chooseProvince(id,cityId){
         //根据省份id获取城市
+
           this.provinceList.forEach((val)=>{
             if(id == val.cId){
+              alert(id,val.cId)
                 this.cityList = val.childList;
-                 this.form.cityId = '';
+                 this.form.cityId = cityId;
                 this.form.areaId = '';
                 this.form.countryId = '';
             }
@@ -959,27 +1058,29 @@ export default {
      },
 
      //获取县级列表
-     chooseArea(id){
+     chooseArea(id,areaId){
          //根据城市id获取县级
+
            this.cityList.forEach((val)=>{
               if(id == val.cId){
                 this.areaList = val.childList;
-                this.form.areaId = '';
+                console.log(this.areaList)
+                this.form.areaId = areaId;
                this.form.countryId = '';
               }
           })
      },
 
      //获取乡镇
-     chooseCountry(id){
+     chooseCountry(id,countryId){
          //根据县级id获取乡镇列表
         this.areaList.forEach((val)=>{
               if(id == val.cId){
                 this.countryList = val.childList;
-             this.form.countryId = '';
+             this.form.countryId = countryId;
               }
           })
-     },
+     },*/
 
      //获取管理人列表
     getMangerList(){
@@ -1025,8 +1126,8 @@ export default {
         this.getGroundList()
         //表格第一行默认选中
         this.checked();
-           //获取省份
-        this.getProvince();
+//           //获取省份
+//        this.getProvince();
 
 
          window.addEventListener('resize', ()=>{
@@ -1061,32 +1162,32 @@ export default {
                 this.getMangerList();
             }
         },
-          form:{
-            handler(value,oldVal){
-                if(value.provinceId){
-                    this.provinceList.forEach((val)=>{
-                        if(value.provinceId == val.cId){
-                            this.cityList = val.childList;
-
-                        }
-                    })
-                };
-                if(value.cityId){
-                     this.cityList.forEach((val)=>{
-                        if(value.cityId == val.cId){
-                            this.areaList = val.childList;
-                        }
-                    })
-                };
-                if(value.areaId){
-                    this.areaList.forEach((val)=>{
-                        if(value.areaId == val.cId){
-                            this.countryList = val.childList;
-                        }
-                    })
-                }
-            }
-        }
+//          form:{
+//            handler(value,oldVal){
+//                if(value.provinceId){
+//                    this.provinceList.forEach((val)=>{
+//                        if(value.provinceId == val.cId){
+//                            this.cityList = val.childList;
+//
+//                        }
+//                    })
+//                };
+//                if(value.cityId){
+//                     this.cityList.forEach((val)=>{
+//                        if(value.cityId == val.cId){
+//                            this.areaList = val.childList;
+//                        }
+//                    })
+//                };
+//                if(value.areaId){
+//                    this.areaList.forEach((val)=>{
+//                        if(value.areaId == val.cId){
+//                            this.countryList = val.childList;
+//                        }
+//                    })
+//                }
+//            }
+//        }
     }
 }
 </script>

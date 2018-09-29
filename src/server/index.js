@@ -28,42 +28,26 @@ Axios.interceptors.request.use(
 Axios.interceptors.response.use(
     response =>{
         //如果返回602  需要重新登录
-        if(response.code == 602){
-            this.$message.error(response.msg);
-            setTimeout(()=>{
-                this.$router.push({
-                    name: 'login'
-                })
-            },1500)
-            }
+
         return response;
     },
     err =>{
         console.log(err)
-        if(err.response){
-
-        }
+      if(err.response.code == 602){
+        Message({
+          message: err.msg,
+          type: 'warning'
+        });
+        setTimeout(()=>{
+          this.$router.push({
+            name: 'login'
+          })
+        },1500)
+      }
     }
 )
 
-/*axiosConfig.interceptors.response.use(
-    response => {
-        return response;
-    },
-    error => {
-        if (error.response) {
-            switch (error.response.status) {
-                case 401:
-                    // 返回 401 清除token信息并跳转到登录页面
-                    store.commit(types.LOGOUT);
-                    router.replace({
-                        path: 'login',
-                        query: {redirect: router.currentRoute.fullPath}
-                    })
-            }
-        }
-        return Promise.reject(error.response.data)   // 返回接口返回的错误信息
-    });*/
+
 /***
  * 公用的server方法
  */
@@ -94,7 +78,14 @@ export default{
                   resolve(res.data)
               }else if(res.data.code == 500){
                   resolve(res.data)
-              }
+              }else if(res.data.code == 602){
+
+                 Message({
+                  message: res.data.msg,
+                  type: 'warning'
+                });
+                resolve(res.data)
+            }
           },err=>{
                  //如果动画为true，返回之后需要关闭动画
               if(load || load == undefined) {
@@ -150,6 +141,12 @@ export default{
                   resolve(res.data)
               }else if(res.data.code == 500){
                   resolve(res.data);
+              }else if(res.data.code == 602){
+                Message({
+                  message: res.data.msg,
+                  type: 'warning'
+                });
+                resolve(res.data)
               }
           },err=>{
                 //如果动画为true，返回之后需要关闭动画

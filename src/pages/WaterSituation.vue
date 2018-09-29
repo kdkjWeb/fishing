@@ -72,7 +72,7 @@
         </div>
         <!-- end表格 -->
 
-        
+
         <!-- start分页 -->
         <div class="page">
             <el-pagination
@@ -113,7 +113,7 @@ export default {
                 {prop: 'insureLevel', label: '超保水位', width: '100', align: 'right'},
                 {prop: 'trend', label: '水势', width: '60', align: ''},
                 {prop: 'fishPlaceType', label: '钓场类型', width: '80', align: ''},
-                {prop: 'fishPlaceName', label: '钓场', width: '80', align: ''},    
+                {prop: 'fishPlaceName', label: '钓场', width: '80', align: ''},
                 {prop: 'cdate', label: '采集时间', width: '110', align: 'right'},
                 {prop: '', label: '', width: '', align: ''}
             ],
@@ -156,11 +156,16 @@ export default {
                             this.tableData = JSON.parse(JSON.stringify(arr));
                             this.total = res.data.total;
                         }
-                       
-            
+
+
                       this.$nextTick(function(){
                             this.checked();//每次更新了数据，触发这个函数即可。
                         })
+                }else{
+                  this.$message({
+                    type: 'warning',
+                    message: res.msg
+                  })
                 }
             })
         },
@@ -201,8 +206,8 @@ export default {
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
-             
-        
+
+
             // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
             if(this.multipleSelection.length == 2){
                      for(var i= 0; i<this.tableData.length; i++){
@@ -230,7 +235,7 @@ export default {
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
             this.$refs.multipleTable.toggleRowSelection(this.tableData[0],true);
-            
+
             if(this.currentPage == 1){
                 this.rowIndex = 1;
             }

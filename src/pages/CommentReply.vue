@@ -291,6 +291,11 @@ export default {
                                     })
                                 }
                             })
+                        }else{
+                          this.$message({
+                            type: 'warning',
+                            message: res.msg
+                          });
                         }
                     })
                 }).catch(() => {
@@ -321,6 +326,11 @@ export default {
                             });
                             //获取所有评论列表
                             this.getAllCmtsList();
+                        }else{
+                          this.$message({
+                            type: 'warning',
+                            message: res.msg
+                          });
                         }
                     })
                 }).catch(() => {
@@ -421,7 +431,7 @@ export default {
       }
     },
     created(){
-         this.height = window.innerHeight - 240;
+         this.height = window.innerHeight - 250;
     },
     mounted(){
         //表格第一行默认选中
@@ -430,7 +440,7 @@ export default {
         this.getAllCmtsList();
 
         window.addEventListener('resize', ()=>{
-             this.height = window.innerHeight - 240;
+             this.height = window.innerHeight - 250;
         })
     }
 }

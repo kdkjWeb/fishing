@@ -72,7 +72,7 @@
         </div>
         <!-- end表格 -->
 
-        
+
         <!-- start分页 -->
         <div class="page">
             <el-pagination
@@ -149,11 +149,16 @@ export default {
                             this.tableData = JSON.parse(JSON.stringify(arr));
                             this.total = res.data.total;
                         }
-                       
-            
+
+
                       this.$nextTick(function(){
                             this.checked();//每次更新了数据，触发这个函数即可。
                         })
+                }else{
+                  this.$message({
+                    type: 'warning',
+                    message: res.msg
+                  })
                 }
             })
         },
@@ -194,8 +199,8 @@ export default {
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
-             
-        
+
+
             // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
             if(this.multipleSelection.length == 2){
                      for(var i= 0; i<this.tableData.length; i++){
@@ -223,7 +228,7 @@ export default {
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
             this.$refs.multipleTable.toggleRowSelection(this.tableData[0],true);
-            
+
             if(this.currentPage == 1){
                 this.rowIndex = 1;
             }
@@ -261,7 +266,7 @@ export default {
             // var h = date.getHours();
             // var minute = date.getMinutes();
             // minute = minute < 10 ? ('0' + minute) : minute;
-            // var second = date.getSeconds();	
+            // var second = date.getSeconds();
             // second = second < 10 ? ('0' + second) : second;
             // return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
 

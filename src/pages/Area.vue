@@ -87,7 +87,7 @@ export default {
                 modifyTime: '',
                 modifier: ''
             },
-            
+
             defaultProps: {
             children: 'childList',
             label: 'regionName'
@@ -114,7 +114,7 @@ export default {
             }
       },
 
-    
+
         //点击删除按钮
         del() {
         //按钮选中状态
@@ -134,20 +134,20 @@ export default {
                         type: 'success',
                         message: '删除成功!'
                     });
-                }else if(res.code == 500){
+                }else {
                     this.$message({
                     type: 'warning',
                     message: res.msg
-                }); 
+                });
                 }
             })
 
-          
+
         }).catch(() => {
           this.$message({
             type: 'info',
             message: '已取消删除'
-          });          
+          });
         });
       },
 
@@ -193,7 +193,7 @@ export default {
                //新增同级
                 this.$post('region/addRegion',{
                     parentId: this.checkData.parentId ? this.checkData.parentId : null,
-                    regionName: this.form.des 
+                    regionName: this.form.des
                 }).then(res=>{
                     this.getProvince();
                     if(res.code == 0){
@@ -212,7 +212,7 @@ export default {
                //新增下级
                 this.$post('region/addRegion',{
                     parentId: this.checkData.cId,
-                    regionName: this.form.des 
+                    regionName: this.form.des
                 }).then(res=>{
                   this.getProvince();
                     if(res.code == 0){
@@ -231,7 +231,7 @@ export default {
                //修改
                this.$post('region/updateRegion',{
                    cId: this.checkData.cId,
-                   regionName: this.form.des 
+                   regionName: this.form.des
                }).then(res=>{
                    if(res.code == 0){
                        this.getProvince();
@@ -253,18 +253,27 @@ export default {
       //获取区域列表
      getProvince(){
          this.$get('region/queryTrees',{}).then(res=>{
-             this.provinceList = res.data;
-             this.$nextTick(()=>{
+
+             if(res.code == 0){
+               this.provinceList = res.data;
+               this.$nextTick(()=>{
                  this.checkArr.push(this.provinceList[0].cId);
                  this.checkData = this.provinceList[0];
                  this.$refs.tree.setCurrentKey(this.checkArr[0]); // treeBox 元素的ref   value 绑定的node-key
 
                  if(this.checkData.childList.length>0){
-                     this.disabled = true;
+                   this.disabled = true;
                  }else{
-                     this.disabled = false;
+                   this.disabled = false;
                  }
-             })
+               })
+             }else{
+               this.$message({
+                 type: 'warning',
+                 message: res.msg
+               });
+             }
+
          })
      },
     },

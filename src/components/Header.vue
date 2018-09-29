@@ -93,6 +93,15 @@ export default {
                         this.$router.push({
                             path: '/login'
                         })
+                    }else if(res.code == 602){
+
+                      //删除localStorage的数据
+                      localStorage.removeItem('userInfo')
+
+                      //跳转到登录页面
+                      this.$router.push({
+                        path: '/login'
+                      })
                     }
                 })
                 break;

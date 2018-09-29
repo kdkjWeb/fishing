@@ -78,7 +78,7 @@
         </div>
         <!-- end表格 -->
 
-        
+
         <!-- start分页 -->
         <div class="page">
             <el-pagination
@@ -108,7 +108,7 @@ export default {
                 date: ''
             },
             tableList: [   //表格的头部配置
-            
+
                 {prop: 'status', label: '阅读', width: '100', align: ''},
                 {prop: 'content', label: '意见详情', width: '', align: ''},
                 {prop: 'nickname', label: '反馈人', width: '100', align: ''},
@@ -146,11 +146,16 @@ export default {
                             this.tableData = res.data.list;
                         }
 
-                        
+
                         this.total = res.data.total;
                       this.$nextTick(function(){
                             this.checked();//每次更新了数据，触发这个函数即可。
                         })
+                }else{
+                  this.$message({
+                    type: 'warning',
+                    message: res.msg
+                  });
                 }
             })
         },
@@ -161,7 +166,7 @@ export default {
         },
         //导出
         exportd(){
-        
+
             let path = this.$store.state.baseUrl;
             let href = path + 'common/downloadSuggestions'
             let json = {};
@@ -191,13 +196,13 @@ export default {
             });
             }
             console.log(href)
-            location.href = href; 
+            location.href = href;
         },
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
-             
-        
+
+
             // 强制要求复选框只能选择一个，大于等于2个的时候把第一个取消选中
             if(this.multipleSelection.length == 2){
                      for(var i= 0; i<this.tableData.length; i++){
@@ -225,7 +230,7 @@ export default {
         checked(){
               //首先el-table添加ref="multipleTable"引用标识
             this.$refs.multipleTable.toggleRowSelection(this.tableData[0],true);
-            
+
             if(this.currentPage == 1){
                 this.rowIndex = 1;
             }

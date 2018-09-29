@@ -177,7 +177,7 @@
                         :headers="myHeaders"
                         auto-upload
                         :before-upload="beforeAvatarUpload">
-                        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                        <img v-if="imageUrl" :src="imageUrl" class="avatar" :onerror="userImg">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div>
                         </el-upload>
@@ -268,8 +268,9 @@
                     </el-row>
                     <el-row>
                       <el-col :span="8">
+                        <!--:disabled="disabled2"-->
                           <el-form-item label="用户类别：">
-                                <el-select v-model="form.role" placeholder="用户类别"  :disabled="disabled2">
+                                <el-select v-model="form.role" placeholder="用户类别"  >
                                 <el-option label="超级管理" value="0"></el-option>
                                 <el-option label="管理" value="1"></el-option>
                                 <el-option label="钓友" value="2"></el-option>
@@ -429,7 +430,7 @@
                                 :headers="myHeaders"
                                 auto-upload
                                 :before-upload="beforeAvatarUpload1">
-                                <img v-if="imageUrl1" :src="imageUrl1" class="avatar" style="width:300px;">
+                                <img v-if="imageUrl1" :src="imageUrl1" class="avatar"  style="width:300px;">
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M,图片比例：4.4:1</div>
                                 </el-upload>
@@ -464,6 +465,8 @@
 export default {
     data(){
         return{
+
+          userImg:'this.src="' + require('@/assets/images/userImg.png') + '"',  //图片加载不出来显示
             num:'',
             errMsg: '',
             errMsg1: '',
@@ -568,7 +571,7 @@ export default {
             rules: {
                 nickname: [
                       { required: true, message: '请输入昵称', trigger: 'blur' },
-                      { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
+                      { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
                 ],
                 /*password: [
                     { required: true, message: '请输入密码', trigger: 'change' }
@@ -659,9 +662,12 @@ export default {
                             this.checked();//每次更新了数据，触发这个函数即可。
                         })
                     }
-
-
-                }
+                }else{
+                 this.$message({
+                   type: 'warning',
+                   message: res.msg
+                 });
+               }
             })
         },
         //查询
@@ -741,6 +747,11 @@ export default {
                                     });
                                 }
                             })
+                        }else{
+                          this.$message({
+                            type: 'warning',
+                            message: res.msg
+                          });
                         }
                     })
                 }).catch(() => {
@@ -768,29 +779,35 @@ export default {
             this.$get('user/getUserInfo',{
                 id: this.circleId
             }).then(res=>{
-                this.form = res.data;
-                this.form.status = this.form.status + "";
-                this.form.gender = this.form.gender + "";
-                this.form.trusted = this.form.trusted + "";
-                this.form.number = this.rowIndex;
-                this.form.targetFish = this.form.targetFish ? this.form.targetFish.split(',') : [];
-                this.form.fishWay = this.form.fishWay ? this.form.fishWay.split(',') : [];
-                this.form.bait = this.form.bait ? this.form.bait.split(',') : [];
-                this.imageUrl = res.data.iconUrl;
-                this.imageUrl1 = res.data.bannerIconUrl;
-                this.num = this.form.invitedCode;
 
-                if(res.data.role == 1 || res.data.role == 0){
+                if(res.code == 0){
+                  this.form = res.data;
+                  this.form.status = this.form.status + "";
+                  this.form.gender = this.form.gender + "";
+                  this.form.trusted = this.form.trusted + "";
+                  this.form.number = this.rowIndex;
+                  this.form.targetFish = this.form.targetFish ? this.form.targetFish.split(',') : [];
+                  this.form.fishWay = this.form.fishWay ? this.form.fishWay.split(',') : [];
+                  this.form.bait = this.form.bait ? this.form.bait.split(',') : [];
+                  this.imageUrl = res.data.iconUrl;
+                  this.imageUrl1 = res.data.bannerIconUrl;
+                  this.num = this.form.invitedCode;
+
+                  if(res.data.role == 1 || res.data.role == 0){
                     this.isPas = false;
-                }else{
+                  }else{
                     this.isPas = true;
-                }
+                  }
 
-                if(res.data.role){
+                  if(res.data.role){
                     this.getrankList(res.data.role)
+                  }
+                }else{
+                  this.$message({
+                    type: 'warning',
+                    message: res.msg
+                  });
                 }
-
-
             })
 
         },
@@ -808,6 +825,11 @@ export default {
             }).then(res=>{
                 if(res.code == 0){
                     this.rankList = res.data;
+                }else{
+                  this.$message({
+                    type: 'warning',
+                    message: res.msg
+                  });
                 }
             })
         },
@@ -818,6 +840,11 @@ export default {
             }).then(res=>{
                 if(res.code == 0){
                     this.checkList = res.data;
+                }else{
+                  this.$message({
+                    type: 'warning',
+                    message: res.msg
+                  });
                 }
             })
         },
@@ -886,14 +913,14 @@ export default {
         },
         //弹出框的确认按钮
         comfirm(formName){
-             if(!this.form.icon){
-                this.$message({
-                message: '请上传新的用户图标！',
-                type: 'warning'
-                });
-
-                return;
-            }
+//             if(!this.form.icon){
+//                this.$message({
+//                message: '请上传新的用户图标！',
+//                type: 'warning'
+//                });
+//
+//                return;
+//            }
             if(!this.circleId && this.form.phone == ''){
                 let reg = /^1[3|4|5|6|8|7|9][0-9]\d{8}$/;
                 if(!reg.test(this.form.phone)){

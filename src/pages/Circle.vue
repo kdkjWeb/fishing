@@ -119,9 +119,9 @@
                         </el-col>
                         <el-col :span="12">
                             <el-form-item label="状态：" prop="status">
-                                <el-select v-model="form.status" placeholder="状态">
+                                <el-select v-model="form.status" placeholder="状态" :disabled="disabledStatus">
                                 <el-option label="审核" value="1"></el-option>
-                                <el-option label="待审" value="0"></el-option>
+                                <el-option label="未审" value="0"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
@@ -357,6 +357,7 @@ export default {
             address: '',
             date: ''
             },
+          disabledStatus:false,
             form:{
                 circleName: '',  //圈子
                 number: '',   //编号
@@ -382,7 +383,6 @@ export default {
                 intro: '',   //简介
                 remark: '',    //备注
                 icon: ''   //图标
-
             },
             tableList: [   //表格的头部配置
                 {prop: 'status', label: '状态', width: '50', align: '',align1: 'left'},
@@ -481,35 +481,50 @@ export default {
                         })
                     }
                     this.total = res.data.total;
+                }else{
+                    this.$message({
+                      type: 'warning',
+                      message: res.msg
+                    })
                 }
             })
         },
+
         //查询
         search(){
             this.currentPage = 1;
             this.getCircleList();
         },
+
         //新增
         add(){
             this.dialogVisible = true;
-
+            this.disabledStatus = false;
             //新增有些字段禁止填写
             this.disabled = true;
-
 
             //点击新增清空表单
                 for(var i in this.form){
                 if(i == 'status'){  //遇到默认项跳过，执行下面的循环
                     continue;
                 }else if(this.form[i] != ''){
-
+//                  this.form = {};
                     this.$nextTick(() => {
                             this.$refs['codeName'].resetField();
                             this.$refs['kind'].resetField();
-                            this.form = {};
-                            this.form.status = '1';
-                            this.imageUrl = '';
-                        });
+
+                      this.imageUrl = '';
+
+                      Object.keys(this.form).forEach((key)=>{
+                        if(key == 'status'){
+
+                          this.form[key] = '1';
+                        }else{
+                          this.form[key] = '';
+                        }
+
+                      })
+                    });
 
 
                 }
@@ -518,6 +533,7 @@ export default {
         this.circleId = ''
 
         },
+
         //删除
         deleted(){
             if(this.multipleSelection.length != 1){
@@ -531,7 +547,7 @@ export default {
                if(this.multipleSelection[0].status === '审核'){
                     this.$message({
                         type: 'warning',
-                        message: '该帖子已被审核，不允许删除!'
+                        message: '该圈子已被审核，不允许删除!'
                         });
                         return;
                     }
@@ -560,6 +576,11 @@ export default {
                                          this.checked();
                                     })
                                 }
+                            })
+                        }else{
+                            this.$message({
+                              type: 'warning',
+                              message: res.msg
                             })
                         }
                     })
@@ -600,6 +621,7 @@ export default {
 
             location.href = href;
         },
+
         //多选框选中之后存放的数据
         handleSelectionChange(val){
              this.multipleSelection = val;
@@ -628,27 +650,30 @@ export default {
             }
 
         },
+
         //每页显示多少条数据
         handleSizeChange(val) {
             this.pageSize = val;
             this.getCircleList(val,this.currentPage);
         },
+
         //当前第几页
         handleCurrentChange(val) {
             this.currentPage = val;
             this.getCircleList(this.pageSize,val)
         },
+
         //弹出框的确认按钮
         comfirm(formName){
 
-            if(!this.form.icon){
-                this.$message({
-                message: '请上传新圈子的图标！',
-                type: 'warning'
-                });
-
-                return;
-            }
+//            if(!this.form.icon){
+//                this.$message({
+//                message: '请上传新圈子的图标！',
+//                type: 'warning'
+//                });
+//
+//                return;
+//            }
 
 
             this.$refs[formName].validate((valid)=>{
@@ -709,6 +734,7 @@ export default {
                 }
             })
         },
+
         //弹出框的取消按钮
         cancel(formName){
             this.dialogVisible = false;
@@ -724,6 +750,7 @@ export default {
                 this.rowIndex = 1;
             }
       },
+
       //标准时间格式转换
       dataTransform(date){
         if(date){
@@ -737,6 +764,7 @@ export default {
             return null;
         }
       },
+
       //设置表头的背景颜色
       getRowClass({ row, column, rowIndex, columnIndex }) {
             if (rowIndex == 0) {
@@ -745,26 +773,46 @@ export default {
                 return ''
             }
         },
+
      //设置表格索引序号
      index(index){
          return (this.currentPage - 1)*this.pageSize + index + 1;
      },
+
      //获取圈子分类列表
      getCodeName(){
          this.$post('sysCategory/queryByCategory',{
              category: 30
          }).then(res=>{
-             this.codeNameList = res.data;
+             if(res.code == 0){
+               this.codeNameList = res.data;
+             }else{
+               this.$message({
+                 message: res.msg,
+                 type: 'warning'
+               });
+             }
+
          })
      },
+
      //获取省份列表
      getProvince(){
          this.$get('/region/queryTrees',{}).then(res=>{
               if(res.code == 0){
-                this.provinceList = res.data;
+                  if(res.code == 0){
+                    this.provinceList = res.data;
+                  }else{
+                    this.$message({
+                      message: res.msg,
+                      type: 'warning'
+                    });
+                  }
+
               }
           })
      },
+
      //获取市列表
     chooseProvince(id){
         //根据省份id获取城市
@@ -777,6 +825,7 @@ export default {
             }
         })
      },
+
      //获取县级列表
      chooseArea(id){
          //根据城市id获取县级
@@ -788,6 +837,7 @@ export default {
               }
           })
      },
+
      //获取乡镇
      chooseCountry(id){
          //根据县级id获取乡镇列表
@@ -797,6 +847,7 @@ export default {
               }
           })
      },
+
     //获取管理人列表
     getMangerList(){
         this.$post('user/getUserList',{
@@ -804,6 +855,11 @@ export default {
         }).then(res=>{
             if(res.code == 0){
                 this.managerList = res.data.list
+            }else{
+              this.$message({
+                message: res.msg,
+                type: 'warning'
+              });
             }
         })
     },
@@ -818,21 +874,24 @@ export default {
                 return;
             }
 
-
             this.dialogVisible = true;
             this.disabled = true;
+            this.disabledStatus = false;
+
+            if(this.multipleSelection[0].status =='审核'){
+                if(this.multipleSelection[0].circleName == '鱼情' || this.multipleSelection[0].circleName == '随便说说' || this.multipleSelection[0].circleName == '钓位'){
+                  this.disabledStatus = true;
+                }
+            }
+
+
             this.circleId = this.multipleSelection[0].cId;   //获取每条圈子的id,用来判断点击弹出框的确认是新增还是修改
-
-
-
-
             if(this.circleId) {
-              this.$get('circle/queryById', {
+              this.$get('circle/queryByIdForRole', {
                 circleId: this.circleId
               }).then(res => {
-                  console.log(res)
-                if(res.code == 0){
 
+                if(res.code == 0){
                     this.form = res.data;
                     this.form.status = this.form.status + "";
                     this.form.circleCategoryId = this.form.circleCategoryId + "";
@@ -841,6 +900,11 @@ export default {
                     this.form.creator = this.form.creatorName;
                     this.form.manager = this.form.managerName;
                     this.form.modifier = this.form.modifierName;
+                }else{
+                    this.$message({
+                      type:'warning',
+                      message:res.msg
+                    })
                 }
               })
             }
@@ -1059,7 +1123,7 @@ display: block;
     padding-right: 15px;
 }
 .circle .aboutNum{
-    width: 620px;
+    width: 639px;
     height: 30px;
     line-height: 30px;
     margin-top: 10px;
