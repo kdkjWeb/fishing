@@ -559,8 +559,13 @@ export default {
                 },
 
                 success: function(data) {
+                    if(data.regeocode.addressComponent.province.length>0){
+                      _this.form.provinceName = data.regeocode.addressComponent.province;
+                    }else{
+                      _this.form.provinceName = '';
+                    }
 
-                  _this.form.provinceName = data.regeocode.addressComponent.province;
+
 
                   if(data.regeocode.addressComponent.city.length > 0){
                     _this.form.cityName = data.regeocode.addressComponent.city;
@@ -568,8 +573,19 @@ export default {
                     _this.form.cityName = data.regeocode.addressComponent.province;
                   }
 
-                  _this.form.areaName = data.regeocode.addressComponent.district;
-                 _this.form.countryName = data.regeocode.addressComponent.township;
+                  if(data.regeocode.addressComponent.district.length>0){
+                    _this.form.areaName = data.regeocode.addressComponent.district;
+                  }else{
+                    _this.form.areaName = '';
+                  }
+
+                  if( data.regeocode.addressComponent.township.length>0){
+                    _this.form.countryName = data.regeocode.addressComponent.township;
+                  }else{
+                    _this.form.countryName = '';
+                  }
+
+
                   _this.form.location = data.regeocode.formatted_address;
 
                   //请求成功处理，和本地回调完全一样
@@ -582,7 +598,7 @@ export default {
 
                 error: function() {
                   //请求出错处理
-                  alert("error");
+//                  alert("error");
                 }
               });
 
