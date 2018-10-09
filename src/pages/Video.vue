@@ -191,7 +191,6 @@
                   </el-col>
 
                   <el-col :span="8">
-
                     <el-form-item label="视频分类：" prop="videoCategoryId"  ref="videoCategoryId" :error="videoError" class="videoStyle">
                       <el-select v-model="form.videoCategoryId" placeholder="可见类型" multiple>
                         <el-option
@@ -301,6 +300,26 @@
                 </el-upload>
               </el-col>
             </el-row>
+            <el-row style="margin-top:20px;">
+              <el-col :span="24">
+                <span class="uploadTitle">上传视频封面：</span>
+                <el-upload
+                  class="avatar-uploader"
+                  accept="image/jpeg,image/png"
+                  :action="`${this.$store.state.baseUrl}common/uploadOssPic`"
+                  :show-file-list="false"
+                  :on-success="handleAvatarSuccess"
+                  name="picture"
+                  :headers="myHeaders"
+                  auto-upload
+                  :before-upload="beforeAvatarUpload">
+
+                  <img v-if="imageUrl" :src="imageUrl"  class="avatar" >
+                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                  <div slot="tip" class="el-upload__tip">只支持jpg/png类型，且不超过2M</div>
+                </el-upload>
+              </el-col>
+            </el-row>
 
           </el-form>
 
@@ -384,6 +403,10 @@
       ElRow},
     data(){
       return{
+        myHeaders: {     //上传图片携带token
+          token: ''
+        },
+        imageUrl: '',  //上传图片显示
         errMsg: '',
         height: '',
         video: {},
@@ -662,7 +685,7 @@
         this.circleId = '';
         this.form.topicContentList = [];
         this.videoUploadPercent = 0;
-
+        this.videoError = '';
         this.$nextTick(()=>{
 
 //          this.$refs['topicType'].resetField();
@@ -677,6 +700,7 @@
             }
           })
         })
+        this.imageUrl = '';
       },
 
 
@@ -860,6 +884,7 @@
            this.form.isBest = res.data.isBest + '';
            this.form.status = res.data.status + '';
           //  this.form.videoCategoryId = res.data.videoCategoryId + '';
+           this.imageUrl = res.data.topicContentList[0].thumbUrl
            this.video = this.form.topicContentList[0];
 
            if(typeof this.multipleSelection[0].videoCategoryId === 'string'){
@@ -1231,13 +1256,7 @@
       },
       //上传成功
       handleVideoSuccess(res, file){
-
-          console.log(res,file)
-
-
         if(!file) return;
-
-          console.log(1)
         var reader = new FileReader();
           console.log(reader);
         reader.onload = function(){
@@ -1248,9 +1267,6 @@
         this.videoUploadPercent = 100;
         this.videoPath = URL.createObjectURL(file.raw);
         res.data = res.data.split(',') ;
-        console.log(res.data)
-        // this.video.thumbUrl =
-
 
         if(res.code == 0){
             this.$message({
@@ -1262,8 +1278,11 @@
             contentType:3,
             content:res.data[0],
             sort:1,
-            thumb:res.data[1]
+            thumb: ''
           }]
+
+
+          console.log(this.form)
         }else if(res.code == 602){
            this.$message.error(res.msg);
             setTimeout(()=>{
@@ -1279,6 +1298,44 @@
         }
 
       },
+
+      /**start上传图片 */
+      handleAvatarSuccess(res, file) {
+
+          if(this.form.topicContentList){
+            this.imageUrl = URL.createObjectURL(file.raw);
+            this.form.topicContentList[0].thumb = file.response.data;
+            if(res.code == 602){
+              this.$message.error(res.msg);
+              setTimeout(()=>{
+                this.$router.push({
+                  name: 'login'
+                })
+              },1500)
+            }
+          }else{
+              this.$message({
+                type: 'warning',
+                message: '请先上传视频'
+              })
+          }
+
+        console.log(this.form)
+      },
+      beforeAvatarUpload(file) {
+        const isJPG = file.type === 'image/jpeg';
+        const isPNG = file.type === 'image/png';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG && !isPNG) {
+          this.$message.error('请选择我们支持的格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传图片大小不能超过 2MB!');
+        }
+        return (isJPG || isPNG) && isLt2M;
+      }
+      /**end上传图片 */
     },
     created(){
       this.height = window.innerHeight - 674;

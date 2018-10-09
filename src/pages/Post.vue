@@ -1292,17 +1292,19 @@
                       type: 'warning',
                       message: '所有内容都不能为空，请输入内容！'
                     });
-                  }else{
-                    if(val.content.length < 15){
-                      contentFlag = false;
-                      this.$message({
-                        type: 'warning',
-                        message: '内容最少输入15个字符或以上！'
-                      });
-                    }
                   }
+
+//                  else{
+//                    if(val.content.length < 15){
+//                      contentFlag = false;
+//                      this.$message({
+//                        type: 'warning',
+//                        message: '内容最少输入15个字符或以上！'
+//                      });
+//                    }
+//                  }
                 }
-              })
+              });
 
               if(contentFlag){
                 this.$post(url,{

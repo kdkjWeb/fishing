@@ -84,7 +84,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="currentPage"
-            :page-sizes="[10, 50, 80, 100]"
+            :page-sizes="[30, 50, 80, 100]"
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -290,7 +290,6 @@
                             <!--<el-select v-model="form.provinceId" placeholder="请选择省份" @change="chooseProvince(form.provinceId)">-->
                             <!--<el-option :label="item.regionName" :value="item.cId" v-for="item in provinceList" :key="item.cId"></el-option>-->
                             <!--</el-select>-->
-
                           <el-input  v-model="form.provinceName"  disabled></el-input>
                         </el-form-item>
                       </el-col>
@@ -417,7 +416,7 @@ export default {
             imageUrl: '',  //上传图片显示
             multipleSelection: [],   //存放勾选的数据
             currentPage: 1, //当前第几页
-            pageSize: 10,   //每页显示多少条
+            pageSize: 30,   //每页显示多少条
             total: null,   //总共多少条数据
             circleId: '',    //修改，删除保存的id
             rowIndex: '',   //每一行的编号

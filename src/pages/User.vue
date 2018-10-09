@@ -561,10 +561,10 @@ export default {
                 {prop: 'seatPhone', label: '电话', width: '120', align: 'right'},
                 {prop: 'address', label: '住址', width: '130', align: ''},
                 {prop: 'remark', label: '备注', width: '150', align: ''},
-                {prop: 'cDate', label: '注册时间', width: '100', align: 'right'},
-                {prop: 'cDate', label: '创建时间', width: '100', align: 'right'},
+                {prop: 'cDate', label: '注册时间', width: '140', align: 'right'},
+                {prop: 'cDate', label: '创建时间', width: '140', align: 'right'},
                 {prop: 'updatePeople', label: '修改人', width: '80', align: ''},
-                {prop: 'updateTime', label: '修改时间', width: '100', align: 'right'},
+                {prop: 'updateTime', label: '修改时间', width: '140', align: 'right'},
 
             ],
             tableData: [],    //表格的数据
@@ -785,6 +785,7 @@ export default {
                   this.form.status = this.form.status + "";
                   this.form.gender = this.form.gender + "";
                   this.form.trusted = this.form.trusted + "";
+
                   this.form.number = this.rowIndex;
                   this.form.targetFish = this.form.targetFish ? this.form.targetFish.split(',') : [];
                   this.form.fishWay = this.form.fishWay ? this.form.fishWay.split(',') : [];
@@ -792,6 +793,7 @@ export default {
                   this.imageUrl = res.data.iconUrl;
                   this.imageUrl1 = res.data.bannerIconUrl;
                   this.num = this.form.invitedCode;
+
 
                   if(res.data.role == 1 || res.data.role == 0){
                     this.isPas = false;
