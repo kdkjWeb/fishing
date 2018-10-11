@@ -32,7 +32,6 @@ Axios.interceptors.response.use(
         return response;
     },
     err =>{
-        console.log(err)
       if(err.response.code == 602){
         Message({
           message: err.msg,

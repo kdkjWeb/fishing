@@ -565,7 +565,9 @@
               header-align="center"
               align="right"
               :index="index"
-              label="编号">
+              label="编号"
+              :show-overflow-tooltip="true"
+              >
             </el-table-column>
 
             <el-table-column
@@ -1503,6 +1505,7 @@
             let href = path + 'basicTopic/downloadBasicTopic'
             let json = {};
 
+
             Object.keys(this.formInline).forEach((key,index)=>{
                 if(this.formInline[key] != '' && key != 'date'){
                     json[key] = this.formInline[key]
@@ -2044,6 +2047,7 @@ background: #fff;
 </style>
 
 <style>
+
   #post .topSearch .el-form-item__content{
     width: 80px;
   }
@@ -2111,6 +2115,7 @@ background: #fff;
     line-height: 150px;
     text-align: center;
   }
+
 </style>
 <style scoped>
   #post{
